@@ -1,11 +1,10 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
-#include "AIExtensionPrivatePCH.h"
-#include "AIExtensionSettings.h"
+#include "FactionsSettings.h"
 
 
 #if WITH_EDITOR
-void UAIExtensionSettings::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
+void UFactionsSettings::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
 {
     if (PropertyChangedEvent.Property != nullptr)
     {
@@ -17,7 +16,7 @@ void UAIExtensionSettings::PostEditChangeChainProperty(FPropertyChangedChainEven
         auto* Link = PropertyChangedEvent.PropertyChain.GetActiveMemberNode();
         const auto* LinkValue = Link->GetValue();
 
-        if (LinkValue && LinkValue->GetFName() == GET_MEMBER_NAME_CHECKED(UAIExtensionSettings, Relations))
+        if (LinkValue && LinkValue->GetFName() == GET_MEMBER_NAME_CHECKED(UFactionsSettings, Relations))
         {
             const int32 RelationIndex = PropertyChangedEvent.GetArrayIndex(LinkValue->GetFName().ToString());
 
@@ -26,7 +25,7 @@ void UAIExtensionSettings::PostEditChangeChainProperty(FPropertyChangedChainEven
     }
 }
 
-bool UAIExtensionSettings::CanEditChange(const UProperty* InProperty) const
+bool UFactionsSettings::CanEditChange(const UProperty* InProperty) const
 {
     bool bCanEdit = Super::CanEditChange(InProperty);
 
@@ -41,7 +40,7 @@ bool UAIExtensionSettings::CanEditChange(const UProperty* InProperty) const
     return bCanEdit;
 }
 
-void UAIExtensionSettings::SanitizeRelations(EPropertyChangeType::Type ChangeType, int32 RelationIndex)
+void UFactionsSettings::SanitizeRelations(EPropertyChangeType::Type ChangeType, int32 RelationIndex)
 {
     if (ChangeType == EPropertyChangeType::Interactive)
         return;

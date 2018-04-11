@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class AIEXTENSION_API UFactionsLibrary : public UBlueprintFunctionLibrary
+class FACTIONS_API UFactionsLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	

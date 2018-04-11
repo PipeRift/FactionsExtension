@@ -2,6 +2,8 @@
 #pragma once
 
 #include "IPropertyTypeCustomization.h"
+#include "SComboBox.h"
+
 
 class FStringEnumCustomization : public IPropertyTypeCustomization
 {

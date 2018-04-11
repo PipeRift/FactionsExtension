@@ -1,5 +1,7 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
+#include "FactionsEditor.h"
+
 #include "Kismet2/KismetEditorUtilities.h"
 
 #include "FactionCustomization.h"

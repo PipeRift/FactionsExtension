@@ -1,13 +1,12 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
-#include "AIExtensionEditorPrivatePCH.h"
+#include "StringEnumPin.h"
  
 #include "KismetEditorUtilities.h"
  
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 
-#include "StringEnumPin.h"
  
 void SStringEnumPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {

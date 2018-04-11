@@ -1,15 +1,14 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
-#include "AIExtensionEditorPrivatePCH.h"
-
-#include "AIExtensionModule.h"
-
-#include "Faction.h"
-#include "AIExtensionSettings.h"
-
 #include "FactionCustomization.h"
 
+#include "FactionsModule.h"
+
+#include "Faction.h"
+#include "FactionsSettings.h"
+
 #define LOCTEXT_NAMESPACE "FFactionCustomization"
+
 
 bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
@@ -27,7 +26,7 @@ bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle>
 }
 
 void FFactionCustomization::GetEnumItems(TArray<FString>& Values) const {
-    const UAIExtensionSettings* Settings = GetDefault<UAIExtensionSettings>();
+    const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
     if (!Settings) {
         return;
     }
@@ -43,7 +42,7 @@ void FFactionCustomization::GetEnumItems(TArray<FString>& Values) const {
 
 void FFactionCustomization::OnItemSelected(FString Value) {
 
-    const TArray<FFactionInfo>& AllFactions = GetDefault<UAIExtensionSettings>()->Factions;
+    const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
     const int32 Id = AllFactions.IndexOfByPredicate([Value](auto& Info) {
         return Info.Name == Value;
@@ -65,7 +64,7 @@ FText FFactionCustomization::GetSelectedItem() const
 {
     int32 Id;
     const FPropertyAccess::Result RowResult = IdHandle->GetValue(Id);
-    const TArray<FFactionInfo>& AllFactions = GetDefault<UAIExtensionSettings>()->Factions;
+    const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
     if (RowResult != FPropertyAccess::MultipleValues)
     {

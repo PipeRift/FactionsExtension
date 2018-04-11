@@ -6,18 +6,12 @@ public class Factions : ModuleRules
 {
 	public Factions(ReadOnlyTargetRules TargetRules) : base(TargetRules)
     {
-		PublicIncludePaths.AddRange(new string[]
-        {
-            "Factions/Public"
-			// ... add public include paths required here ...
-	    });
-				
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
+
+        PublicIncludePaths.Add("Factions/Public");
 		
-		PrivateIncludePaths.AddRange(new string[]
-        {
-			"Factions/Private"
-			// ... add other private include paths required here ...
-		});
+		PrivateIncludePaths.Add("Factions/Private");
 			
 		
 		PublicDependencyModuleNames.AddRange(new string[]

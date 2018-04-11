@@ -1,4 +1,5 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
+
 #pragma once
 
 #if WITH_EDITOR
@@ -45,11 +46,4 @@ private:
 
     // Callbacks for when the settings were saved.
     bool HandleSettingsSaved();
-
-#if WITH_EDITOR
-public:
-	EAssetTypeCategories::Type GetAssetCategoryBit() const {
-		return IAIModule::Get().GetAIAssetCategoryBit();
-	}
-#endif
 };

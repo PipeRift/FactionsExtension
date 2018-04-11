@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnvQueryTest_AI.h"
-#include "EnvQueryTest_IsCurrentTarget.generated.h"
+#include "EnvironmentQuery/EnvQueryTest.h"
+#include "EnvQueryTest_Faction.generated.h"
 
 /**
  * 
  */
-UCLASS(meta = (DisplayName = "Is Current Target"))
-class AIEXTENSION_API UEnvQueryTest_IsCurrentTarget : public UEnvQueryTest_AI
+UCLASS(meta = (DisplayName = "Faction"))
+class FACTIONS_API UEnvQueryTest_Faction : public UEnvQueryTest
 {
     GENERATED_UCLASS_BODY()
 
 protected:
-    virtual void RunAITest(AAIGeneric* AI, FEnvQueryInstance& QueryInstance) const;
+	virtual void RunTest(FEnvQueryInstance& QueryInstance) const override;
     virtual FText GetDescriptionDetails() const override;
 };

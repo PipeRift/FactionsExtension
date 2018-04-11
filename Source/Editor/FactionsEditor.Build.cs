@@ -6,24 +6,15 @@ public class FactionsEditor : ModuleRules
 {
 	public FactionsEditor(ReadOnlyTargetRules TargetRules) : base(TargetRules)
     {
-		
-		PublicIncludePaths.AddRange(
-			new string[] {
-                "Editor/Public"
-				// ... add public include paths required here ...
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				"Editor/Private"
-				// ... add other private include paths required here ...
-			}
-			);
-			
-		
-		PublicDependencyModuleNames.AddRange(
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
+
+        PublicIncludePaths.Add("Editor/Public");
+
+        PrivateIncludePaths.Add("Editor/Private");
+
+
+        PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",

@@ -1,12 +1,9 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 #pragma once
 
-#include "FactionsEditorPrivatePCH.h"
-
 #include "PropertyEditorModule.h"
 #include "IAssetTools.h"
 
-#include "TickableObject.h"
  
 DECLARE_LOG_CATEGORY_EXTERN(LogFactionsEditor, All, All)
  

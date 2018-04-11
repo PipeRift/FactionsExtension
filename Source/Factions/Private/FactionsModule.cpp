@@ -1,14 +1,14 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// Copyright 2015-2018 Piperift. All Rights Reserved.
 
-#include "FactionsPrivatePCH.h"
+#include "FactionsModule.h"
 #include "GameplayTagsManager.h"
 
-// Settings
 #include "FactionsSettings.h"
 
 DEFINE_LOG_CATEGORY(LogFactions)
 
 #define LOCTEXT_NAMESPACE "FactionsModule"
+
 
 void FFactionsModule::StartupModule()
 {

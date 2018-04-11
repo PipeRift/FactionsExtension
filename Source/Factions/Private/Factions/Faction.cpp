@@ -1,10 +1,9 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
+#include "Faction.h"
 #include "FactionsSettings.h"
-
 #include "FactionInfo.h"
 
-#include "Faction.h"
 
 const FFaction FFaction::NoFaction(NO_FACTION);
 
