@@ -1,2 +1,2 @@
-# AI Extension Plugin
-A plugin that adds blueprint oriented Artificial Intelligence features to Unreal Engine 4
+# Factions Plugin
+Add factions and relations in your game using C++ or Blueprints
