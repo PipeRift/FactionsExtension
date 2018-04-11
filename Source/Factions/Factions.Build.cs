@@ -19,15 +19,11 @@ public class Factions : ModuleRules
 			"Core",
 			"CoreUObject",
 			"Engine",
-            "GameplayTasks",
-            "AIModule",
-            "MovieSceneTracks"
-			// ... add other public dependencies that you statically link with here ...
+            "AIModule"
 		});
 
         PrivateDependencyModuleNames.AddRange(new string[]
         {
-            "GameplayTags"
         });
 
 

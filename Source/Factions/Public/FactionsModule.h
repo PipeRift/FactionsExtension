@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "ModuleInterface.h"
+#include "ModuleManager.h"
+
 #if WITH_EDITOR
 #include "ISettingsModule.h"
 #include "ISettingsSection.h"
