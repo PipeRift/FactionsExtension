@@ -24,10 +24,14 @@ public:
         Factions.Add(FFactionInfo("Default", FColor::Blue));
     }
 
-    UPROPERTY(config, EditAnywhere, Category = Custom)
+	/** Faction used when an Actor doesn't implement a FactionAgentInterface */
+	//UPROPERTY(config, EditAnywhere, Category = Custom)
+	//FFaction DefaultFaction;
+
+    UPROPERTY(config, EditAnywhere, Category = Factions)
     TArray<FFactionInfo> Factions;
 
-    UPROPERTY(config, EditAnywhere, Category = Custom)
+    UPROPERTY(config, EditAnywhere, Category = Relations)
     TArray<FFactionRelation> Relations; //Moved from Set, serializing caused problems (4.16)
 
 protected:

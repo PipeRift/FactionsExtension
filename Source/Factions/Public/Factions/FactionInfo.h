@@ -25,13 +25,15 @@ struct FACTIONS_API FFactionRelation
         FactionA(A), FactionB(B), Attitude(InAttitude)
     {}
 
-
+	/** First Faction of the relation */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "A"))
     FFaction FactionA;
 
+	/** Second Faction of the relation */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "B"))
     FFaction FactionB;
 
+	/** Defines how this two factions will react to each other */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TEnumAsByte<ETeamAttitude::Type> Attitude;
 
@@ -50,7 +52,6 @@ struct FACTIONS_API FFactionRelation
     friend uint32 GetTypeHash(const FFactionRelation& InRelation)
     {
         return GetTypeHash(InRelation.FactionA) ^ GetTypeHash(InRelation.FactionB);
-        /*return GetTypeHash(InRelation.Guid);*/
     }
 };
 
@@ -63,24 +64,36 @@ struct FACTIONS_API FFactionInfo
     GENERATED_USTRUCT_BODY()
 
 public:
-    FFactionInfo() : Name(NO_FACTION_NAME), Color(FColor::Cyan), DefaultAttitude(ETeamAttitude::Neutral)
+    FFactionInfo()
+		: Name(NO_FACTION_NAME)
+		, Color(FColor::Cyan)
+		, AttitudeTowardsItself(ETeamAttitude::Friendly)
+		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
     {}
 
-    FFactionInfo(FString InName, FColor InColor = FColor::Cyan) :
-        Name(InName),
-        Color(InColor),
-        DefaultAttitude(ETeamAttitude::Neutral) 
+    FFactionInfo(FName InName, FLinearColor InColor = FColor::Cyan)
+		: Name(InName)
+		, Color(InColor)
+		, AttitudeTowardsItself(ETeamAttitude::Friendly)
+		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
     {}
 
-
+	/** Name of the faction */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
-    FString Name;
+    FName Name;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TEnumAsByte<ETeamAttitude::Type> DefaultAttitude;
+	/** Color of the Faction. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
+	FLinearColor Color;
 
+	/** Attitude this faction will have against itself. Relations will override it. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
-    FColor Color;
+	TEnumAsByte<ETeamAttitude::Type> AttitudeTowardsItself;
+
+	/** Attitude this faction will have against others. Relations will override it. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
+	TEnumAsByte<ETeamAttitude::Type> DefaultAttitudeTowardsOthers;
+
 
     const FFaction GetFaction();
 
