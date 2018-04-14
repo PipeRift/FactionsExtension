@@ -33,19 +33,21 @@ void FFactionCustomization::GetEnumItems(TArray<FString>& Values) const {
 
     for (auto& Info : Settings->Factions)
     {
-        Values.Add(Info.Name);
+        Values.Add(Info.Name.ToString());
     }
     // Make sure None is at the start
-    Values.Remove(NO_FACTION_NAME);
-    Values.Insert(NO_FACTION_NAME, 0);
+    Values.Remove(NO_FACTION_NAME.ToString());
+    Values.Insert(NO_FACTION_NAME.ToString(), 0);
 }
 
 void FFactionCustomization::OnItemSelected(FString Value) {
 
     const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
-    const int32 Id = AllFactions.IndexOfByPredicate([Value](auto& Info) {
-        return Info.Name == Value;
+	FName NameValue = FName(*Value);
+
+    const int32 Id = AllFactions.IndexOfByPredicate([NameValue](auto& Info) {
+		return Info.Name == NameValue;
     });
 
     if (Id != INDEX_NONE)
@@ -71,9 +73,9 @@ FText FFactionCustomization::GetSelectedItem() const
         if (AllFactions.IsValidIndex(Id))
         {
             //Return name with prefix number
-            return FText::FromString(AllFactions[Id].Name);
+            return FText::FromName(AllFactions[Id].Name);
         }
-        return FText::FromString(NO_FACTION_NAME);
+        return FText::FromName(NO_FACTION_NAME);
     }
     return LOCTEXT("MultipleValues", "Multiple Values");
 }

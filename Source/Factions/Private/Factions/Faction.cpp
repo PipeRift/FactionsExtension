@@ -7,27 +7,37 @@
 
 const FFaction FFaction::NoFaction(NO_FACTION);
 
-FFactionInfo* FFaction::GetFactionInfo() const
+bool FFaction::GetFactionInfo(FFactionInfo& Info) const
 {
-    UFactionsSettings* Settings = GetMutableDefault<UFactionsSettings>();
+	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
+	check(Settings);
 
-    if (Settings->Factions.IsValidIndex(Id)) {
-        return &Settings->Factions[Id];
-    }
+	if (Settings->Factions.IsValidIndex(Id))
+    {
+		Info = Settings->Factions[Id];
+		return true;
+	}
 
-    //If the faction is not found, return default faction info.
-    return nullptr;
+	//If the faction is not found, return default faction info.
+	return false;
 }
 
-const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) const {
+const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) const
+{
     const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
 
     const FFactionRelation* FoundRelationPtr = Settings->Relations.FindByKey(FFactionRelation(*this, Other));
-    if (FoundRelationPtr == NULL) {
-        const FFactionInfo* Info = GetFactionInfo();
-        if (Info)
+    if (FoundRelationPtr == NULL)
+    {
+		//Relation not found, use default
+		FFactionInfo Info;
+        if (GetFactionInfo(Info))
         {
-            return Info->DefaultAttitude;
+			if (*this == Other)
+			{
+				return Info.AttitudeTowardsItself;
+			}
+			return Info.DefaultAttitudeTowardsOthers;
         }
         return ETeamAttitude::Neutral;
     }

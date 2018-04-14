@@ -32,10 +32,30 @@ public:
         return A != B;
     }
 
+	/** Get the faction of an actor. None if the actors doesn't implement FactionAgentInterface */
 	UFUNCTION(BlueprintPure, Category = "Factions")
 	static FORCEINLINE FFaction GetFaction(AActor* Target)
 	{
 		return IFactionAgentInterface::Execute_GetFaction(Target);
+	}
+
+	/** @return true if this faction is none */
+	UFUNCTION(BlueprintPure, Category = "Factions", meta = (DisplayName = "Is None"))
+	static FORCEINLINE bool FactionIsNone(const FFaction& Faction)
+	{
+		return Faction.IsNone();
+	}
+
+	/**
+	 * Find the information of a faction
+	 * @param Faction to search for
+	 * @param Info associated to the faction, if found
+	 * @return true if the faction was valid and information was found
+	 */
+	UFUNCTION(BlueprintPure, Category = "Factions")
+	static FORCEINLINE bool GetFactionInfo(const FFaction& Faction, FFactionInfo& Info)
+	{
+		return Faction.GetFactionInfo(Info);
 	}
 
     UFUNCTION(BlueprintPure, Category = "Factions", meta = (DisplayName = "Get Attitude Towards", WorldContext = "A"))

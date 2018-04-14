@@ -7,7 +7,7 @@
 #include "Faction.generated.h"
 
 #define NO_FACTION -1
-#define NO_FACTION_NAME FString("None")
+#define NO_FACTION_NAME FName{}
 
 struct FFactionInfo;
 
@@ -21,7 +21,9 @@ struct FACTIONS_API FFaction
 
     FFaction() : Id(NO_FACTION) {}
 
-    FFaction(int32 InId) : Id(InId) {}
+    FFaction(int32 InId)
+		: Id(InId >= 0? InId : NO_FACTION)
+	{}
 
     FFaction(const FGenericTeamId& InTeam)
     {
@@ -36,15 +38,16 @@ struct FACTIONS_API FFaction
     int32 Id;
 
 
-    FFactionInfo* GetFactionInfo() const;
+	bool GetFactionInfo(FFactionInfo& Info) const;
 
-    /*UFUNCTION(BlueprintPure, Category = Faction, meta = (DisplayName = "Get Faction Info"))
-    FORCEINLINE const FFactionInfo& exec_GetFactionInfo() const {
-        return *GetFactionInfo();
-    }*/
+    const FGenericTeamId GetTeam() const {
+		if (Id == NO_FACTION || Id >= FGenericTeamId::NoTeam.GetId())
+		{
+			// If Faction ID is 255 or higher, Teams won't support it.
+			return FGenericTeamId::NoTeam;
+		}
 
-    FORCEINLINE const FGenericTeamId GetTeam() const {
-        return Id != NO_FACTION? FGenericTeamId(Id) : FGenericTeamId::NoTeam;
+        return FGenericTeamId(Id);
     }
 
     FORCEINLINE bool IsNone() const {
