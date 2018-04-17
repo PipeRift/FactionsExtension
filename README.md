@@ -1,7 +1,8 @@
 # Factions Plugin
 Add factions and relations in your game using C++ or Blueprints
 
-This is a plugin for Unreal Engine 4, and has support for versions **4.19** and **4.18**.
+This plugin is for Unreal Engine 4 and has support for versions **4.19** and **4.18**.<br>
+You can download this **[Test project](https://mega.nz/#!JMowlKCA!wZv-L6oNSJCwDw1CUbTFyjPOXvd6viB-QLgK-u36xtY)** to see and test the API
 
 ## Introduction
 
