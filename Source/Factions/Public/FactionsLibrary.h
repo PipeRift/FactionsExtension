@@ -4,7 +4,9 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 
-#include "Faction.h"
+#include "Factions/Faction.h"
+#include "Factions/FactionInfo.h"
+#include "Factions/FactionAgentInterface.h"
 
 #include "FactionsLibrary.generated.h"
 
