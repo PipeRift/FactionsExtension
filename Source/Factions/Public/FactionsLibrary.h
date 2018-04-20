@@ -25,12 +25,12 @@ public:
     /***************************************/
 
     UFUNCTION(BlueprintPure, Category = Factions, meta = (CompactNodeTitle = "=="))
-    static FORCEINLINE bool Equals(const FFaction& A, const FFaction& B) {
+    static FORCEINLINE bool Equals(const FFaction A, const FFaction B) {
         return A == B;
     }
 
     UFUNCTION(BlueprintPure, Category = Factions, meta = (CompactNodeTitle = "!="))
-    static FORCEINLINE bool NotEqual(const FFaction& A, const FFaction& B) {
+    static FORCEINLINE bool NotEqual(const FFaction A, const FFaction B) {
         return A != B;
     }
 
@@ -43,14 +43,14 @@ public:
 
 	/** Get the faction of an actor. None if the actors doesn't implement FactionAgentInterface */
 	UFUNCTION(BlueprintCallable, Category = Factions)
-	static void SetFaction(AActor* Target, const FFaction& NewFaction)
+	static void SetFaction(AActor* Target, const FFaction NewFaction)
 	{
 		IFactionAgentInterface::Execute_SetFaction(Target, NewFaction);
 	}
 
 	/** @return true if this faction is none */
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DisplayName = "Is None", BlueprintAutocast))
-	static FORCEINLINE bool FactionIsNone(const FFaction& Faction)
+	static FORCEINLINE bool FactionIsNone(const FFaction Faction)
 	{
 		return Faction.IsNone();
 	}
@@ -62,7 +62,7 @@ public:
 	 * @return true if the faction was valid and information was found
 	 */
 	UFUNCTION(BlueprintPure, Category = Factions)
-	static FORCEINLINE bool GetFactionInfo(const FFaction& Faction, FFactionInfo& Info)
+	static FORCEINLINE bool GetFactionInfo(const FFaction Faction, FFactionInfo& Info)
 	{
 		return Faction.GetFactionInfo(Info);
 	}
@@ -95,26 +95,26 @@ public:
 
 	/** @return One's attitude towards Other faction */
 	UFUNCTION(BlueprintPure, Category = Factions)
-	static FORCEINLINE TEnumAsByte<ETeamAttitude::Type> GetAttitudeToFaction(const FFaction& One, const FFaction& Other)
+	static FORCEINLINE TEnumAsByte<ETeamAttitude::Type> GetAttitudeToFaction(const FFaction One, const FFaction Other)
 	{
 		return One.GetAttitudeTowards(Other);
 	}
 
 	/** @return true if A is Hostile to B (or otherwise) */
 	UFUNCTION(BlueprintPure, Category = Factions)
-	static FORCEINLINE bool IsHostileFaction(const FFaction& One, const FFaction& Other) {
+	static FORCEINLINE bool IsHostileFaction(const FFaction One, const FFaction Other) {
 		return GetAttitudeToFaction(One, Other) == ETeamAttitude::Hostile;
 	}
 
 	/** @return true if A is Friendly to B (or otherwise) */
 	UFUNCTION(BlueprintPure, Category = Factions)
-	static FORCEINLINE bool IsFriendlyFaction(const FFaction& One, const FFaction& Other) {
+	static FORCEINLINE bool IsFriendlyFaction(const FFaction One, const FFaction Other) {
 		return GetAttitudeToFaction(One, Other) == ETeamAttitude::Friendly;
 	}
 
 	/** @return true if One is Neutral to Other (or otherwise) */
 	UFUNCTION(BlueprintPure, Category = Factions)
-	static FORCEINLINE bool IsNeutralFaction(const FFaction& One, const FFaction& Other) {
+	static FORCEINLINE bool IsNeutralFaction(const FFaction One, const FFaction Other) {
 		return GetAttitudeToFaction(One, Other) == ETeamAttitude::Neutral;
 	}
 };

@@ -38,7 +38,7 @@ protected:
     /** Update the root data on a change of selection */
     void OnSelectionChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
 
-    void UpdateItems();
+    void UpdateItems(bool bRefresh = true);
 
 
     /** Called at customization's setup
