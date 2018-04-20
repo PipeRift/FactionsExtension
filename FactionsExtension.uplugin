@@ -24,6 +24,9 @@
             "Win32",
             "Linux",
             "HTML5",
+            "Android",
+            "PS4",
+            "XboxOne",
             "Switch"
         ]
       },
@@ -34,7 +37,12 @@
         "WhitelistPlatforms": [
           "Win64",
           "Win32",
-          "Linux"
+          "Linux",
+          "HTML5",
+          "Android",
+          "PS4",
+          "XboxOne",
+          "Switch"
         ]
       }
     ]
