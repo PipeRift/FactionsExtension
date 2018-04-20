@@ -41,6 +41,13 @@ public:
 		return IFactionAgentInterface::Execute_GetFaction(Target);
 	}
 
+	/** Get the faction of an actor. None if the actors doesn't implement FactionAgentInterface */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	static void SetFaction(AActor* Target, const FFaction& NewFaction)
+	{
+		IFactionAgentInterface::Execute_SetFaction(Target, NewFaction);
+	}
+
 	/** @return true if this faction is none */
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DisplayName = "Is None", BlueprintAutocast))
 	static FORCEINLINE bool FactionIsNone(const FFaction& Faction)
