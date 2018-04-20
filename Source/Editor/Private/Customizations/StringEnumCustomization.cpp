@@ -10,7 +10,7 @@ void FStringEnumCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle>
 {
     if (CanCustomizeHeader(StructPropertyHandle, HeaderRow, StructCustomizationUtils))
     {    
-        UpdateItems();
+        UpdateItems(false);
 
         HeaderRow.NameContent()
         [
@@ -23,7 +23,7 @@ void FStringEnumCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle>
             SAssignNew(ComboBox, SComboBox<TSharedPtr<FString>>)
             .OptionsSource(&CachedItems)
             .OnGenerateWidget(this, &FStringEnumCustomization::HandleStringEnumComboBoxGenerateWidget)
-            .OnComboBoxOpening(this, &FStringEnumCustomization::UpdateItems)
+            .OnComboBoxOpening(this, &FStringEnumCustomization::UpdateItems, false)
             .OnSelectionChanged(this, &FStringEnumCustomization::OnSelectionChanged)
             //.InitiallySelectedItem(GetVariablFFactionValue())
             [
@@ -60,7 +60,7 @@ void FStringEnumCustomization::OnSelectionChanged(TSharedPtr<FString> SelectedIt
 }
 
 /** Display the current column selection */
-void FStringEnumCustomization::UpdateItems()
+void FStringEnumCustomization::UpdateItems(bool bRefresh)
 {
     TArray<FString> Items;
     GetEnumItems(Items);
@@ -77,9 +77,9 @@ void FStringEnumCustomization::UpdateItems()
         }
     }
 
-    /*if (ComboBox.IsValid()) {
+    if (bRefresh && ComboBox.IsValid()) {
         ComboBox->RefreshOptions();
-    }*/
+    }
 }
 
 void FStringEnumCustomization::GetEnumItems(TArray<FString>& Values) const {

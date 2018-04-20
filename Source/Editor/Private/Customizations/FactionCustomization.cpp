@@ -17,9 +17,9 @@ bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle>
 
     if (IdHandle->IsValidHandle())
 	{
-		//FAIExtensionModule& Module = FAIExtensionModule::GetInstance();
+		FFactionsModule& Module = FFactionsModule::Get();
 		//Bind On Settings Changed event
-        //Module->OnModifiedSettings().BindRaw(this, &FFactionCustomization::UpdateItems);
+        Module.OnModifiedSettings().BindRaw(this, &FFactionCustomization::UpdateItems, true);
         return true;
     }
     return false;
@@ -40,8 +40,8 @@ void FFactionCustomization::GetEnumItems(TArray<FString>& Values) const {
     Values.Insert(NO_FACTION_NAME.ToString(), 0);
 }
 
-void FFactionCustomization::OnItemSelected(FString Value) {
-
+void FFactionCustomization::OnItemSelected(FString Value)
+{
     const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
 	FName NameValue = FName(*Value);

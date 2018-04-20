@@ -32,14 +32,14 @@ protected:
     /** Update the root data on a change of selection */
     void OnSelectionChanged(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
 
-    void UpdateItems();
+    void UpdateItems(bool bRefresh = true);
 
 
 
     /** Returns all the enum items.
     * This is for override purposes.
     */
-    virtual const TArray<FString> GetEnumItems();
+    virtual void GetEnumItems(TArray<FString>& Values);
 
     /** Called when selection changed.
     * This is for override purposes.

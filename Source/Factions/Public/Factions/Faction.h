@@ -11,6 +11,7 @@
 
 struct FFactionInfo;
 
+
 /**
  * 
  */
@@ -34,7 +35,7 @@ struct FACTIONS_API FFaction
     }
 
     
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
     int32 Id;
 
 

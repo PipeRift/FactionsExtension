@@ -38,6 +38,7 @@ public class FactionsEditor : ModuleRules
                 "GraphEditor",
                 "Kismet",
                 "PropertyEditor",
+                "BlueprintGraph",
                 "DetailCustomizations",
                 "Settings",
                 "Factions"

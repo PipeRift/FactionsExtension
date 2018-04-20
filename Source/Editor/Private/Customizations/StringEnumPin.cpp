@@ -17,7 +17,11 @@ TSharedRef<SWidget> SStringEnumPin::GetDefaultValueWidget()
 {
     UpdateItems();
 
-    return  SAssignNew(ComboBox, SComboBox<TSharedPtr<FString>>)
+    return SNew(SBox)
+	.MaxDesiredHeight(20.f)
+	[
+		SAssignNew(ComboBox, SComboBox<TSharedPtr<FString>>)
+		.ContentPadding(0.f)
         .OptionsSource(&CachedItems)
         .OnGenerateWidget(this, &SStringEnumPin::HandleStringEnumComboBoxGenerateWidget)
         .OnSelectionChanged(this, &SStringEnumPin::OnSelectionChanged)
@@ -25,7 +29,8 @@ TSharedRef<SWidget> SStringEnumPin::GetDefaultValueWidget()
         [
             SNew(STextBlock)
             .Text(this, &SStringEnumPin::GetSelectedItem)
-        ];
+        ]
+	];
 }
 
 TSharedRef<SWidget> SStringEnumPin::HandleStringEnumComboBoxGenerateWidget(TSharedPtr<FString> Item)
@@ -43,9 +48,11 @@ void SStringEnumPin::OnSelectionChanged(TSharedPtr<FString> SelectedItem, ESelec
     }
 }
 
-void SStringEnumPin::UpdateItems()
+void SStringEnumPin::UpdateItems(bool bRefresh)
 {
-    const TArray<FString>& Items = GetEnumItems();
+	TArray<FString> Items;
+	GetEnumItems(Items);
+
     CachedItems.Empty();
 
     //Convert FString to Shared Ptrs and Populate the array
@@ -58,16 +65,14 @@ void SStringEnumPin::UpdateItems()
         }
     }
 
-    if (ComboBox.IsValid()) {
+    if (bRefresh && ComboBox.IsValid()) {
         ComboBox->RefreshOptions();
     }
 }
 
-const TArray<FString> SStringEnumPin::GetEnumItems()
+void SStringEnumPin::GetEnumItems(TArray<FString>& Values)
 {
-    TArray<FString> Values;
     Values.Add(FString("None"));
-    return Values;
 }
 
 FText SStringEnumPin::GetSelectedItem() const
