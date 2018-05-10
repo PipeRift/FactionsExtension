@@ -21,18 +21,18 @@ public:
     UFactionsSettings(const FObjectInitializer& ObjectInitializer)
         : Super(ObjectInitializer)
     {
-        Factions.Add(FFactionInfo("Default", FColor::Blue));
+		Factions.Add(TEXT("Default"), FFactionInfo(FColor::Blue));
     }
 
 	/** Faction used when an Actor doesn't implement a FactionAgentInterface */
 	//UPROPERTY(config, EditAnywhere, Category = Custom)
 	//FFaction DefaultFaction;
 
-    UPROPERTY(config, EditAnywhere, Category = Factions)
-    TArray<FFactionInfo> Factions;
+    UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
+    TMap<FName, FFactionInfo> Factions;
 
-    UPROPERTY(config, EditAnywhere, Category = Relations)
-    TArray<FFactionRelation> Relations; //Moved from Set, serializing caused problems (4.16)
+    UPROPERTY(config, EditAnywhere, Category = Relations, SaveGame)
+    TSet<FFactionRelation> Relations; //Moved from Set, serializing caused problems (4.16)
 
 protected:
 
@@ -42,4 +42,9 @@ protected:
 
     void SanitizeRelations(EPropertyChangeType::Type ChangeType, int32 RelationIndex = INDEX_NONE);
 #endif
+
+public:
+
+	bool Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo);
+	bool Internal_UnregistryFaction(FFaction Faction);
 };

@@ -21,7 +21,7 @@ private:
     void ApplyDefaultValue();
 
 protected:
-    int32 FactionDefaultIdValue;
+    FName FactionDefaultNameValue;
 
     /** Returns all the enum items.
     * This is for override purposes.

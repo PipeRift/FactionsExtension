@@ -6,7 +6,6 @@
 
 #include "Faction.generated.h"
 
-#define NO_FACTION -1
 #define NO_FACTION_NAME FName{}
 
 struct FFactionInfo;
@@ -18,42 +17,62 @@ struct FFactionInfo;
 USTRUCT(BlueprintType)
 struct FACTIONS_API FFaction
 {
-    GENERATED_USTRUCT_BODY()
+	GENERATED_USTRUCT_BODY()
 
-    FFaction() : Id(NO_FACTION) {}
+	static const FFaction NoFaction;
 
-    FFaction(int32 InId)
-		: Id(InId >= 0? InId : NO_FACTION)
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = Faction)
+	FName Name;
+
+public:
+
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
+	//int32 Id;
+
+
+    FFaction() : Name(NO_FACTION_NAME) {
+	}
+
+    FFaction(FName Name)
+		: Name(Name)
 	{}
 
     FFaction(const FGenericTeamId& InTeam)
     {
-        if (InTeam.GetId() == FGenericTeamId::NoTeam.GetId())
+        /*if (InTeam.GetId() == FGenericTeamId::NoTeam.GetId())
             Id = NO_FACTION;
         else
-            Id = InTeam.GetId();
+            Id = InTeam.GetId();*/
     }
 
-    
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
-    int32 Id;
-
-
+	/**
+	* Find the information of a faction
+	* @param Info associated to the faction, if found
+	* @return true if the faction was valid and information was found
+	*/
 	bool GetFactionInfo(FFactionInfo& Info) const;
 
-    const FGenericTeamId GetTeam() const {
-		if (Id == NO_FACTION || Id >= FGenericTeamId::NoTeam.GetId())
-		{
+	/**
+	* Replace the information of a faction
+	* @param Info to replace the previous one
+	* @return true if the faction was found and modified
+	*/
+	bool SetFactionInfo(const FFactionInfo& NewInfo) const;
+
+	const FGenericTeamId GetTeam() const {
+		/*if (Id == NO_FACTION || Id >= FGenericTeamId::NoTeam.GetId())
+		{*/
 			// If Faction ID is 255 or higher, Teams won't support it.
 			return FGenericTeamId::NoTeam;
-		}
+		/*}
 
-        return FGenericTeamId(Id);
+        return FGenericTeamId(Id);*/
     }
 
-    FORCEINLINE bool IsNone() const {
-        return Id == NO_FACTION;
-    }
+	bool IsNone() const;
 
     /**
      * Attitude evaluation
@@ -67,7 +86,7 @@ struct FACTIONS_API FFaction
     /**
      * Operator overloading & Hashes
      */
-    FORCEINLINE bool operator==(const FFaction& Other) const { return Id == Other.Id; }
+    FORCEINLINE bool operator==(const FFaction& Other) const { return Name == Other.Name; }
     FORCEINLINE bool operator!=(const FFaction& Other) const { return !(*this == Other); }
 
     // Implicit conversion to GenericTeamId
@@ -78,8 +97,10 @@ struct FACTIONS_API FFaction
 
     friend uint32 GetTypeHash(const FFaction& InRelation)
     {
-        return InRelation.IsNone() ? MAX_uint32 : (uint32)InRelation.Id;
+        return GetTypeHash(InRelation.Name);
     }
 
-    static const FFaction NoFaction;
+	FName GetIdName() const {
+		return Name;
+	}
 };

@@ -31,43 +31,41 @@ TSharedRef<SWidget> SFactionPin::GetDefaultValueWidget()
 
 void SFactionPin::ParseDefaultValue()
 {
-    FString IdString = GraphPinObj->GetDefaultAsString();
-    if (IdString.StartsWith(TEXT("(")) && IdString.EndsWith(TEXT(")")))
+    FString NameString = GraphPinObj->GetDefaultAsString();
+    if (NameString.StartsWith(TEXT("(")) && NameString.EndsWith(TEXT(")")))
     {
         //Remove ( and )
-        IdString = IdString.LeftChop(1);
-        IdString = IdString.RightChop(1);
+        NameString = NameString.LeftChop(1);
+        NameString = NameString.RightChop(1);
 
         //Get parameter string value
-        IdString.Split("=", NULL, &IdString);
-        if (IdString.StartsWith(TEXT("\"")) && IdString.EndsWith(TEXT("\"")))
+        NameString.Split("=", NULL, &NameString);
+        if (NameString.StartsWith(TEXT("\"")) && NameString.EndsWith(TEXT("\"")))
         {
-            IdString = IdString.LeftChop(1);
-            IdString = IdString.RightChop(1);
+            NameString = NameString.LeftChop(1);
+            NameString = NameString.RightChop(1);
         }
     }
 
-    if (!IdString.IsEmpty())
+    if (!NameString.IsEmpty())
     {
-        FactionDefaultIdValue = FCString::Atoi(*IdString);
+        FactionDefaultNameValue = FName(*NameString);
     }
 	else
 	{
-		FactionDefaultIdValue = NO_FACTION;
+		FactionDefaultNameValue = NO_FACTION_NAME;
 	}
 }
 
 void SFactionPin::ApplyDefaultValue()
 {
-    FString IdStr = FString::FromInt(FactionDefaultIdValue);
-
     // Set Pin Data
     FString PriorityString;
-    if (!IdStr.IsEmpty())
-    {
+    if (!FactionDefaultNameValue.IsNone())
+	{
         PriorityString = TEXT("(");
-        PriorityString += TEXT("Id=\"");
-        PriorityString += IdStr;
+        PriorityString += TEXT("Name=\"");
+        PriorityString += FactionDefaultNameValue.ToString();
         PriorityString += TEXT("\")");
     }
     FString CurrentDefaultValue = GraphPinObj->GetDefaultAsString();
@@ -89,9 +87,9 @@ void SFactionPin::GetEnumItems(TArray<FString>& Values)
 		return;
 	}
 
-	for (auto& Info : Settings->Factions)
+	for (const auto& KeyValue : Settings->Factions)
 	{
-		Values.Add(Info.Name.ToString());
+		Values.Add(KeyValue.Key.ToString());
 	}
 	// Make sure None is at the start
 	Values.Remove(NO_FACTION_NAME.ToString());
@@ -100,19 +98,15 @@ void SFactionPin::GetEnumItems(TArray<FString>& Values)
 
 void SFactionPin::OnItemSelected(FString Value)
 {
-	const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
 	FName NameValue = FName(*Value);
 
-	const int32 Id = AllFactions.IndexOfByPredicate([NameValue](auto& Info) {
-		return Info.Name == NameValue;
-	});
-
 	//If Faction not found, Set default value
-    if (Id != INDEX_NONE)
-        FactionDefaultIdValue = Id;
+    if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
+        FactionDefaultNameValue = NameValue;
     else 
-        FactionDefaultIdValue = NO_FACTION;
+        FactionDefaultNameValue = NO_FACTION_NAME;
 
     ApplyDefaultValue();
 }
@@ -122,12 +116,12 @@ FText SFactionPin::GetSelectedItem() const
     //Call parent but don't use it. This is for widget logic
     SStringEnumPin::GetSelectedItem();
 
-	const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
-	if (AllFactions.IsValidIndex(FactionDefaultIdValue))
+	if (AllFactions.Contains(FactionDefaultNameValue))
 	{
 		//Return name with prefix number
-		return FText::FromName(AllFactions[FactionDefaultIdValue].Name);
+		return FText::FromName(FactionDefaultNameValue);
 	}
 	return FText::FromName(NO_FACTION_NAME);
 }

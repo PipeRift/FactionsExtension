@@ -14,6 +14,7 @@
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #endif //WITH_EDITOR
 
+
 DECLARE_LOG_CATEGORY_EXTERN(LogFactions, All, All);
 
 
@@ -40,13 +41,32 @@ public:
     }
 
 private:
+
+	FDelegateHandle OnEndPlayHandle;
+
+	void OnEndPlay() {
+		CacheFactionInformation();
+	}
+
+
     /** Holds a delegate that is executed after the settings section has been modified. */
     FOnModifiedSettings ModifiedSettingsDelegate;
 
     void RegisterSettings();
     void UnregisterSettings();
 
-
     // Callbacks for when the settings were saved.
     bool HandleSettingsSaved();
+
+	void CacheFactionInformation();
+
+
+	static TWeakObjectPtr<class UFactionsSettings> FactionManager;
+
+public:
+
+	static UFactionsSettings* GetFactionManager() {
+		return FactionManager.Get();
+	}
+
 };

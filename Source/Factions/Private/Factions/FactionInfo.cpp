@@ -5,20 +5,7 @@
 #include "FactionsSettings.h"
 
 
-const FFaction FFactionInfo::GetFaction() 
-{
-    const auto* Self = this;
-    //Find this faction by pointer
-    const int32 Index = GetDefault<UFactionsSettings>()->Factions.IndexOfByPredicate([Self](const auto& FactionInfo) {
-        return Self == &FactionInfo;
-    });
-
-    const FFaction Faction(Index);
-    checkf(Faction.IsNone(), TEXT("Faction Info can never be None"))
-    return Faction;
-}
-
-void FFactionInfo::SetRelation(const FFaction& OtherFaction, const ETeamAttitude::Type Attitude)
+/*void FFactionInfo::SetRelation(const FFaction& OtherFaction, const ETeamAttitude::Type Attitude)
 {
     if (OtherFaction.IsNone())
         return;
@@ -37,4 +24,4 @@ void FFactionInfo::SetRelation(const FFaction& OtherFaction, const ETeamAttitude
     {
         FoundRelationPtr->Attitude = Attitude;
     }
-}
+}*/
