@@ -38,7 +38,7 @@ public:
     }
 
 	/** @return the faction of an actor. None if the actor doesn't implement FactionAgentInterface */
-	UFUNCTION(BlueprintPure, Category = Factions)
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Target"))
 	static FORCEINLINE FFaction GetFaction(const AActor* Target)
 	{
 		return IFactionAgentInterface::Execute_GetFaction(Target);
@@ -48,7 +48,7 @@ public:
 	 * @param Target actor that will receive the new faction
 	 * @param newFaction that will be set
 	 */
-	UFUNCTION(BlueprintCallable, Category = Factions)
+	UFUNCTION(BlueprintCallable, Category = Factions, meta = (DefaultToSelf = "Target"))
 	static void SetFaction(AActor* Target, const FFaction NewFaction)
 	{
 		IFactionAgentInterface::Execute_SetFaction(Target, NewFaction);
@@ -79,7 +79,7 @@ public:
 	 * @param Info to replace the previous one
 	 * @return true if the faction was found and modified
 	 */
-	UFUNCTION(BlueprintPure, Category = Factions)
+	UFUNCTION(BlueprintCallable, Category = Factions)
 	static bool SetFactionInfo(const FFaction Faction, const FFactionInfo& Info) {
 		return Faction.SetFactionInfo(Info);
 	}
