@@ -9,6 +9,9 @@
 
 class UFactionsSettings;
 
+#define LOCTEXT_NAMESPACE "FactionInfo"
+
+
 /**
  * Defines a relation between factions
 */
@@ -51,7 +54,7 @@ struct FACTIONS_API FFactionRelation
     
     friend uint32 GetTypeHash(const FFactionRelation& InRelation)
     {
-        return GetTypeHash(InRelation.FactionA) ^ GetTypeHash(InRelation.FactionB);
+		return GetTypeHash(InRelation.FactionA) ^ GetTypeHash(InRelation.FactionB);
     }
 };
 
@@ -64,38 +67,35 @@ struct FACTIONS_API FFactionInfo
     GENERATED_USTRUCT_BODY()
 
 public:
-    FFactionInfo()
-		: Name(NO_FACTION_NAME)
+    FFactionInfo(FLinearColor InColor = FColor::Cyan)
+		: DisplayName(LOCTEXT("FactionDisplayName", ""))
 		, Color(FColor::Cyan)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
     {}
 
-    FFactionInfo(FName InName, FLinearColor InColor = FColor::Cyan)
-		: Name(InName)
+    FFactionInfo(FText DisplayName, FLinearColor InColor = FColor::Cyan)
+		: DisplayName(DisplayName)
 		, Color(InColor)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
     {}
 
 	/** Name of the faction */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
-    FName Name;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
+    FText DisplayName;
 
 	/** Color of the Faction. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	FLinearColor Color;
 
 	/** Attitude this faction will have against itself. Relations will override it. */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	TEnumAsByte<ETeamAttitude::Type> AttitudeTowardsItself;
 
 	/** Attitude this faction will have against others. Relations will override it. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	TEnumAsByte<ETeamAttitude::Type> DefaultAttitudeTowardsOthers;
-
-
-    const FFaction GetFaction();
-
-    void SetRelation(const FFaction& OtherFaction, const ETeamAttitude::Type Attitude);
 };
+
+#undef LOCTEXT_NAMESPACE

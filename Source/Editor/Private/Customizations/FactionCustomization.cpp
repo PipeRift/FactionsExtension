@@ -13,9 +13,9 @@
 bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
     StructHandle = StructPropertyHandle;
-    IdHandle = StructPropertyHandle->GetChildHandle("Id");
+    NameHandle = StructPropertyHandle->GetChildHandle("Name");
 
-    if (IdHandle->IsValidHandle())
+    if (NameHandle->IsValidHandle())
 	{
 		FFactionsModule& Module = FFactionsModule::Get();
 		//Bind On Settings Changed event
@@ -31,9 +31,9 @@ void FFactionCustomization::GetEnumItems(TArray<FString>& Values) const {
         return;
     }
 
-    for (auto& Info : Settings->Factions)
+    for (const auto& KeyValue : Settings->Factions)
     {
-        Values.Add(Info.Name.ToString());
+        Values.Add(KeyValue.Key.ToString());
     }
     // Make sure None is at the start
     Values.Remove(NO_FACTION_NAME.ToString());
@@ -42,38 +42,34 @@ void FFactionCustomization::GetEnumItems(TArray<FString>& Values) const {
 
 void FFactionCustomization::OnItemSelected(FString Value)
 {
-    const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+    const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
 	FName NameValue = FName(*Value);
 
-    const int32 Id = AllFactions.IndexOfByPredicate([NameValue](auto& Info) {
-		return Info.Name == NameValue;
-    });
-
-    if (Id != INDEX_NONE)
+    if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
     {
-        IdHandle->SetValue(Id);
+        NameHandle->SetValue(NameValue);
     }
     else
     {
         //Priority not found. Set default value
-        IdHandle->SetValue(NO_FACTION);
+        NameHandle->SetValue(NO_FACTION_NAME);
     }
 }
 
 /** Display the current column selection */
 FText FFactionCustomization::GetSelectedItem() const
 {
-    int32 Id;
-    const FPropertyAccess::Result RowResult = IdHandle->GetValue(Id);
-    const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+    FName Name;
+    const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
+    const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
     if (RowResult != FPropertyAccess::MultipleValues)
     {
-        if (AllFactions.IsValidIndex(Id))
+		const FFactionInfo* Info = AllFactions.Find(Name);
+        if (Info)
         {
-            //Return name with prefix number
-            return FText::FromName(AllFactions[Id].Name);
+            return FText::FromName(Name);
         }
         return FText::FromName(NO_FACTION_NAME);
     }

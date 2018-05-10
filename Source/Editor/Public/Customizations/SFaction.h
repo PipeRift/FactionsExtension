@@ -51,7 +51,7 @@ private:
 
 
 	TSharedPtr<IPropertyHandle> FactionHandle;
-	TSharedPtr<IPropertyHandle> IdHandle;
+	TSharedPtr<IPropertyHandle> NameHandle;
 
 	FSimpleDelegate OnChange;
 

@@ -11,7 +11,7 @@ void SFaction::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _
 	OnChange = InArgs._OnChange;
 	FactionHandle = _FactionHandle;
 	if(FactionHandle.IsValid())
-		IdHandle = FactionHandle->GetChildHandle("Id");
+		NameHandle = FactionHandle->GetChildHandle("Name");
 
 	ChildSlot
 	[
@@ -44,7 +44,7 @@ void SFaction::UpdateItems(bool bRefreshComboBox /*= false*/)
 	//Convert FString to Shared Ptrs and Populate the array
 	for (auto It = Names.CreateConstIterator(); It; ++It)
 	{
-		if (It && !It->IsNone())
+		if (It)
 		{
 			CachedItems.Add(MakeShared<FName>(*It));
 		}
@@ -57,26 +57,22 @@ void SFaction::UpdateItems(bool bRefreshComboBox /*= false*/)
 
 void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESelectInfo::Type SelectInfo)
 {
-	if (!IdHandle.IsValid())
+	if (!NameHandle.IsValid())
 		return;
 
-	if (SelectedNamePtr.IsValid() && !SelectedNamePtr->IsNone())
+	if (SelectedNamePtr.IsValid())
 	{
 		FName SelectedName = *SelectedNamePtr;
-		const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+		const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
-		const int32 Id = AllFactions.IndexOfByPredicate([SelectedName](auto& Info) {
-			return Info.Name == SelectedName;
-		});
-
-		if (Id != INDEX_NONE)
+		if (SelectedName != NO_FACTION_NAME && AllFactions.Contains(SelectedName))
 		{
-			IdHandle->SetValue(Id);
+			NameHandle->SetValue(SelectedName);
 		}
 		else
 		{
 			//Priority not found. Set default value
-			IdHandle->SetValue(NO_FACTION);
+			NameHandle->SetValue(NO_FACTION_NAME);
 		}
 	}
 	
@@ -85,19 +81,19 @@ void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESele
 
 FText SFaction::GetSelectedItem() const
 {
-	if (!IdHandle.IsValid())
+	if (!NameHandle.IsValid())
 		return FText::FromName(NO_FACTION_NAME);
 
-	int32 Id;
-	const FPropertyAccess::Result RowResult = IdHandle->GetValue(Id);
-	const TArray<FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	FName Name;
+	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
+	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 
 	if (RowResult != FPropertyAccess::MultipleValues)
 	{
-		if (AllFactions.IsValidIndex(Id))
+		if (AllFactions.Contains(Name))
 		{
 			//Return name with prefix number
-			return FText::FromName(AllFactions[Id].Name);
+			return FText::FromName(Name);
 		}
 	}
 	return FText::FromName(NO_FACTION_NAME);
@@ -110,9 +106,9 @@ void SFaction::GetFactionNames(TArray<FName>& Names) const
 		return;
 	}
 
-	for (auto& Info : Settings->Factions)
+	for (const auto& KeyValue : Settings->Factions)
 	{
-		Names.Add(Info.Name);
+		Names.Add(KeyValue.Key);
 	}
 	// Make sure None is at the start
 	Names.Remove(NO_FACTION_NAME);

@@ -4,6 +4,7 @@
 #include "GameplayTagsManager.h"
 
 #include "FactionsSettings.h"
+#include "GameDelegates.h"
 
 DEFINE_LOG_CATEGORY(LogFactions)
 
@@ -17,6 +18,10 @@ void FFactionsModule::StartupModule()
     // This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
     RegisterSettings();
+
+	CacheFactionInformation();
+
+	OnEndPlayHandle = FGameDelegates::Get().GetEndPlayMapDelegate().AddRaw(this, &FFactionsModule::OnEndPlay);
 }
 
 void FFactionsModule::ShutdownModule()
@@ -25,9 +30,18 @@ void FFactionsModule::ShutdownModule()
     // This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
     // we call this function before unloading the module.
 
+	FGameDelegates::Get().GetEndPlayMapDelegate().Remove(OnEndPlayHandle);
+
     if (UObjectInitialized())
     {
         UnregisterSettings();
+
+		// Destroy faction Info
+		if (FactionManager.IsValid())
+		{
+			FactionManager->RemoveFromRoot();
+			FactionManager->MarkPendingKill();
+		}
     }
 }
 
@@ -88,9 +102,26 @@ bool FFactionsModule::HandleSettingsSaved()
     {
         Settings->SaveConfig();
     }
-    
+
+	CacheFactionInformation();
     return true;
 }
+
+void FFactionsModule::CacheFactionInformation()
+{
+	// Destroy previous Info
+	if (FactionManager.IsValid())
+	{
+		FactionManager->RemoveFromRoot();
+		FactionManager->MarkPendingKill();
+	}
+
+	// Create new infos from settings, and don't allow GC destruction
+	FactionManager = NewObject<UFactionsSettings>();
+	FactionManager->AddToRoot();
+}
+
+TWeakObjectPtr<class UFactionsSettings> FFactionsModule::FactionManager {};
 
 #undef LOCTEXT_NAMESPACE
     

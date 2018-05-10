@@ -47,3 +47,23 @@ void UFactionsSettings::SanitizeRelations(EPropertyChangeType::Type ChangeType, 
 
 }
 #endif //WITH_EDITOR
+
+bool UFactionsSettings::Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo)
+{
+	// Faction already exists
+	if (Factions.Contains(Name))
+		return false;
+
+	Factions.Add(Name, FactionInfo);
+	return true;
+}
+
+bool UFactionsSettings::Internal_UnregistryFaction(FFaction Faction)
+{
+	if (Faction.IsNone())
+		return false;
+
+	Factions.Remove(Faction.GetIdName());
+	MarkPackageDirty();
+	return true;
+}

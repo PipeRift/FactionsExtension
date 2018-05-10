@@ -16,7 +16,7 @@ TSharedRef<IPropertyTypeCustomization> FFactionInfoCustomization::MakeInstance()
 
 void FFactionInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	TSharedPtr<IPropertyHandle> NameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Name));
+	TSharedPtr<IPropertyHandle> NameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName));
 
 	HeaderRow
 	.NameContent()
@@ -25,20 +25,17 @@ void FFactionInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Stru
 		.Font(FEditorStyle::GetFontStyle({ "PropertyWindow.NormalFont" }))
 		.ColorAndOpacity(FColor::White)
 		.Text(this, &FFactionInfoCustomization::GetTextFromHandle, NameHandle.ToSharedRef())
-	]
-	.ValueContent()
-	.MinDesiredWidth(175.f)
-	[
-		NameHandle->CreatePropertyValueWidget()
 	];
 }
 
 void FFactionInfoCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
+	TSharedPtr<IPropertyHandle> DisplayNameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName));
 	TSharedPtr<IPropertyHandle> ColorHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
 	TSharedPtr<IPropertyHandle> ItselfHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, AttitudeTowardsItself));
 	TSharedPtr<IPropertyHandle> OthersHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DefaultAttitudeTowardsOthers));
 
+	StructBuilder.AddProperty(DisplayNameHandle.ToSharedRef());
 	StructBuilder.AddProperty(ColorHandle.ToSharedRef());
 	StructBuilder.AddProperty(ItselfHandle.ToSharedRef());
 	StructBuilder.AddProperty(OthersHandle.ToSharedRef());
