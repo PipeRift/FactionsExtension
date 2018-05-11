@@ -29,15 +29,15 @@ struct FACTIONS_API FFactionRelation
     {}
 
 	/** First Faction of the relation */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "A"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Relation, meta = (DisplayName = "A"))
     FFaction FactionA;
 
 	/** Second Faction of the relation */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "B"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Relation, meta = (DisplayName = "B"))
     FFaction FactionB;
 
 	/** Defines how this two factions will react to each other */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Relation)
     TEnumAsByte<ETeamAttitude::Type> Attitude;
 
 
