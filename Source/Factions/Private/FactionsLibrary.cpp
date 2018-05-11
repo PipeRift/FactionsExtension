@@ -9,7 +9,10 @@ FFaction UFactionsLibrary::RegistryFaction(const FName& Name, const FFactionInfo
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	return Settings->Internal_RegistryFaction(Name, FactionInfo);
+	Settings->Internal_RegistryFaction(Name, FactionInfo);
+
+	// Return the faction, won't be valid if its not registered
+	return { Name };
 }
 
 bool UFactionsLibrary::UnregistryFaction(FFaction Faction)

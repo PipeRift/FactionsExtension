@@ -8,6 +8,26 @@
 
 const FFaction FFaction::NoFaction(NO_FACTION_NAME);
 
+FFaction::FFaction(const FGenericTeamId& InTeam)
+{
+	if (InTeam.GetId() != FGenericTeamId::NoTeam.GetId())
+	{
+		const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+		if (Settings)
+		{
+			TArray<FName> Keys;
+			Settings->Factions.GetKeys(Keys);
+
+			if (Keys.IsValidIndex(InTeam.GetId()))
+			{
+				Name = Keys[InTeam.GetId()];
+				return;
+			}
+		}
+	}
+	Name = NO_FACTION_NAME;
+}
+
 bool FFaction::GetFactionInfo(FFactionInfo& Info) const
 {
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
@@ -72,4 +92,27 @@ const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) co
     }
 
     return FoundRelationPtr->Attitude;
+}
+
+const FGenericTeamId FFaction::GetTeam() const
+{
+	if (IsNone()) {
+		return FGenericTeamId::NoTeam;
+	}
+
+	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	check(Settings);
+
+	TArray<FName> Keys;
+	Settings->Factions.GetKeys(Keys);
+
+	//Find Id
+	const int32 Id = Keys.IndexOfByKey(Name);
+	if (Id == INDEX_NONE || Id >= FGenericTeamId::NoTeam.GetId())
+	{
+		// If Faction ID is 255 or higher, Teams won't support it.
+		return FGenericTeamId::NoTeam;
+	}
+
+	return { static_cast<uint8>(Id) };
 }

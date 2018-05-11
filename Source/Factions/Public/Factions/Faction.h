@@ -40,13 +40,8 @@ public:
 		: Name(Name)
 	{}
 
-    FFaction(const FGenericTeamId& InTeam)
-    {
-        /*if (InTeam.GetId() == FGenericTeamId::NoTeam.GetId())
-            Id = NO_FACTION;
-        else
-            Id = InTeam.GetId();*/
-    }
+	FFaction(const FGenericTeamId& InTeam);
+
 
 	/**
 	* Find the information of a faction
@@ -61,16 +56,6 @@ public:
 	* @return true if the faction was found and modified
 	*/
 	bool SetFactionInfo(const FFactionInfo& NewInfo) const;
-
-	const FGenericTeamId GetTeam() const {
-		/*if (Id == NO_FACTION || Id >= FGenericTeamId::NoTeam.GetId())
-		{*/
-			// If Faction ID is 255 or higher, Teams won't support it.
-			return FGenericTeamId::NoTeam;
-		/*}
-
-        return FGenericTeamId(Id);*/
-    }
 
 	bool IsNone() const;
 
@@ -103,4 +88,6 @@ public:
 	FName GetIdName() const {
 		return Name;
 	}
+
+	const FGenericTeamId GetTeam() const;
 };
