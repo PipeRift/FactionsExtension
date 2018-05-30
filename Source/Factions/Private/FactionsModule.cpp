@@ -13,11 +13,11 @@ DEFINE_LOG_CATEGORY(LogFactions)
 
 void FFactionsModule::StartupModule()
 {
-    UE_LOG(LogFactions, Log, TEXT("Factions: Log Started"));
+	UE_LOG(LogFactions, Log, TEXT("Factions: Log Started"));
 
-    // This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
-    RegisterSettings();
+	RegisterSettings();
 
 	CacheFactionInformation();
 
@@ -26,15 +26,15 @@ void FFactionsModule::StartupModule()
 
 void FFactionsModule::ShutdownModule()
 {
-    UE_LOG(LogFactions, Log, TEXT("Factions: Log Ended"));
-    // This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-    // we call this function before unloading the module.
+	UE_LOG(LogFactions, Log, TEXT("Factions: Log Ended"));
+	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
+	// we call this function before unloading the module.
 
 	FGameDelegates::Get().GetEndPlayMapDelegate().Remove(OnEndPlayHandle);
 
-    if (UObjectInitialized())
-    {
-        UnregisterSettings();
+	if (UObjectInitialized())
+	{
+		UnregisterSettings();
 
 		// Destroy faction Info
 		if (FactionManager.IsValid())
@@ -42,69 +42,69 @@ void FFactionsModule::ShutdownModule()
 			FactionManager->RemoveFromRoot();
 			FactionManager->MarkPendingKill();
 		}
-    }
+	}
 }
 
 void FFactionsModule::RegisterSettings()
 {
 #if WITH_EDITOR
-    // Registering some settings is just a matter of exposing the default UObject of
-    // your desired class, feel free to add here all those settings you want to expose
-    // to your LDs or artists.
+	// Registering some settings is just a matter of exposing the default UObject of
+	// your desired class, feel free to add here all those settings you want to expose
+	// to your LDs or artists.
 
-    if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-    {
-        // Get Project Settings category
-        ISettingsContainerPtr SettingsContainer = SettingsModule->GetContainer("Project");
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		// Get Project Settings category
+		ISettingsContainerPtr SettingsContainer = SettingsModule->GetContainer("Project");
 
-        // Register Factions settings
-        ISettingsSectionPtr SettingsSection = SettingsModule->RegisterSettings("Project", "Game", "Factions",
-            LOCTEXT("RuntimeFactionsSettingsName", "Factions"),
-            LOCTEXT("RuntimeFactionsDescription", "Factions database and relations table"),
-            GetMutableDefault<UFactionsSettings>());
+		// Register Factions settings
+		ISettingsSectionPtr SettingsSection = SettingsModule->RegisterSettings("Project", "Game", "Factions",
+			LOCTEXT("RuntimeFactionsSettingsName", "Factions"),
+			LOCTEXT("RuntimeFactionsDescription", "Factions database and relations table"),
+			GetMutableDefault<UFactionsSettings>());
 
-        // Register the save handler to your settings, you might want to use it to
-        // validate those or just act to settings changes.
-        if (SettingsSection.IsValid())
-        {
-            SettingsSection->OnModified().BindRaw(this, &FFactionsModule::HandleSettingsSaved);
-        }
-    }
+		// Register the save handler to your settings, you might want to use it to
+		// validate those or just act to settings changes.
+		if (SettingsSection.IsValid())
+		{
+			SettingsSection->OnModified().BindRaw(this, &FFactionsModule::HandleSettingsSaved);
+		}
+	}
 #endif
 }
 
 void FFactionsModule::UnregisterSettings()
 {
 #if WITH_EDITOR
-    // Ensure to unregister all of your registered settings here, hot-reload would
-    // otherwise yield unexpected results.
+	// Ensure to unregister all of your registered settings here, hot-reload would
+	// otherwise yield unexpected results.
 
-    if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-    {
-        SettingsModule->UnregisterSettings("Project", "Game", "Factions");
-    }
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		SettingsModule->UnregisterSettings("Project", "Game", "Factions");
+	}
 #endif
 }
 
 bool FFactionsModule::HandleSettingsSaved()
 {
-    UFactionsSettings* Settings = GetMutableDefault<UFactionsSettings>();
-    bool ResaveSettings = false;
+	UFactionsSettings* Settings = GetMutableDefault<UFactionsSettings>();
+	bool ResaveSettings = false;
 
-    if (ModifiedSettingsDelegate.IsBound()) {
-        ModifiedSettingsDelegate.Execute();
-    }
+	if (ModifiedSettingsDelegate.IsBound()) {
+		ModifiedSettingsDelegate.Execute();
+	}
 
-    // You can put any validation code in here and resave the settings in case an invalid
-    // value has been entered
+	// You can put any validation code in here and resave the settings in case an invalid
+	// value has been entered
 
-    if (ResaveSettings)
-    {
-        Settings->SaveConfig();
-    }
+	if (ResaveSettings)
+	{
+		Settings->SaveConfig();
+	}
 
 	CacheFactionInformation();
-    return true;
+	return true;
 }
 
 void FFactionsModule::CacheFactionInformation()
@@ -124,5 +124,5 @@ void FFactionsModule::CacheFactionInformation()
 TWeakObjectPtr<class UFactionsSettings> FFactionsModule::FactionManager {};
 
 #undef LOCTEXT_NAMESPACE
-    
+	
 IMPLEMENT_MODULE(FFactionsModule, Factions)
