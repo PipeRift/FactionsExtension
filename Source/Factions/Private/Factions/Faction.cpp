@@ -35,7 +35,7 @@ bool FFaction::GetFactionInfo(FFactionInfo& Info) const
 
 	const FFactionInfo* FoundInfo = Settings->Factions.Find(Name);
 	if (FoundInfo)
-    {
+	{
 		Info = *FoundInfo;
 		return true;
 	}
@@ -73,25 +73,25 @@ bool FFaction::IsNone() const
 
 const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) const
 {
-    const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 
 	const FFactionRelation* FoundRelationPtr = Settings->Relations.Find({ *this, Other });
-    if (FoundRelationPtr == NULL)
-    {
+	if (FoundRelationPtr == nullptr)
+	{
 		//Relation not found, use default
 		FFactionInfo Info;
-        if (GetFactionInfo(Info))
-        {
+		if (GetFactionInfo(Info))
+		{
 			if (*this == Other)
 			{
 				return Info.AttitudeTowardsItself;
 			}
 			return Info.DefaultAttitudeTowardsOthers;
-        }
-        return ETeamAttitude::Neutral;
-    }
+		}
+		return ETeamAttitude::Neutral;
+	}
 
-    return FoundRelationPtr->Attitude;
+	return FoundRelationPtr->Attitude;
 }
 
 const FGenericTeamId FFaction::GetTeam() const

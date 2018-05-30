@@ -12,7 +12,7 @@ struct FFactionInfo;
 
 
 /**
- * 
+ * Represents an existing faction from the database
  */
 USTRUCT(BlueprintType)
 struct FACTIONS_API FFaction
@@ -33,10 +33,10 @@ public:
 	//int32 Id;
 
 
-    FFaction() : Name(NO_FACTION_NAME) {
+	FFaction() : Name(NO_FACTION_NAME) {
 	}
 
-    FFaction(FName Name)
+	FFaction(FName Name)
 		: Name(Name)
 	{}
 
@@ -59,31 +59,31 @@ public:
 
 	bool IsNone() const;
 
-    /**
-     * Attitude evaluation
-     */
-    FORCEINLINE bool IsHostileTowards(const FFaction& Other) const {
-        return GetAttitudeTowards(Other) == ETeamAttitude::Hostile;
-    }
+	/**
+	 * Attitude evaluation
+	 */
+	FORCEINLINE bool IsHostileTowards(const FFaction& Other) const {
+		return GetAttitudeTowards(Other) == ETeamAttitude::Hostile;
+	}
 
-    const ETeamAttitude::Type GetAttitudeTowards(const FFaction& Other) const;
+	const ETeamAttitude::Type GetAttitudeTowards(const FFaction& Other) const;
 
-    /**
-     * Operator overloading & Hashes
-     */
-    FORCEINLINE bool operator==(const FFaction& Other) const { return Name == Other.Name; }
-    FORCEINLINE bool operator!=(const FFaction& Other) const { return !(*this == Other); }
+	/**
+	 * Operator overloading & Hashes
+	 */
+	FORCEINLINE bool operator==(const FFaction& Other) const { return Name == Other.Name; }
+	FORCEINLINE bool operator!=(const FFaction& Other) const { return !(*this == Other); }
 
-    // Implicit conversion to GenericTeamId
-    operator FGenericTeamId() const
-    {
-        return GetTeam();
-    }
+	// Implicit conversion to GenericTeamId
+	operator FGenericTeamId() const
+	{
+		return GetTeam();
+	}
 
-    friend uint32 GetTypeHash(const FFaction& InRelation)
-    {
-        return GetTypeHash(InRelation.Name);
-    }
+	friend uint32 GetTypeHash(const FFaction& InRelation)
+	{
+		return GetTypeHash(InRelation.Name);
+	}
 
 	FName GetIdName() const {
 		return Name;

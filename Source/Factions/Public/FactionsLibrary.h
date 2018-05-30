@@ -12,30 +12,30 @@
 #include "FactionsLibrary.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class FACTIONS_API UFactionsLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
+
 public:
 
-    /***************************************/
-    /* Factions                            */
-    /***************************************/
+	/***************************************/
+	/* Factions                            */
+	/***************************************/
 
 	/** @return true if two factions are the same */
-    UFUNCTION(BlueprintPure, Category = Factions, meta = (CompactNodeTitle = "=="))
-    static FORCEINLINE bool Equals(const FFaction A, const FFaction B) {
-        return A == B;
-    }
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (CompactNodeTitle = "=="))
+	static FORCEINLINE bool Equals(const FFaction A, const FFaction B) {
+		return A == B;
+	}
 
 	/** @return true if two factions are not the same */
-    UFUNCTION(BlueprintPure, Category = Factions, meta = (CompactNodeTitle = "!="))
-    static FORCEINLINE bool NotEqual(const FFaction A, const FFaction B) {
-        return A != B;
-    }
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (CompactNodeTitle = "!="))
+	static FORCEINLINE bool NotEqual(const FFaction A, const FFaction B) {
+		return A != B;
+	}
 
 	/** @return the faction of an actor. None if the actor doesn't implement FactionAgentInterface */
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Target"))
@@ -73,7 +73,7 @@ public:
 		return Faction.GetFactionInfo(Info);
 	}
 
-	/** 
+	/**
 	 * Replace the information of an existing faction
 	 * @param Faction to change
 	 * @param Info to replace the previous one
@@ -85,7 +85,7 @@ public:
 	}
 
 	/** @return One's attitude towards Other actor */
-    UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "One"))
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "One"))
 	static FORCEINLINE TEnumAsByte<ETeamAttitude::Type> GetAttitudeTowards(const AActor* One, const AActor* Other)
 	{
 		return GetAttitudeToFaction(GetFaction(One), GetFaction(Other));
@@ -135,9 +135,9 @@ public:
 		return GetAttitudeToFaction(One, Other) == ETeamAttitude::Neutral;
 	}
 
-	/** 
+	/**
 	 * Registry a new faction.
-	 * This will not check if another faction of the same name exists. Use FindFactionByName for that. 
+	 * This will not check if another faction of the same name exists. Use FindFactionByName for that.
 	 * @param FactionInfo that the new faction will have. For things like name, color or default attitudes.
 	 * @return the created faction
 	 */
@@ -153,7 +153,7 @@ public:
 	static bool UnregistryFaction(FFaction Faction);
 
 	/**
-  	 * @return all currently registered factions
+	 * @return all currently registered factions
 	 */
 	UFUNCTION(BlueprintCallable, Category = Factions)
 	static void GetAllFactions(TArray<FFaction>& Factions);

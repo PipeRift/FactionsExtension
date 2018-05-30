@@ -10,7 +10,7 @@
 #include "FactionsModule.h"
 #include "FactionsSettings.h"
 
- 
+
 void SFactionPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {
 	FFactionsModule& Module = FFactionsModule::Get();
@@ -105,7 +105,7 @@ void SFactionPin::OnItemSelected(FString Value)
 	//If Faction not found, Set default value
     if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
         FactionDefaultNameValue = NameValue;
-    else 
+    else
         FactionDefaultNameValue = NO_FACTION_NAME;
 
     ApplyDefaultValue();

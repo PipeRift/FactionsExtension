@@ -23,22 +23,22 @@ class FFactionsModule : public IModuleInterface
 
 public:
 
-    // Get Jink Core module instance
-    FORCEINLINE static FFactionsModule& Get() { 
-        return FModuleManager::LoadModuleChecked<FFactionsModule>("Factions");
-    }
+	// Get Jink Core module instance
+	FORCEINLINE static FFactionsModule& Get() { 
+		return FModuleManager::LoadModuleChecked<FFactionsModule>("Factions");
+	}
 
-    /** IModuleInterface implementation */
-    virtual void StartupModule() override;
-    virtual void ShutdownModule() override;
+	/** IModuleInterface implementation */
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
 
-    virtual bool SupportsDynamicReloading() override { return true; }
+	virtual bool SupportsDynamicReloading() override { return true; }
 
-    DECLARE_DELEGATE_RetVal(void, FOnModifiedSettings)
-    FOnModifiedSettings& OnModifiedSettings()
-    {
-        return ModifiedSettingsDelegate;
-    }
+	DECLARE_DELEGATE_RetVal(void, FOnModifiedSettings)
+	FOnModifiedSettings& OnModifiedSettings()
+	{
+		return ModifiedSettingsDelegate;
+	}
 
 private:
 
@@ -49,14 +49,14 @@ private:
 	}
 
 
-    /** Holds a delegate that is executed after the settings section has been modified. */
-    FOnModifiedSettings ModifiedSettingsDelegate;
+	/** Holds a delegate that is executed after the settings section has been modified. */
+	FOnModifiedSettings ModifiedSettingsDelegate;
 
-    void RegisterSettings();
-    void UnregisterSettings();
+	void RegisterSettings();
+	void UnregisterSettings();
 
-    // Callbacks for when the settings were saved.
-    bool HandleSettingsSaved();
+	// Callbacks for when the settings were saved.
+	bool HandleSettingsSaved();
 
 	void CacheFactionInformation();
 
