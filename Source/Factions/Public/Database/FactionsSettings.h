@@ -5,17 +5,18 @@
 #include "Object.h"
 
 #include "FactionInfo.h"
+#include "RelationDatabase.h"
 #include "FactionsSettings.generated.h"
 
 
 /**
- * Find Custom Config documentation here: wiki.unrealengine.com/CustomSettings 
+ * Find Custom Config documentation here: wiki.unrealengine.com/CustomSettings
  */
 UCLASS(config = Game, defaultconfig)
 class FACTIONS_API UFactionsSettings : public UObject
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	UFactionsSettings(const FObjectInitializer& ObjectInitializer)
@@ -32,7 +33,7 @@ public:
 	TMap<FName, FFactionInfo> Factions;
 
 	UPROPERTY(config, EditAnywhere, Category = Relations, SaveGame)
-	TSet<FFactionRelation> Relations; //Moved from Set, serializing caused problems (4.16)
+	FRelationDatabase Relations; //Moved from Set, serializing caused problems (4.16)
 
 protected:
 

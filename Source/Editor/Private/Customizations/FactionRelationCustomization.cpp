@@ -21,7 +21,7 @@ void FFactionRelationCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> 
 	TSharedPtr<IPropertyHandle> AHandle        = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA));
 	TSharedPtr<IPropertyHandle> BHandle        = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB));
 	TSharedPtr<IPropertyHandle> AttitudeHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Attitude));
-	
+
 	HeaderRow
 	.NameContent()
 	[
