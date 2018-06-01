@@ -14,9 +14,9 @@ void SFaction::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _
 		NameHandle = FactionHandle->GetChildHandle("Name");
 
 	ChildSlot
-		[
-			SAssignNew(ComboBox, SComboBox<TSharedPtr<FName>>)
-			.OptionsSource(&CachedItems)
+	[
+		SAssignNew(ComboBox, SComboBox<TSharedPtr<FName>>)
+		.OptionsSource(&CachedItems)
 		.OnGenerateWidget(this, &SFaction::HandleStringEnumComboBoxGenerateWidget)
 		.OnComboBoxOpening(this, &SFaction::UpdateItems, false)
 		.OnSelectionChanged(this, &SFaction::OnSelectionChanged)

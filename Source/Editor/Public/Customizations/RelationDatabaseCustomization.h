@@ -4,12 +4,18 @@
 #include "IPropertyTypeCustomization.h"
 #include "PropertyHandle.h"
 #include "SListView.h"
+#include "EditorUndoClient.h"
 
 
-class FRelationDatabaseCustomization : public IPropertyTypeCustomization
+class FRelationDatabaseCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
 {
 
 public:
+
+	FRelationDatabaseCustomization()
+		: FilterFactionA{ "" }
+		, FilterFactionB{ "" }
+	{};
 
 	/**
 	* Creates a new instance.
@@ -22,7 +28,15 @@ public:
 	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 
+	~FRelationDatabaseCustomization();
+
+
 	TSharedRef<SWidget> MakeColumnWidget(uint32 RelationIndex, FName ColumnName);
+
+	//~ Begin FEditorUndoClient Interface
+	virtual void PostUndo(bool bSuccess) override;
+	virtual void PostRedo(bool bSuccess) override;
+	//~ End FEditorUndoClient Interface
 
 private:
 
@@ -59,10 +73,15 @@ private:
 	/** List view responsible for showing the rows in VisibleRows for each entry in AvailableColumns */
 	TSharedPtr<SListView<TSharedPtr<uint32>>> RelationListView;
 
+	FString FilterFactionA;
+	FString FilterFactionB;
+
 
 	static const FName FactionAId;
 	static const FName FactionBId;
 	static const FName AttitudeId;
 	static const FName DeleteId;
+
+	static const FName NameMember;
 };
 

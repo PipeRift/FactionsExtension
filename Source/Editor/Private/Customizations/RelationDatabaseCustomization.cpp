@@ -4,6 +4,7 @@
 
 #include <ScopedTransaction.h>
 
+#include "Editor.h"
 #include "DetailWidgetRow.h"
 #include "IDetailPropertyRow.h"
 #include "IDetailChildrenBuilder.h"
@@ -14,6 +15,7 @@
 #include "SFaction.h"
 
 #include "FactionsSettings.h"
+#include "Faction.h"
 
 #define LOCTEXT_NAMESPACE "FRelationDatabaseCustomization"
 
@@ -22,6 +24,8 @@ const FName FRelationDatabaseCustomization::FactionAId("Faction A");
 const FName FRelationDatabaseCustomization::FactionBId("Faction B");
 const FName FRelationDatabaseCustomization::AttitudeId("Reaction");
 const FName FRelationDatabaseCustomization::DeleteId("Delete");
+
+const FName FRelationDatabaseCustomization::NameMember("Name");
 
 
 class SRelationViewItem : public SMultiColumnTableRow<TSharedPtr<uint32>>
@@ -230,10 +234,18 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 			]
 		]
 	];
+
+	GEditor->RegisterForUndo(this);
 }
 
 void FRelationDatabaseCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {}
+
+FRelationDatabaseCustomization::~FRelationDatabaseCustomization()
+{
+	GEditor->UnregisterForUndo(this);
+}
+
 
 TSharedRef<SWidget> FRelationDatabaseCustomization::CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle)
 {
@@ -329,6 +341,22 @@ TSharedRef<SWidget> FRelationDatabaseCustomization::MakeColumnWidget(uint32 Rela
 	return SNullWidget::NullWidget;
 }
 
+void FRelationDatabaseCustomization::PostUndo(bool bSuccess)
+{
+	if (bSuccess && StructHandle.IsValid())
+	{
+		RefreshRelations();
+	}
+}
+
+void FRelationDatabaseCustomization::PostRedo(bool bSuccess)
+{
+	if (bSuccess && StructHandle.IsValid())
+	{
+		RefreshRelations();
+	}
+}
+
 void FRelationDatabaseCustomization::OnRelationsScrolled(double InScrollOffset)
 {
 
@@ -342,6 +370,7 @@ void FRelationDatabaseCustomization::OnRelationSelected(TSharedPtr<uint32> InNew
 void FRelationDatabaseCustomization::RefreshRelations()
 {
 	AvailableRelations.Empty();
+	VisibleRelations.Empty();
 
 	if (!ListHandleArray.IsValid())
 		return;
@@ -355,11 +384,22 @@ void FRelationDatabaseCustomization::RefreshRelations()
 	for (uint32 I = 0; I < Num; ++I)
 	{
 		TSharedRef<IPropertyHandle> ItemProperty = ListHandleArray->GetElement(I);
-		//TODO: Filter Here
-		AvailableRelations.Add(MakeShared<uint32>(I));
-	}
 
-	VisibleRelations = AvailableRelations;
+		FName FactionAName;
+		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA))
+			->GetChildHandle(NameMember)->GetValue(FactionAName);
+
+		FName FactionBName;
+		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB))
+			->GetChildHandle(NameMember)->GetValue(FactionBName);
+
+		TSharedPtr<uint32> Item { MakeShared<uint32>(I) };
+		AvailableRelations.Add(Item);
+		if ((FilterFactionA.IsEmpty() || FactionAName.ToString().Contains(FilterFactionA)) && (FilterFactionB.IsEmpty() || FactionBName.ToString().Contains(FilterFactionB)))
+		{
+			VisibleRelations.Add(Item);
+		}
+	}
 
 	if (RelationListView.IsValid())
 	{
@@ -369,6 +409,11 @@ void FRelationDatabaseCustomization::RefreshRelations()
 
 void FRelationDatabaseCustomization::OnFactionFilterChanged(const FText& Text, FName Faction)
 {
+	if (Faction == FactionAId)
+		FilterFactionA = Text.ToString();
+	else if (Faction == FactionBId)
+		FilterFactionB = Text.ToString();
+
 	RefreshRelations();
 }
 

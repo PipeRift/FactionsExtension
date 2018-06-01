@@ -23,8 +23,19 @@ public:
 	UPROPERTY(EditAnywhere, config)
 	TArray<FFactionRelation> ConfigList;
 
-	UPROPERTY(SaveGame)
+protected:
+
+	UPROPERTY(Transient, SaveGame)
 	TSet<FFactionRelation> IndexedList;
+
+
+public:
+
+	const TSet<FFactionRelation>& GetRelations() const { return IndexedList; }
+	TSet<FFactionRelation>& GetRelations() { return IndexedList; }
+
+	// Copies relations to a runtime set for fast searching
+	void IndexRelations();
 };
 
 

@@ -4,6 +4,8 @@
 
 #include "Object.h"
 
+#include <Engine/World.h>
+
 #include "FactionInfo.h"
 #include "RelationDatabase.h"
 #include "FactionsSettings.generated.h"
@@ -19,11 +21,7 @@ class FACTIONS_API UFactionsSettings : public UObject
 
 public:
 
-	UFactionsSettings(const FObjectInitializer& ObjectInitializer)
-		: Super(ObjectInitializer)
-	{
-		Factions.Add(TEXT("Default"), FFactionInfo(FColor::Blue));
-	}
+	UFactionsSettings();
 
 	/** Faction used when an Actor doesn't implement a FactionAgentInterface */
 	//UPROPERTY(config, EditAnywhere, Category = Custom)
@@ -33,7 +31,21 @@ public:
 	TMap<FName, FFactionInfo> Factions;
 
 	UPROPERTY(config, EditAnywhere, Category = Relations, SaveGame)
-	FRelationDatabase Relations; //Moved from Set, serializing caused problems (4.16)
+	FRelationDatabase Relations;
+
+
+public:
+
+	bool Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo);
+	bool Internal_UnregistryFaction(FFaction Faction);
+
+	bool Internal_RegistryRelation(const FFactionRelation& Relation);
+	bool Internal_UnregistryRelation(const FFactionRelation& Relation);
+
+	const FFactionRelation* FindRelation(const FFaction& A, const FFaction& B) const
+	{
+		return Relations.GetRelations().Find({ A, B });
+	}
 
 protected:
 
@@ -44,8 +56,7 @@ protected:
 	void SanitizeRelations(EPropertyChangeType::Type ChangeType, int32 RelationIndex = INDEX_NONE);
 #endif
 
-public:
+	virtual void BeginDestroy() override;
 
-	bool Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo);
-	bool Internal_UnregistryFaction(FFaction Faction);
+	void OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS);
 };
