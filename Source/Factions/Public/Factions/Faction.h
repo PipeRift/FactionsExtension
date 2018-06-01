@@ -22,9 +22,9 @@ struct FACTIONS_API FFaction
 	static const FFaction NoFaction;
 
 
-private:
+public:
 
-	UPROPERTY(EditAnywhere, Category = Faction)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	FName Name;
 
 public:

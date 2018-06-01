@@ -20,6 +20,8 @@ void SFaction::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _
 		.OnGenerateWidget(this, &SFaction::HandleStringEnumComboBoxGenerateWidget)
 		.OnComboBoxOpening(this, &SFaction::UpdateItems, false)
 		.OnSelectionChanged(this, &SFaction::OnSelectionChanged)
+		.ButtonStyle(FEditorStyle::Get(), "FlatButton")
+		.ForegroundColor(FSlateColor::UseForeground())
 		//.InitiallySelectedItem(GetVariableFactionValue())
 		[
 			SNew(STextBlock)
@@ -75,7 +77,7 @@ void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESele
 			NameHandle->SetValue(NO_FACTION_NAME);
 		}
 	}
-	
+
 	UpdateItems(true);
 }
 

@@ -75,7 +75,7 @@ const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) co
 {
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 
-	const FFactionRelation* FoundRelationPtr = Settings->Relations.Find({ *this, Other });
+	const FFactionRelation* FoundRelationPtr = Settings->FindRelation(*this, Other);
 	if (FoundRelationPtr == nullptr)
 	{
 		//Relation not found, use default
