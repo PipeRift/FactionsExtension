@@ -420,6 +420,8 @@ void FRelationDatabaseCustomization::OnFactionFilterChanged(const FText& Text, F
 FReply FRelationDatabaseCustomization::OnNewRelation()
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_NewRelation", "Added new relation"));
+	GetOuter()->Modify();
+
 	ListHandleArray->AddItem();
 	RefreshRelations();
 
@@ -429,6 +431,8 @@ FReply FRelationDatabaseCustomization::OnNewRelation()
 FReply FRelationDatabaseCustomization::OnDeleteRelation(uint32 Index)
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_DeleteRelation", "Deleted relation"));
+	GetOuter()->Modify();
+
 	ListHandleArray->DeleteItem(Index);
 	RefreshRelations();
 
@@ -438,10 +442,24 @@ FReply FRelationDatabaseCustomization::OnDeleteRelation(uint32 Index)
 FReply FRelationDatabaseCustomization::OnClearRelations()
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_ClearRelations", "Deleted all relations"));
+	GetOuter()->Modify();
+
 	ListHandleArray->EmptyArray();
 	RefreshRelations();
 
 	return FReply::Handled();
+}
+
+UObject* FRelationDatabaseCustomization::GetOuter() const
+{
+	if (!StructHandle.IsValid())
+		return nullptr;
+
+	// Customization -> Relations -> Settings
+	TArray<UObject*> Objects;
+	StructHandle->GetOuterObjects(Objects);
+
+	return Objects.Num() ? Objects[0] : nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE

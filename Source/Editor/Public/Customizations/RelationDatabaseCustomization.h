@@ -57,6 +57,8 @@ private:
 	FReply OnDeleteRelation(uint32 Index);
 	FReply OnClearRelations();
 
+	UObject* GetOuter() const;
+
 
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
