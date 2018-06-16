@@ -419,7 +419,7 @@ void FRelationDatabaseCustomization::OnFactionFilterChanged(const FText& Text, F
 
 FReply FRelationDatabaseCustomization::OnNewRelation()
 {
-	const FScopedTransaction Transaction(LOCTEXT("Relation_NewRelation", "Added new relation"));
+	const FScopedTransaction Transaction(LOCTEXT("Relation_New", "Added new relation"));
 	GetOuter()->Modify();
 
 	ListHandleArray->AddItem();
