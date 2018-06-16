@@ -8,30 +8,43 @@
 #include "SListView.h"
 #include "Input/Reply.h"
 #include "PropertyHandle.h"
+#include "EditorUndoClient.h"
+
 
 class IDetailsView;
 class IDetailLayoutBuilder;
 class UFactionsSettings;
 
 struct FFactionInfoMapItem {
-	FFactionInfoMapItem() : Id{ INDEX_NONE }, Name{}, Property{} {}
+	FFactionInfoMapItem() : Id{ INDEX_NONE }, Name{}, MapProperty{} {}
 	FFactionInfoMapItem(int32 Id, FName Name, const TSharedPtr<IPropertyHandle>& Property)
-		: Id{Id}, Name{Name}, Property{Property}
+		: Id{Id}, Name{Name}, MapProperty{Property}
 	{}
 
 	int32 Id;
 	FName Name;
-	TSharedPtr<IPropertyHandle> Property;
+	TSharedPtr<IPropertyHandle> MapProperty;
 
-	bool IsValid() const { return Id != INDEX_NONE && Property.IsValid(); }
+	bool IsValid() const { return Id != INDEX_NONE && MapProperty.IsValid(); }
+
+	TSharedPtr<IPropertyHandle> GetProperty() const {
+		return MapProperty.IsValid() ? MapProperty->GetChildHandle(Id) : nullptr;
+	}
 };
 
-class FFactionsSettingsDetails : public IDetailCustomization
+class FFactionsSettingsDetails : public IDetailCustomization, public FEditorUndoClient
 {
 public:
 
 	/** Makes a new instance of this detail layout class for a specific detail view requesting it */
 	static TSharedRef<IDetailCustomization> MakeInstance();
+
+	//~ Begin FEditorUndoClient Interface
+	virtual void PostUndo(bool bSuccess) override;
+	virtual void PostRedo(bool bSuccess) override;
+	//~ End FEditorUndoClient Interface
+
+	virtual ~FFactionsSettingsDetails();
 
 private:
 
@@ -54,6 +67,7 @@ private:
 
 public:
 
+	void OnFactionIdChange(const FText& NewId, ETextCommit::Type CommitInfo, const TSharedPtr<FFactionInfoMapItem> Faction);
 	FReply OnDeleteFaction(const TSharedPtr<FFactionInfoMapItem> Faction);
 
 
@@ -74,12 +88,13 @@ private:
 
 	TSharedPtr<SVerticalBox> FactionContainer;
 
-	TSharedPtr<FFactionInfoMapItem> CurrentSelection;
+	TWeakPtr<FFactionInfoMapItem> CurrentSelection;
 
 	FString SearchFilter;
 
 public:
 
+	static const FName ColumnSelect;
 	static const FName ColumnId;
 	static const FName ColumnColor;
 	static const FName ColumnDelete;
