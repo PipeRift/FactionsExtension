@@ -68,7 +68,7 @@ public:
 
 		if (Column == FFactionsSettingsDetails::ColumnSelect)
 		{
-			return SNew(STextBlock).Text(LOCTEXT("FactionColumnSelect", "⊙"));
+			return SNew(STextBlock).Text(LOCTEXT("FactionColumnSelect_Value", "⊙"));
 		}
 		else if (Column == FFactionsSettingsDetails::ColumnColor)
 		{
@@ -240,6 +240,11 @@ void FFactionsSettingsDetails::CustomizeFactionsDetails(IDetailLayoutBuilder& De
 			FactionsPropertyRow.GetDefaultWidgets(DefaultNameWidget, DefaultValueWidget);
 			FactionsPropertyRow.CustomWidget();
 
+
+			TSharedRef<SScrollBar> ListScrollBar = SNew(SScrollBar)
+				.Orientation(Orient_Vertical)
+				.Thickness(FVector2D(8.0f, 8.0f));
+
 			{
 				TSharedRef<SHeaderRow> HeaderRow = SNew(SHeaderRow)
 				+ SHeaderRow::Column(ColumnSelect)
@@ -300,7 +305,8 @@ void FFactionsSettingsDetails::CustomizeFactionsDetails(IDetailLayoutBuilder& De
 					.OnGenerateRow(this, &FFactionsSettingsDetails::MakeFactionWidget)
 					//.OnListViewScrolled(this, &FFactionsSettingsDetails::OnFactionsScrolled)
 					.OnSelectionChanged(this, &FFactionsSettingsDetails::SetFactionSelection)
-					.ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
+					.ExternalScrollbar(ListScrollBar)
+					.ConsumeMouseWheel(EConsumeMouseWheel::Always)
 					.SelectionMode(ESelectionMode::Single)
 					.AllowOverscroll(EAllowOverscroll::No);
 			}
@@ -345,8 +351,27 @@ void FFactionsSettingsDetails::CustomizeFactionsDetails(IDetailLayoutBuilder& De
 					]
 				]
 				+ SVerticalBox::Slot()
+				.VAlign(VAlign_Fill)
 				[
-					FactionsListView.ToSharedRef()
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
+					.FillWidth(1.f)
+					[
+						SNew(SBox)
+						.HeightOverride(280.f)
+						[
+							FactionsListView.ToSharedRef()
+						]
+					]
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					[
+						SNew(SBox)
+						.WidthOverride(14.f)
+						[
+							ListScrollBar
+						]
+					]
 				]
 			]
 			.ValueContent()
@@ -499,6 +524,7 @@ FReply FFactionsSettingsDetails::OnNewFaction()
 		Settings->Modify();
 
 		Settings->Factions.Add({});
+		Settings->SaveConfig(CPF_Config);
 
 		RefreshFactions();
 		return FReply::Handled();
@@ -515,6 +541,8 @@ FReply FFactionsSettingsDetails::OnClearFactions()
 		Settings->Modify();
 
 		Settings->Factions.Empty();
+		Settings->SaveConfig(CPF_Config);
+
 		RefreshFactions();
 
 		//Clear selection
@@ -541,6 +569,7 @@ void FFactionsSettingsDetails::OnFactionIdChange(const FText& NewIdText, ETextCo
 
 		Settings->Factions.Remove(Faction->Name);
 		Settings->Factions.Add(NewId, MoveTemp(Info));
+		Settings->SaveConfig(CPF_Config);
 
 		// Selection will be kept if we update the name and then refresh
 		Faction->Name = NewId;
@@ -556,6 +585,8 @@ FReply FFactionsSettingsDetails::OnDeleteFaction(const TSharedPtr<FFactionInfoMa
 		Settings->Modify();
 
 		Settings->Factions.Remove(Faction->Name);
+		Settings->SaveConfig(CPF_Config);
+
 		RefreshFactions();
 
 		// Clean selection if removed

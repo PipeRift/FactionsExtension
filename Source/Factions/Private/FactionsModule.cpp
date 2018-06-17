@@ -124,5 +124,5 @@ void FFactionsModule::CacheFactionInformation()
 TWeakObjectPtr<class UFactionsSettings> FFactionsModule::FactionManager {};
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FFactionsModule, Factions)

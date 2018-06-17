@@ -182,6 +182,7 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 				+ SHorizontalBox::Slot()
 				.HAlign(HAlign_Left)
 				.AutoWidth()
+				.Padding(0, 10)
 				[
 					SNew(STextBlock)
 					.TextStyle(FEditorStyle::Get(), "LargeText")
