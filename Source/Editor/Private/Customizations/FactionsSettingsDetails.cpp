@@ -14,6 +14,8 @@
 #include "Engine/CurveTable.h"
 #include "DetailWidgetRow.h"
 #include "Widgets/Text/STextBlock.h"
+#include "SColorBlock.h"
+#include "SColorPicker.h"
 #include "SGridPanel.h"
 #include "SWidgetSwitcher.h"
 #include "SEditableTextBox.h"
@@ -30,160 +32,349 @@ const FName FFactionsSettingsDetails::ColumnColor("Color");
 const FName FFactionsSettingsDetails::ColumnDelete("Delete");
 
 
-class SFactionViewItem : public SMultiColumnTableRow<TSharedPtr<FFactionInfoMapItem>>
+/************************************************************************
+* SFactionViewItem
+*/
+
+void SFactionViewItem::Construct(const FArguments& InArgs, const TSharedRef<STableViewBase>& InOwnerTableView)
 {
-public:
-	SLATE_BEGIN_ARGS(SFactionViewItem) {}
-	/** The widget that owns the tree.  We'll only keep a weak reference to it. */
-	SLATE_ARGUMENT(TSharedPtr<FFactionsSettingsDetails>, Details)
-	SLATE_ARGUMENT(TSharedPtr<FFactionInfoMapItem>, Faction)
-	SLATE_END_ARGS()
+	Details = InArgs._Details;
+	Faction = InArgs._Faction;
 
-	/** Construct function for this widget */
-	void Construct(const FArguments& InArgs, const TSharedRef<STableViewBase>& InOwnerTableView)
+	if (Faction.IsValid())
 	{
-		Details = InArgs._Details;
-		Faction = InArgs._Faction;
-
-		if (Faction.IsValid())
+		auto Property = Faction->GetProperty();
+		if (Property.IsValid())
 		{
-			auto Property = Faction->GetProperty();
-			if (Property.IsValid())
-			{
-				ColorProperty = Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
-			}
-		}
+			ColorProperty = Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
 
-		SMultiColumnTableRow<TSharedPtr<FFactionInfoMapItem>>::Construct(
-			FSuperRowType::FArguments()
-			.Style(FEditorStyle::Get(), "DataTableEditor.CellListViewRow"),
-			InOwnerTableView
-		);
+			bColorIsLinear = CastChecked<UStructProperty>(ColorProperty->GetProperty())->Struct->GetFName() == NAME_LinearColor;
+			bColorIgnoreAlpha = ColorProperty->GetProperty()->HasMetaData(TEXT("HideAlphaChannel"));
+		}
 	}
+	bDontUpdateWhileEditingColor = true;
 
-	/** Overridden from SMultiColumnTableRow.  Generates a widget for this column of the list view. */
-	virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& Column) override
+	SMultiColumnTableRow<TSharedPtr<FFactionInfoMapItem>>::Construct(
+		FSuperRowType::FArguments()
+		.Style(FEditorStyle::Get(), "DataTableEditor.CellListViewRow"),
+		InOwnerTableView
+	);
+}
+
+TSharedRef<SWidget> SFactionViewItem::GenerateWidgetForColumn(const FName& Column)
+{
+	TSharedPtr<FFactionsSettingsDetails> CustomizationPtr = Details.Pin();
+
+	if (Column == FFactionsSettingsDetails::ColumnSelect)
 	{
-		TSharedPtr<FFactionsSettingsDetails> CustomizationPtr = Details.Pin();
-
-		if (Column == FFactionsSettingsDetails::ColumnSelect)
-		{
-			return SNew(STextBlock).Text(LOCTEXT("FactionColumnSelect_Value", "⊙"));
-		}
-		else if (Column == FFactionsSettingsDetails::ColumnColor)
-		{
-			return SNew(STextBlock)
-				.Text(LOCTEXT("ValueColor", "Color"));
-		}
-		else if (Column == FFactionsSettingsDetails::ColumnDelete)
-		{
-			return SNew(SBox)
-			.Padding(1)
-			.HAlign(HAlign_Center)
-			.VAlign(VAlign_Center)
-			.MaxDesiredWidth(20.f)
-			.MaxDesiredHeight(20.f)
-			[
-				SNew(SButton)
-				.Text(LOCTEXT("Relations_Delete", "✖"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-				.TextFlowDirection(ETextFlowDirection::Auto)
-				.ContentPadding(2)
-				.OnClicked(Details.Pin().Get(), &FFactionsSettingsDetails::OnDeleteFaction, Faction)
-			];
-		}
-
+		return SNew(STextBlock).Text(LOCTEXT("FactionColumnSelect_Value", "⊙"));
+	}
+	else if (Column == FFactionsSettingsDetails::ColumnColor)
+	{
+		return CreateColorWidget(ColorProperty);
+	}
+	else if (Column == FFactionsSettingsDetails::ColumnDelete)
+	{
 		return SNew(SBox)
-		.Padding(FMargin{ 5.0f, 3.f })
-		.MinDesiredHeight(25.f)
+		.Padding(1)
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Center)
+		.MaxDesiredWidth(20.f)
+		.MaxDesiredHeight(20.f)
 		[
-			SAssignNew(IdNameSwitcher, SWidgetSwitcher)
-			+ SWidgetSwitcher::Slot()
-			[
-
-				SNew(SBox)
-				.VAlign(VAlign_Center)
-				.MinDesiredWidth(30.f)
-				.MinDesiredHeight(18.f)
-				[
-					SNew(STextBlock)
-					.Text(this, &SFactionViewItem::GetEditableNameAsText)
-					.OnDoubleClicked(this, &SFactionViewItem::OnIdNameDoubleClicked)
-				]
-			]
-			+ SWidgetSwitcher::Slot()
-			[
-				SNew(SBox)
-				.VAlign(VAlign_Center)
-				.MinDesiredWidth(30.f)
-				[
-					SAssignNew(IdNameTextBox, SEditableTextBox)
-					.Text(this, &SFactionViewItem::GetEditableNameAsText)
-					.ToolTipText(LOCTEXT("EditNameId_Tooltip", "Replace a faction's Id"))
-					.RevertTextOnEscape(true)
-					.ClearKeyboardFocusOnCommit(true)
-					.OnTextCommitted(this, &SFactionViewItem::OnIdNameCommited)
-				]
-			]
-			/*SAssignNew(NameTextBlock, SInlineEditableTextBlock)
-			.Text(this, &SFactionViewItem::GetEditableNameAsText)
-			//.OnVerifyTextChanged(this, &SDialogueGraphNode_Area::OnVerifyNameTextChanged)
-			.OnTextCommitted(Details.Pin().Get(), &FFactionsSettingsDetails::OnFactionIdChange, Faction)*/
+			SNew(SButton)
+			.Text(LOCTEXT("Relations_Delete", "✖"))
+			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
+			.TextFlowDirection(ETextFlowDirection::Auto)
+			.ContentPadding(2)
+			.OnClicked(Details.Pin().Get(), &FFactionsSettingsDetails::OnDeleteFaction, Faction)
 		];
 	}
 
-private:
+	return SNew(SBox)
+	.Padding(FMargin{ 5.0f, 3.f })
+	.MinDesiredHeight(25.f)
+	[
+		SAssignNew(IdNameSwitcher, SWidgetSwitcher)
+		+ SWidgetSwitcher::Slot()
+		[
+			SNew(SBox)
+			.VAlign(VAlign_Center)
+			.MinDesiredWidth(30.f)
+			.MinDesiredHeight(18.f)
+			[
+				SNew(STextBlock)
+				.Text(this, &SFactionViewItem::GetEditableNameAsText)
+				.OnDoubleClicked(this, &SFactionViewItem::OnIdNameDoubleClicked)
+			]
+		]
+		+ SWidgetSwitcher::Slot()
+		[
+			SNew(SBox)
+			.VAlign(VAlign_Center)
+			.MinDesiredWidth(30.f)
+			[
+				SAssignNew(IdNameTextBox, SEditableTextBox)
+				.Text(this, &SFactionViewItem::GetEditableNameAsText)
+				.ToolTipText(LOCTEXT("EditNameId_Tooltip", "Replace a faction's Id"))
+				.RevertTextOnEscape(true)
+				.ClearKeyboardFocusOnCommit(true)
+				.OnTextCommitted(this, &SFactionViewItem::OnIdNameCommited)
+			]
+		]
+	];
+}
 
-	FText GetEditableNameAsText() const {
-		return FText::FromName(Faction->Name);
-	}
+FReply SFactionViewItem::OnIdNameDoubleClicked()
+{
+	FReply Reply = FReply::Unhandled();
 
-	FReply OnIdNameDoubleClicked()
+	if (Details.IsValid())
 	{
-		FReply Reply = FReply::Unhandled();
+		IdNameSwitcher->SetActiveWidgetIndex(1);
 
-		if (Details.IsValid())
-		{
-			IdNameSwitcher->SetActiveWidgetIndex(1);
+		// Get path to editable widget
+		FWidgetPath EditableWidgetPath;
+		FSlateApplication::Get().GeneratePathToWidgetUnchecked(IdNameTextBox.ToSharedRef(), EditableWidgetPath);
 
-			// Get path to editable widget
-			FWidgetPath EditableWidgetPath;
-			FSlateApplication::Get().GeneratePathToWidgetUnchecked(IdNameTextBox.ToSharedRef(), EditableWidgetPath);
+		// Set keyboard focus directly
+		FSlateApplication::Get().SetKeyboardFocus(EditableWidgetPath, EFocusCause::SetDirectly);
 
-			// Set keyboard focus directly
-			FSlateApplication::Get().SetKeyboardFocus(EditableWidgetPath, EFocusCause::SetDirectly);
-
-			Reply = FReply::Handled();
-		}
-
-		return Reply;
+		Reply = FReply::Handled();
 	}
 
-	void OnIdNameCommited(const FText& InText, ETextCommit::Type InCommitType) const
+	return Reply;
+}
+
+void SFactionViewItem::OnIdNameCommited(const FText& InText, ETextCommit::Type InCommitType) const
+{
+	if (Details.IsValid())
 	{
-		if (Details.IsValid())
-		{
-			Details.Pin()->OnFactionIdChange(InText, InCommitType, Faction);
-		}
+		Details.Pin()->OnFactionIdChange(InText, InCommitType, Faction);
+	}
 
-		if (InCommitType == ETextCommit::OnEnter || InCommitType == ETextCommit::OnUserMovedFocus)
+	if (InCommitType == ETextCommit::OnEnter || InCommitType == ETextCommit::OnUserMovedFocus)
+	{
+		IdNameSwitcher->SetActiveWidgetIndex(0);
+	}
+}
+
+TSharedRef<SWidget> SFactionViewItem::CreateColorWidget(TWeakPtr<IPropertyHandle> ColorProperty)
+{
+	FSlateFontInfo NormalText = IDetailLayoutBuilder::GetDetailFont();
+
+	return SNew(SHorizontalBox)
+	+ SHorizontalBox::Slot()
+	.VAlign(VAlign_Center)
+	.Padding(0.0f, 2.0f)
+	[
+		// Displays the color with alpha unless it is ignored
+		SAssignNew(ColorPickerParentWidget, SColorBlock)
+		.Color(this, &SFactionViewItem::OnGetColorForColorBlock)
+		.ShowBackgroundForAlpha(true)
+		.IgnoreAlpha(bColorIgnoreAlpha)
+		.OnMouseButtonDown(this, &SFactionViewItem::OnMouseButtonDownColorBlock)
+		.Size(FVector2D(35.0f, 12.0f))
+		.IsEnabled(this, &SFactionViewItem::IsValueEnabled, ColorProperty)
+	]
+	+ SHorizontalBox::Slot()
+	.VAlign(VAlign_Center)
+	.Padding(0.0f, 2.0f)
+	[
+		// Displays the color without alpha
+		SNew(SColorBlock)
+		.Color(this, &SFactionViewItem::OnGetColorForColorBlock)
+		.ShowBackgroundForAlpha(false)
+		.IgnoreAlpha(true)
+		.OnMouseButtonDown(this, &SFactionViewItem::OnMouseButtonDownColorBlock)
+		.Size(FVector2D(35.0f, 12.0f))
+	];
+}
+
+void SFactionViewItem::CreateColorPicker(bool bUseAlpha)
+{
+	int32 NumObjects = ColorProperty->GetNumOuterObjects();
+
+	SavedPreColorPickerColors.Empty();
+	TArray<FString> PerObjectValues;
+	ColorProperty->GetPerObjectValues(PerObjectValues);
+
+	for (int32 ObjectIndex = 0; ObjectIndex < NumObjects; ++ObjectIndex)
+	{
+		if (bColorIsLinear)
 		{
-			IdNameSwitcher->SetActiveWidgetIndex(0);
+			FLinearColor Color;
+			Color.InitFromString(PerObjectValues[ObjectIndex]);
+			SavedPreColorPickerColors.Add(FLinearOrSrgbColor(Color));
+		}
+		else
+		{
+			FColor Color;
+			Color.InitFromString(PerObjectValues[ObjectIndex]);
+			SavedPreColorPickerColors.Add(FLinearOrSrgbColor(Color));
 		}
 	}
 
+	FLinearColor InitialColor;
+	GetColorAsLinear(InitialColor);
 
-	/** Weak reference to the database customization that owns our list */
-	TWeakPtr<FFactionsSettingsDetails> Details;
+	const bool bRefreshOnlyOnOk = bDontUpdateWhileEditingColor || ColorProperty->HasMetaData("DontUpdateWhileEditing");
 
-	TSharedPtr<FFactionInfoMapItem> Faction;
+	FColorPickerArgs PickerArgs;
+	{
+		PickerArgs.bUseAlpha = !bColorIgnoreAlpha;
+		PickerArgs.bOnlyRefreshOnMouseUp = false;
+		PickerArgs.bOnlyRefreshOnOk = bRefreshOnlyOnOk;
+		PickerArgs.sRGBOverride = false;
+		PickerArgs.DisplayGamma = TAttribute<float>::Create(TAttribute<float>::FGetter::CreateUObject(GEngine, &UEngine::GetDisplayGamma));
+		PickerArgs.OnColorCommitted = FOnLinearColorValueChanged::CreateSP(this, &SFactionViewItem::OnSetColorFromColorPicker);
+		PickerArgs.OnColorPickerCancelled = FOnColorPickerCancelled::CreateSP(this, &SFactionViewItem::OnColorPickerCancelled);
+		PickerArgs.OnInteractivePickBegin = FSimpleDelegate::CreateSP(this, &SFactionViewItem::OnColorPickerInteractiveBegin);
+		PickerArgs.OnInteractivePickEnd = FSimpleDelegate::CreateSP(this, &SFactionViewItem::OnColorPickerInteractiveEnd);
+		PickerArgs.InitialColorOverride = InitialColor;
+		PickerArgs.ParentWidget = ColorPickerParentWidget;
+		PickerArgs.OptionalOwningDetailsView = ColorPickerParentWidget;
+		FWidgetPath ParentWidgetPath;
+		if (FSlateApplication::Get().FindPathToWidget(ColorPickerParentWidget.ToSharedRef(), ParentWidgetPath))
+		{
+			PickerArgs.bOpenAsMenu = FSlateApplication::Get().FindMenuInWidgetPath(ParentWidgetPath).IsValid();
+		}
+	}
 
-	TSharedPtr<IPropertyHandle> ColorProperty;
+	OpenColorPicker(PickerArgs);
+}
 
-	TSharedPtr<SWidgetSwitcher> IdNameSwitcher;
-	TSharedPtr<SEditableTextBox> IdNameTextBox;
-};
+void SFactionViewItem::OnSetColorFromColorPicker(FLinearColor NewColor)
+{
+	FString ColorString;
+	if (bColorIsLinear)
+	{
+		ColorString = NewColor.ToString();
+	}
+	else
+	{
+		const bool bSRGB = true;
+		FColor NewFColor = NewColor.ToFColor(bSRGB);
+		ColorString = NewFColor.ToString();
+	}
 
+	ColorProperty->SetValueFromFormattedString(ColorString, bColorIsInteractive ? EPropertyValueSetFlags::InteractiveChange : 0);
+	ColorProperty->NotifyFinishedChangingProperties();
+}
+
+void SFactionViewItem::OnColorPickerCancelled(FLinearColor OriginalColor)
+{
+	TArray<FString> PerObjectColors;
+
+	for (int32 ColorIndex = 0; ColorIndex < SavedPreColorPickerColors.Num(); ++ColorIndex)
+	{
+		if (bColorIsLinear)
+		{
+			PerObjectColors.Add(SavedPreColorPickerColors[ColorIndex].GetLinear().ToString());
+		}
+		else
+		{
+			FColor Color = SavedPreColorPickerColors[ColorIndex].GetSrgb();
+			PerObjectColors.Add(Color.ToString());
+		}
+	}
+
+	if (PerObjectColors.Num() > 0)
+	{
+		ColorProperty->SetPerObjectValues(PerObjectColors);
+	}
+}
+
+void SFactionViewItem::OnColorPickerInteractiveBegin()
+{
+	bColorIsInteractive = true;
+	GEditor->BeginTransaction(FText::Format(LOCTEXT("SetColorProperty", "Edit {0}"), ColorProperty->GetPropertyDisplayName()));
+}
+
+void SFactionViewItem::OnColorPickerInteractiveEnd()
+{
+	bColorIsInteractive = false;
+
+	if (!bDontUpdateWhileEditingColor)
+	{
+		// pushes the last value from the interactive change without the interactive flag
+		FString ColorString;
+		ColorProperty->GetValueAsFormattedString(ColorString);
+		ColorProperty->SetValueFromFormattedString(ColorString);
+	}
+
+	GEditor->EndTransaction();
+}
+
+FPropertyAccess::Result SFactionViewItem::GetColorAsLinear(FLinearColor& OutColor) const
+{
+	// Default to full alpha in case the alpha component is disabled.
+	OutColor.A = 1.0f;
+
+	FString StringValue;
+	FPropertyAccess::Result Result = ColorProperty->GetValueAsFormattedString(StringValue);
+
+	if (Result == FPropertyAccess::Success)
+	{
+		if (bColorIsLinear)
+		{
+			OutColor.InitFromString(StringValue);
+		}
+		else
+		{
+			FColor SrgbColor;
+			SrgbColor.InitFromString(StringValue);
+			OutColor = FLinearColor(SrgbColor);
+		}
+	}
+	else if (Result == FPropertyAccess::MultipleValues)
+	{
+		OutColor = FLinearColor::White;
+	}
+
+	return Result;
+}
+
+FLinearColor SFactionViewItem::OnGetColorForColorBlock() const
+{
+	FLinearColor Color;
+	GetColorAsLinear(Color);
+	return Color;
+}
+
+FReply SFactionViewItem::OnMouseButtonDownColorBlock(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	if (MouseEvent.GetEffectingButton() != EKeys::LeftMouseButton)
+	{
+		return FReply::Unhandled();
+	}
+
+	bool CanShowColorPicker = true;
+	if (ColorProperty.IsValid() && ColorProperty->GetProperty() != nullptr)
+	{
+		CanShowColorPicker = !ColorProperty->IsEditConst();
+	}
+	if (CanShowColorPicker)
+	{
+		CreateColorPicker(true /*bUseAlpha*/);
+	}
+
+	return FReply::Handled();
+}
+
+bool SFactionViewItem::IsValueEnabled(TWeakPtr<IPropertyHandle> WeakHandlePtr) const
+{
+	if (WeakHandlePtr.IsValid())
+	{
+		return !WeakHandlePtr.Pin()->IsEditConst();
+	}
+	return false;
+}
+
+
+/************************************************************************
+ * FFactionsSettingsDetails
+ */
 
 TSharedRef<IDetailCustomization> FFactionsSettingsDetails::MakeInstance()
 {
@@ -250,6 +441,7 @@ void FFactionsSettingsDetails::CustomizeFactionsDetails(IDetailLayoutBuilder& De
 				+ SHeaderRow::Column(ColumnSelect)
 				.HAlignCell(HAlign_Center)
 				.VAlignCell(VAlign_Center)
+				.VAlignHeader(VAlign_Center)
 				.FixedWidth(20.f)
 				[
 					SNew(STextBlock).Text(LOCTEXT("FactionColumnSelect", ""))
@@ -257,7 +449,8 @@ void FFactionsSettingsDetails::CustomizeFactionsDetails(IDetailLayoutBuilder& De
 				+ SHeaderRow::Column(ColumnId)
 				.HAlignCell(HAlign_Fill)
 				.VAlignCell(VAlign_Center)
-				.FillWidth(0.8f)
+				.VAlignHeader(VAlign_Center)
+				.FillWidth(1.f)
 				.HeaderContentPadding(FMargin(0, 3))
 				[
 					SNew(SHorizontalBox)
@@ -283,9 +476,10 @@ void FFactionsSettingsDetails::CustomizeFactionsDetails(IDetailLayoutBuilder& De
 					]
 				]
 				+ SHeaderRow::Column(ColumnColor)
-				.HAlignCell(HAlign_Left)
+				.HAlignCell(HAlign_Right)
 				.VAlignCell(VAlign_Center)
-				.FillWidth(0.2f)
+				.VAlignHeader(VAlign_Center)
+				.FixedWidth(60.f)
 				.HeaderContentPadding(FMargin(0, 3))
 				[
 					SNew(STextBlock).Text(LOCTEXT("FactionColumnColor", "Color"))
@@ -293,6 +487,7 @@ void FFactionsSettingsDetails::CustomizeFactionsDetails(IDetailLayoutBuilder& De
 				+ SHeaderRow::Column(ColumnDelete)
 				.HAlignCell(HAlign_Right)
 				.VAlignCell(VAlign_Center)
+				.VAlignHeader(VAlign_Center)
 				.FixedWidth(20.f)
 				.HeaderContentPadding(FMargin(0, 3))
 				[
