@@ -49,14 +49,25 @@ public:
 
 protected:
 
+	virtual void BeginDestroy() override;
+
+	void OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS);
+
 #if WITH_EDITOR
 	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
 	virtual bool CanEditChange(const UProperty* InProperty) const override;
 
 	void SanitizeRelations(EPropertyChangeType::Type ChangeType, int32 RelationIndex = INDEX_NONE);
+
+public:
+
+	/**
+	* Editor only usage
+	* @return all factions as a reference
+	*/
+	TMap<FName, FFactionInfo>& Internal_GetFactions() { return Factions; }
+
+	/** Gets the member name for the factions */
+	static FName GetFactionsPropertyName() { return GET_MEMBER_NAME_CHECKED(UFactionsSettings, Factions); }
 #endif
-
-	virtual void BeginDestroy() override;
-
-	void OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS);
 };

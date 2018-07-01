@@ -91,19 +91,25 @@ public:
 		return GetAttitudeToFaction(GetFaction(One), GetFaction(Other));
 	}
 
-	/** @return true if A is Hostile to B (or otherwise) */
+	/** @return true if One and Other have the same faction */
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "One"))
+	static FORCEINLINE bool SharesFaction(const AActor* One, const AActor* Other) {
+		return GetFaction(One) == GetFaction(Other);
+	}
+
+	/** @return true if One is Hostile to Other (or otherwise) */
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "One"))
 	static FORCEINLINE bool IsHostile(const AActor* One, const AActor* Other) {
 		return GetAttitudeTowards(One, Other) == ETeamAttitude::Hostile;
 	}
 
-	/** @return true if A is Friendly to B (or otherwise) */
+	/** @return true if One is Friendly to Other (or otherwise) */
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "One"))
 	static FORCEINLINE bool IsFriendly(const AActor* One, const AActor* Other) {
 		return GetAttitudeTowards(One, Other) == ETeamAttitude::Friendly;
 	}
 
-	/** @return true if A is Neutral to B (or otherwise) */
+	/** @return true if One is Neutral to Other (or otherwise) */
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "One"))
 	static FORCEINLINE bool IsNeutral(const AActor* One, const AActor* Other) {
 		return GetAttitudeTowards(One, Other) == ETeamAttitude::Neutral;

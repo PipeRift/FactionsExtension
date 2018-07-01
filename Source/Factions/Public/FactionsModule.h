@@ -24,7 +24,7 @@ class FFactionsModule : public IModuleInterface
 public:
 
 	// Get Jink Core module instance
-	FORCEINLINE static FFactionsModule& Get() { 
+	FORCEINLINE static FFactionsModule& Get() {
 		return FModuleManager::LoadModuleChecked<FFactionsModule>("Factions");
 	}
 
