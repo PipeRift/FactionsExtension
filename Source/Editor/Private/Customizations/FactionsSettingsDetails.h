@@ -6,6 +6,7 @@
 #include "IDetailCustomization.h"
 #include "Layout/Visibility.h"
 #include "SListView.h"
+#include "SEditableTextBox.h"
 #include "Input/Reply.h"
 #include "PropertyHandle.h"
 #include "EditorUndoClient.h"

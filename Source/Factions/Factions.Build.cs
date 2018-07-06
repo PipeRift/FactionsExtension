@@ -8,7 +8,6 @@ public class Factions : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-
 		PublicIncludePaths.Add("Factions/Public");
 		PrivateIncludePaths.Add("Factions/Private");
 

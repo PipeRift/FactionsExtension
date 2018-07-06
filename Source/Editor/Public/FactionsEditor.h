@@ -2,6 +2,7 @@
 #pragma once
 
 #include "PropertyEditorModule.h"
+#include "EdGraphUtilities.h"
 #include "IAssetTools.h"
 
 
