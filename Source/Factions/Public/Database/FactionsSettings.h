@@ -54,10 +54,7 @@ protected:
 	void OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS);
 
 #if WITH_EDITOR
-	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
 	virtual bool CanEditChange(const UProperty* InProperty) const override;
-
-	void SanitizeRelations(EPropertyChangeType::Type ChangeType, int32 RelationIndex = INDEX_NONE);
 
 public:
 
