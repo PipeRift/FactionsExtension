@@ -29,6 +29,16 @@ void FFactionsEditorModule::ShutdownModule()
 {
 	UE_LOG(LogFactionsEditor, Log, TEXT("FactionsEditor: Log Ended"));
 
+
+	// Unregister all the asset types
+	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
+	{
+		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
+		for (int32 Index = 0; Index < CreatedAssetTypeActions.Num(); ++Index)
+		{
+			AssetTools.UnregisterAssetTypeActions(CreatedAssetTypeActions[Index].ToSharedRef());
+		}
+	}
 	CreatedAssetTypeActions.Empty();
 
 	// Cleanup all information for auto generated default event nodes by this module
