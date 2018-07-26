@@ -2,9 +2,9 @@
 
 #include "StringEnumCustomization.h"
 
-#include <SSearchBox.h>
-#include <SComboButton.h>
-#include "DetailWidgetRow.h"
+#include <DetailWidgetRow.h>
+#include <Widgets/Input/SSearchBox.h>
+#include <Widgets/Input/SComboButton.h>
 
 #define LOCTEXT_NAMESPACE "FStringEnumCustomization"
 

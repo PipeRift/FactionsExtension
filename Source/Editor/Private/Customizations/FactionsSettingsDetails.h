@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "IDetailCustomization.h"
 #include "Layout/Visibility.h"
-#include "SListView.h"
-#include "SEditableTextBox.h"
+#include "Widgets/Views/SListView.h"
+#include "Widgets/Input/SEditableTextBox.h"
 #include "Input/Reply.h"
 #include "PropertyHandle.h"
 #include "EditorUndoClient.h"
@@ -191,7 +191,7 @@ private:
 	TSharedPtr<FFactionInfoMapItem> Faction;
 
 
-	TSharedPtr<IPropertyHandle> ColorProperty;
+	TSharedPtr<IPropertyHandle> InfoColorProperty;
 
 	/** Stores a linear or srgb color without converting between the two. Only one is valid at a time */
 	struct FLinearOrSrgbColor

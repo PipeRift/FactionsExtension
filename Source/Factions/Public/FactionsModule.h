@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "ModuleInterface.h"
-#include "ModuleManager.h"
+#include <CoreMinimal.h>
+#include <Modules/ModuleManager.h>
 
 #if WITH_EDITOR
 #include "ISettingsModule.h"

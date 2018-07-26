@@ -1,8 +1,8 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 #pragma once
 
-#include "IPropertyTypeCustomization.h"
-#include "SComboBox.h"
+#include <IPropertyTypeCustomization.h>
+#include <Widgets/Input/SComboBox.h>
 
 
 class FStringEnumCustomization : public IPropertyTypeCustomization

@@ -1,5 +1,6 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class FactionsEditor : ModuleRules
@@ -8,11 +9,9 @@ public class FactionsEditor : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-
-		PublicIncludePaths.Add("Editor/Public");
-
-		PrivateIncludePaths.Add("Editor/Private");
-
+		PublicIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Public/Customizations")
+		});
 
 		PublicDependencyModuleNames.AddRange(new string[] {
 			"Core",

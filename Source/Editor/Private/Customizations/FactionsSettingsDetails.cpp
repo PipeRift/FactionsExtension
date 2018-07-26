@@ -3,23 +3,24 @@
 #include "FactionsSettingsDetails.h"
 
 #include "Editor.h"
-#include "Framework/Application/SlateApplication.h"
-#include "Layout/WidgetPath.h"
-#include "Settings/EditorExperimentalSettings.h"
-#include "DetailLayoutBuilder.h"
-#include "ScopedTransaction.h"
-#include "IDetailPropertyRow.h"
-#include "DetailCategoryBuilder.h"
-#include "Widgets/Input/SButton.h"
-#include "Engine/CurveTable.h"
-#include "DetailWidgetRow.h"
-#include "Widgets/Text/STextBlock.h"
-#include "SColorBlock.h"
-#include "SColorPicker.h"
-#include "SGridPanel.h"
-#include "SWidgetSwitcher.h"
-#include "SEditableTextBox.h"
-#include "SSearchBox.h"
+#include <Framework/Application/SlateApplication.h>
+#include <Layout/WidgetPath.h>
+#include <Settings/EditorExperimentalSettings.h>
+#include <DetailLayoutBuilder.h>
+#include <ScopedTransaction.h>
+#include <IDetailPropertyRow.h>
+#include <DetailCategoryBuilder.h>
+#include <Engine/CurveTable.h>
+#include <DetailWidgetRow.h>
+
+#include <Widgets/Input/SButton.h>
+#include <Widgets/Text/STextBlock.h>
+#include <Widgets/Colors/SColorBlock.h>
+#include <Widgets/Colors/SColorPicker.h>
+#include <Widgets/Layout/SGridPanel.h>
+#include <Widgets/Layout/SWidgetSwitcher.h>
+#include <Widgets/Input/SEditableTextBox.h>
+#include <Widgets/Input/SSearchBox.h>
 
 #include "Database/FactionsSettings.h"
 
@@ -46,10 +47,10 @@ void SFactionViewItem::Construct(const FArguments& InArgs, const TSharedRef<STab
 		auto Property = Faction->GetProperty();
 		if (Property.IsValid())
 		{
-			ColorProperty = Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
+			InfoColorProperty = Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
 
-			bColorIsLinear = CastChecked<UStructProperty>(ColorProperty->GetProperty())->Struct->GetFName() == NAME_LinearColor;
-			bColorIgnoreAlpha = ColorProperty->GetProperty()->HasMetaData(TEXT("HideAlphaChannel"));
+			bColorIsLinear = CastChecked<UStructProperty>(InfoColorProperty->GetProperty())->Struct->GetFName() == NAME_LinearColor;
+			bColorIgnoreAlpha = InfoColorProperty->GetProperty()->HasMetaData(TEXT("HideAlphaChannel"));
 		}
 	}
 	bDontUpdateWhileEditingColor = true;
@@ -71,7 +72,7 @@ TSharedRef<SWidget> SFactionViewItem::GenerateWidgetForColumn(const FName& Colum
 	}
 	else if (Column == FFactionsSettingsDetails::ColumnColor)
 	{
-		return CreateColorWidget(ColorProperty);
+		return CreateColorWidget(InfoColorProperty);
 	}
 	else if (Column == FFactionsSettingsDetails::ColumnDelete)
 	{
@@ -193,11 +194,11 @@ TSharedRef<SWidget> SFactionViewItem::CreateColorWidget(TWeakPtr<IPropertyHandle
 
 void SFactionViewItem::CreateColorPicker(bool bUseAlpha)
 {
-	int32 NumObjects = ColorProperty->GetNumOuterObjects();
+	int32 NumObjects = InfoColorProperty->GetNumOuterObjects();
 
 	SavedPreColorPickerColors.Empty();
 	TArray<FString> PerObjectValues;
-	ColorProperty->GetPerObjectValues(PerObjectValues);
+	InfoColorProperty->GetPerObjectValues(PerObjectValues);
 
 	for (int32 ObjectIndex = 0; ObjectIndex < NumObjects; ++ObjectIndex)
 	{
@@ -218,7 +219,7 @@ void SFactionViewItem::CreateColorPicker(bool bUseAlpha)
 	FLinearColor InitialColor;
 	GetColorAsLinear(InitialColor);
 
-	const bool bRefreshOnlyOnOk = bDontUpdateWhileEditingColor || ColorProperty->HasMetaData("DontUpdateWhileEditing");
+	const bool bRefreshOnlyOnOk = bDontUpdateWhileEditingColor || InfoColorProperty->HasMetaData("DontUpdateWhileEditing");
 
 	FColorPickerArgs PickerArgs;
 	{
@@ -258,8 +259,8 @@ void SFactionViewItem::OnSetColorFromColorPicker(FLinearColor NewColor)
 		ColorString = NewFColor.ToString();
 	}
 
-	ColorProperty->SetValueFromFormattedString(ColorString, bColorIsInteractive ? EPropertyValueSetFlags::InteractiveChange : 0);
-	ColorProperty->NotifyFinishedChangingProperties();
+	InfoColorProperty->SetValueFromFormattedString(ColorString, bColorIsInteractive ? EPropertyValueSetFlags::InteractiveChange : 0);
+	InfoColorProperty->NotifyFinishedChangingProperties();
 }
 
 void SFactionViewItem::OnColorPickerCancelled(FLinearColor OriginalColor)
@@ -281,14 +282,14 @@ void SFactionViewItem::OnColorPickerCancelled(FLinearColor OriginalColor)
 
 	if (PerObjectColors.Num() > 0)
 	{
-		ColorProperty->SetPerObjectValues(PerObjectColors);
+		InfoColorProperty->SetPerObjectValues(PerObjectColors);
 	}
 }
 
 void SFactionViewItem::OnColorPickerInteractiveBegin()
 {
 	bColorIsInteractive = true;
-	GEditor->BeginTransaction(FText::Format(LOCTEXT("SetColorProperty", "Edit {0}"), ColorProperty->GetPropertyDisplayName()));
+	GEditor->BeginTransaction(FText::Format(LOCTEXT("SetColorProperty", "Edit {0}"), InfoColorProperty->GetPropertyDisplayName()));
 }
 
 void SFactionViewItem::OnColorPickerInteractiveEnd()
@@ -299,8 +300,8 @@ void SFactionViewItem::OnColorPickerInteractiveEnd()
 	{
 		// pushes the last value from the interactive change without the interactive flag
 		FString ColorString;
-		ColorProperty->GetValueAsFormattedString(ColorString);
-		ColorProperty->SetValueFromFormattedString(ColorString);
+		InfoColorProperty->GetValueAsFormattedString(ColorString);
+		InfoColorProperty->SetValueFromFormattedString(ColorString);
 	}
 
 	GEditor->EndTransaction();
@@ -312,7 +313,7 @@ FPropertyAccess::Result SFactionViewItem::GetColorAsLinear(FLinearColor& OutColo
 	OutColor.A = 1.0f;
 
 	FString StringValue;
-	FPropertyAccess::Result Result = ColorProperty->GetValueAsFormattedString(StringValue);
+	FPropertyAccess::Result Result = InfoColorProperty->GetValueAsFormattedString(StringValue);
 
 	if (Result == FPropertyAccess::Success)
 	{
@@ -350,9 +351,9 @@ FReply SFactionViewItem::OnMouseButtonDownColorBlock(const FGeometry& MyGeometry
 	}
 
 	bool CanShowColorPicker = true;
-	if (ColorProperty.IsValid() && ColorProperty->GetProperty() != nullptr)
+	if (InfoColorProperty.IsValid() && InfoColorProperty->GetProperty() != nullptr)
 	{
-		CanShowColorPicker = !ColorProperty->IsEditConst();
+		CanShowColorPicker = !InfoColorProperty->IsEditConst();
 	}
 	if (CanShowColorPicker)
 	{

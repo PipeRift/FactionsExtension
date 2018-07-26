@@ -2,7 +2,7 @@
 
 #include "FactionPin.h"
 
-#include "KismetEditorUtilities.h"
+#include "Kismet2/KismetEditorUtilities.h"
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 
@@ -15,42 +15,42 @@ void SFactionPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj
 {
 	FFactionsModule& Module = FFactionsModule::Get();
 
-    //Bind On Settings Changed event
-    Module.OnModifiedSettings().BindRaw(this, &SFactionPin::UpdateItems, false);
+	//Bind On Settings Changed event
+	Module.OnModifiedSettings().BindRaw(this, &SFactionPin::UpdateItems, false);
 
-    SStringEnumPin::Construct(SStringEnumPin::FArguments(), InGraphPinObj);
+	SStringEnumPin::Construct(SStringEnumPin::FArguments(), InGraphPinObj);
 }
 
 TSharedRef<SWidget> SFactionPin::GetDefaultValueWidget()
 {
-    //Get actual default value
-    ParseDefaultValue();
+	//Get actual default value
+	ParseDefaultValue();
 
-    return SStringEnumPin::GetDefaultValueWidget();
+	return SStringEnumPin::GetDefaultValueWidget();
 }
 
 void SFactionPin::ParseDefaultValue()
 {
-    FString NameString = GraphPinObj->GetDefaultAsString();
-    if (NameString.StartsWith(TEXT("(")) && NameString.EndsWith(TEXT(")")))
-    {
-        //Remove ( and )
-        NameString = NameString.LeftChop(1);
-        NameString = NameString.RightChop(1);
+	FString NameString = GraphPinObj->GetDefaultAsString();
+	if (NameString.StartsWith(TEXT("(")) && NameString.EndsWith(TEXT(")")))
+	{
+		//Remove ( and )
+		NameString = NameString.LeftChop(1);
+		NameString = NameString.RightChop(1);
 
-        //Get parameter string value
-        NameString.Split("=", NULL, &NameString);
-        if (NameString.StartsWith(TEXT("\"")) && NameString.EndsWith(TEXT("\"")))
-        {
-            NameString = NameString.LeftChop(1);
-            NameString = NameString.RightChop(1);
-        }
-    }
+		//Get parameter string value
+		NameString.Split("=", NULL, &NameString);
+		if (NameString.StartsWith(TEXT("\"")) && NameString.EndsWith(TEXT("\"")))
+		{
+			NameString = NameString.LeftChop(1);
+			NameString = NameString.RightChop(1);
+		}
+	}
 
-    if (!NameString.IsEmpty())
-    {
-        FactionDefaultNameValue = FName(*NameString);
-    }
+	if (!NameString.IsEmpty())
+	{
+		FactionDefaultNameValue = FName(*NameString);
+	}
 	else
 	{
 		FactionDefaultNameValue = NO_FACTION_NAME;
@@ -59,24 +59,24 @@ void SFactionPin::ParseDefaultValue()
 
 void SFactionPin::ApplyDefaultValue()
 {
-    // Set Pin Data
-    FString PriorityString;
-    if (!FactionDefaultNameValue.IsNone())
+	// Set Pin Data
+	FString PriorityString;
+	if (!FactionDefaultNameValue.IsNone())
 	{
-        PriorityString = TEXT("(");
-        PriorityString += TEXT("Name=\"");
-        PriorityString += FactionDefaultNameValue.ToString();
-        PriorityString += TEXT("\")");
-    }
-    FString CurrentDefaultValue = GraphPinObj->GetDefaultAsString();
-    if (CurrentDefaultValue.IsEmpty())
-    {
-        CurrentDefaultValue = FString(TEXT(""));
-    }
-    if (!CurrentDefaultValue.Equals(PriorityString))
-    {
-        GraphPinObj->GetSchema()->TrySetDefaultValue(*GraphPinObj, PriorityString);
-    }
+		PriorityString = TEXT("(");
+		PriorityString += TEXT("Name=\"");
+		PriorityString += FactionDefaultNameValue.ToString();
+		PriorityString += TEXT("\")");
+	}
+	FString CurrentDefaultValue = GraphPinObj->GetDefaultAsString();
+	if (CurrentDefaultValue.IsEmpty())
+	{
+		CurrentDefaultValue = FString(TEXT(""));
+	}
+	if (!CurrentDefaultValue.Equals(PriorityString))
+	{
+		GraphPinObj->GetSchema()->TrySetDefaultValue(*GraphPinObj, PriorityString);
+	}
 }
 
 
@@ -103,18 +103,18 @@ void SFactionPin::OnItemSelected(FString Value)
 	FName NameValue = FName(*Value);
 
 	//If Faction not found, Set default value
-    if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
-        FactionDefaultNameValue = NameValue;
-    else
-        FactionDefaultNameValue = NO_FACTION_NAME;
+	if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
+		FactionDefaultNameValue = NameValue;
+	else
+		FactionDefaultNameValue = NO_FACTION_NAME;
 
-    ApplyDefaultValue();
+	ApplyDefaultValue();
 }
 
 FText SFactionPin::GetSelectedItem() const
 {
-    //Call parent but don't use it. This is for widget logic
-    SStringEnumPin::GetSelectedItem();
+	//Call parent but don't use it. This is for widget logic
+	SStringEnumPin::GetSelectedItem();
 
 	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
 

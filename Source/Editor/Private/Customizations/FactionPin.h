@@ -1,15 +1,14 @@
 #pragma once
 
-#include "SlateBasics.h"
 #include "StringEnumPin.h"
- 
- 
+
+
 class SFactionPin : public SStringEnumPin
 {
 public:
     SLATE_BEGIN_ARGS(SFactionPin) {}
     SLATE_END_ARGS()
- 
+
 public:
     void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj);
 
