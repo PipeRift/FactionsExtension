@@ -9,6 +9,7 @@ gulp.task('default', function() {
 
 gulp.task('build', function(cb) {
   runSequence(
+    'refresh-summary',
     'generate-book',
     function() {
       gulpGitbook(".", cb);
