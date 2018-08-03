@@ -15,7 +15,9 @@ public class Factions : ModuleRules
 		{
 			"Core",
 			"CoreUObject",
-			"Engine"
+			"Engine",
+            "AIModule"
+
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]
