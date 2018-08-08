@@ -1,26 +1,42 @@
 # Usage
 
-Factions can be edited from *Project Settings*, inside *Game* category, *Factions* tab.
+All settings can be edited from **Project Settings -> Game -> Factions** tab.
 
- <img width="600" height="100%" src="https://i.imgur.com/5hKfoHF.png">
+![Settings](img\settings.png)
 
 
 
-### Editing Factions
+## Factions
 
-Factions are defined as an array to be edited and every faction will have its own properties like color or default attitudes.
+Factions settings are defined by right and left areas.
 
- <img width="400" height="100%" src="https://i.imgur.com/YRl4Kmk.png">
+**At the left** you have a list of all factions, with a little search box in case you have more than you can deal with.
 
-  This information is available on runtime though
+**At the right** you will find all the properties of a selected faction (which was selected by just clicking on it on the list).
+
+![Factions Settings](img\settings-factions.png)
+
+
+
+You can also rename factions by double clicking on them.
+
+ ![Rename Faction](img\rename-faction.gif)
+
+ 
+
+All Faction information can be read on runtime too:
 
  <img width="200" height="100%" src="https://i.imgur.com/4SOhCGb.png">
 
 
 
-### Editing Relations
+## Relations
 
 Relations define how will two factions interact to each other.
- <img width="400" height="100%" src="https://i.imgur.com/ihngM3D.png">
+
+In this example, Brotherhood and Triggermen are enemies:
+
+![Relations](img\relations.png)
 
 By default there are three possible attitudes: **Hostile**, **Neutral** and **Friendly**
+
