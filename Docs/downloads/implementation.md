@@ -2,7 +2,7 @@
 
 ## Blueprints
 
-*Check the **[Test Project](https://mega.nz/#!JMowlKCA!wZv-L6oNSJCwDw1CUbTFyjPOXvd6viB-QLgK-u36xtY)** for an in-engine example*
+*Check the **[Test Project](https://mega.nz/#!JMowlKCA!wZv-L6oNSJCwDw1CUbTFyjPOXvd6viB-QLgK-u36xtY)** for a detailed example*
 
 ### Adding the interface
 
@@ -17,9 +17,8 @@ From here we click on **Add**, inside Interfaces and search for FactionAgentInte
 
 ### Getting and Settings the Faction
 
-Factions require your actor to define how to get and set a faction. That can be done overriding **GetFaction** and **SetFaction**.
-
-A common implementation would be to have a **class variable** (of type *"Faction"*), and then return it at GetFaction and set it at SetFaction:
+The system needs you to tell him how to set the faction and how to get it. This is done by overriding two functions as seen below.
+The Faction variable that is seen is a normal blueprint variable, that can be edited normally.
 
  ![](https://i.imgur.com/imuFDXn.png)
 

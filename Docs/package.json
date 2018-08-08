@@ -31,6 +31,6 @@
     "start": "node ./node_modules/gulp-cli/bin/gulp.js serve",
     "build": "node ./node_modules/gulp-cli/bin/gulp.js build",
     "build-light": "node ./node_modules/gulp-cli/bin/gulp.js build-light",
-    "publish": "npm install && npm run build && cd _book && git init && git commit --allow-empty -m 'UpdateDocs' && git checkout -b gh-pages && git add . && git commit -am 'UpdateDocs' && git push https://github.com/Piperift/FactionsExtension.git gh-pages --force"
+    "publish": "npm install && npm run build && cd _book && git init && git commit --allow-empty -m UpdateDocs && git checkout -b gh-pages && git add . && git rm *.md -f && git commit -am UpdateDocs && git push https://github.com/Piperift/FactionsExtension.git gh-pages --force"
   }
 }

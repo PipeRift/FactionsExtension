@@ -1,5 +1,5 @@
 @echo off
 cd ..
 :begin
-call npm start
+call gulp serve
 goto :begin
