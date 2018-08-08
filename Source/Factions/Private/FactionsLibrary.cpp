@@ -35,3 +35,19 @@ void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
 		Factions.Add({Entry.Key});
 	}
 }
+
+bool UFactionsLibrary::RegistryRelation(const FFactionRelation& NewRelation)
+{
+	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	check(Settings);
+
+	return Settings->Internal_RegistryRelation(NewRelation);
+}
+
+bool UFactionsLibrary::UnregistryRelation(const FFactionRelation& Relation)
+{
+	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	check(Settings);
+
+	return Settings->Internal_UnregistryRelation(Relation);
+}

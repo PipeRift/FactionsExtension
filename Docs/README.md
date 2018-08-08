@@ -1,7 +1,10 @@
-# Factions Plugin
+# Factions Extension Documentation
+
 Add factions and relations in your game using C++ or Blueprints
 
 This plugin is for Unreal Engine 4 and has support for versions **4.20**, **4.19** and **4.18**.<br>
+You can download this **[Test project](https://mega.nz/#!JMowlKCA!wZv-L6oNSJCwDw1CUbTFyjPOXvd6viB-QLgK-u36xtY)** to see and test the API
+
 
 ## Introduction
 
@@ -14,13 +17,3 @@ This plugin fulfills the needs of this feature in UE4 with a very flexible tool 
 
 ### "What" can have a faction?
 *Everything!*... well not everything, but pretty much. **All actors of any type can have a faction.**
-
-## Documentation
-
-Documentation is available online:
-
-#### [Documentation](https://piperift.com/FactionsExtension/)
-
-## Test Project
-
-You can download this **[Test project](https://mega.nz/#!JMowlKCA!wZv-L6oNSJCwDw1CUbTFyjPOXvd6viB-QLgK-u36xtY)** to see and test the API

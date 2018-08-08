@@ -43,7 +43,8 @@ struct FACTIONS_API FFactionRelation
 
 	bool IsValid() const
 	{
-		return !FactionA.IsNone() && !FactionB.IsNone();
+		// Factions are the same or both are invalid
+		return FactionA == FactionB || (!FactionA.IsNone() && !FactionB.IsNone());
 	}
 
 	FORCEINLINE bool operator==(const FFactionRelation& Other) const {
