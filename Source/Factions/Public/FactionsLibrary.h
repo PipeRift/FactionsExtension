@@ -151,7 +151,7 @@ public:
 	static FFaction RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo);
 
 	/**
-	* Removes a faction from the database
+	* Remove a faction from the database
 	* @param Faction to remove.
 	* @return true if the faction was removed
 	*/
@@ -163,4 +163,21 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = Factions)
 	static void GetAllFactions(TArray<FFaction>& Factions);
+
+
+	/**
+	* Registry a new relation between two factions into the database
+	* @param NewRelation to be registered.
+	* @return true if the relation was registered, false if the two factions were the same or invalid.
+	*/
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	static bool RegistryRelation(const FFactionRelation& NewRelation);
+
+	/**
+	* Remove a relation from the database
+	* @param Relation to be unregistered
+	* @return true if the relation was unregistered
+	*/
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	static bool UnregistryRelation(const FFactionRelation& Relation);
 };
