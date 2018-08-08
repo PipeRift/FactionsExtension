@@ -1,5 +1,6 @@
 # Factions Extension Documentation
 
-* [Implementation](implementation.md)
+- Documentation
+  * [Implementation](documentation/implementation.md)
+  * [Usage](documentation/usage.md)
 * [Installation](installation.md)
-* [Usage](usage.md)
