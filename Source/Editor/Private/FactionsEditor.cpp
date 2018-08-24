@@ -9,7 +9,7 @@
 #include "FactionRelationCustomization.h"
 #include "RelationDatabaseCustomization.h"
 
-#include "Customizations/FactionPinFactory.h"
+#include "FactionPinFactory.h"
 #include "Customizations/FactionsSettingsDetails.h"
 
 

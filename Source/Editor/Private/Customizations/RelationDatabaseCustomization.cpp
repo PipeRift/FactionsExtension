@@ -2,14 +2,15 @@
 
 #include "RelationDatabaseCustomization.h"
 
-#include <Editor.h>
 #include <ScopedTransaction.h>
-#include <DetailWidgetRow.h>
-#include <IDetailPropertyRow.h>
-#include <IDetailChildrenBuilder.h>
-#include <Widgets/Layout/SScrollBox.h>
-#include <Widgets/Input/SSearchBox.h>
-#include <Widgets/Input/SButton.h>
+
+#include "Editor.h"
+#include "DetailWidgetRow.h"
+#include "IDetailPropertyRow.h"
+#include "IDetailChildrenBuilder.h"
+#include "SScrollBox.h"
+#include "SSearchBox.h"
+#include "SButton.h"
 
 #include "SFaction.h"
 

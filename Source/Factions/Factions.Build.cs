@@ -1,6 +1,5 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
-using System.IO;
 using UnrealBuildTool;
 
 public class Factions : ModuleRules
@@ -9,11 +8,8 @@ public class Factions : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicIncludePaths.AddRange(new string[] {
-			Path.Combine(ModuleDirectory, "Public/Factions"),
-			Path.Combine(ModuleDirectory, "Public/Database"),
-			Path.Combine(ModuleDirectory, "Public/EnvironmentQuery")
-		});
+		PublicIncludePaths.Add("Factions/Public");
+		PrivateIncludePaths.Add("Factions/Private");
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{

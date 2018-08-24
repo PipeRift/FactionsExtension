@@ -1,10 +1,10 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 #pragma once
 
-#include <IPropertyTypeCustomization.h>
-#include <PropertyHandle.h>
-#include <EditorUndoClient.h>
-#include <Widgets/Views/SListView.h>
+#include "IPropertyTypeCustomization.h"
+#include "PropertyHandle.h"
+#include "SListView.h"
+#include "EditorUndoClient.h"
 
 
 class FRelationDatabaseCustomization : public IPropertyTypeCustomization, public FEditorUndoClient

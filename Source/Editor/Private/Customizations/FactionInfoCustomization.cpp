@@ -4,7 +4,6 @@
 
 #include "DetailWidgetRow.h"
 #include "IDetailChildrenBuilder.h"
-#include "Widgets/Views/SListView.h"
 
 #include "FactionsSettings.h"
 

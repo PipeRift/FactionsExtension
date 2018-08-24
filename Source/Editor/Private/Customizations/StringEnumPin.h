@@ -2,16 +2,17 @@
 
 #pragma once
 
+#include "SlateBasics.h"
+#include "SComboBox.h"
 #include "SGraphPin.h"
-#include "Widgets/Input/SComboBox.h"
-
-
+ 
+ 
 class SStringEnumPin : public SGraphPin
 {
 public:
     SLATE_BEGIN_ARGS(SStringEnumPin) {}
     SLATE_END_ARGS()
-
+ 
 public:
     void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj);
 

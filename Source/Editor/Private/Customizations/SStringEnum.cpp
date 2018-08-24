@@ -1,9 +1,9 @@
 // Copyright 2015-2018 Piperift. All Rights Reserved.
 
 #include "SStringEnum.h"
-#include <PropertyEditorModule.h>
 
 #include "FactionsSettings.h"
+#include "PropertyEditorModule.h"
 
 
 void SStringEnum::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _FactionHandle)
@@ -75,7 +75,7 @@ void SStringEnum::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ES
 			NameHandle->SetValue(NO_FACTION_NAME);
 		}
 	}
-
+	
 	UpdateItems(true);
 }
 

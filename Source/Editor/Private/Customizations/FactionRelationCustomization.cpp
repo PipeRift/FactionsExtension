@@ -5,10 +5,9 @@
 #include "DetailWidgetRow.h"
 #include "IDetailPropertyRow.h"
 #include "IDetailChildrenBuilder.h"
-#include "Widgets/Views/SListView.h"
+#include "SFaction.h"
 
 #include "FactionsSettings.h"
-#include "SFaction.h"
 
 #define LOCTEXT_NAMESPACE "FFactionRelationCustomization"
 
