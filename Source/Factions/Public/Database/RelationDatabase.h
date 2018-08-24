@@ -20,7 +20,7 @@ struct FRelationDatabase
 
 public:
 
-	UPROPERTY(EditAnywhere, config)
+	UPROPERTY(EditAnywhere, config, Category = Relations)
 	TArray<FFactionRelation> ConfigList;
 
 protected:
