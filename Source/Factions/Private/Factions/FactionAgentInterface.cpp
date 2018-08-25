@@ -11,18 +11,6 @@ UFactionAgentInterface::UFactionAgentInterface(const FObjectInitializer& ObjectI
 	: Super(ObjectInitializer)
 {}
 
-FFaction IFactionAgentInterface::GetFaction() const
-{
-	FFaction Faction;
-	EventGetFaction(Faction);
-	return Faction;
-}
-
-void IFactionAgentInterface::SetFaction(const FFaction & Faction)
-{
-	EventSetFaction(Faction);
-}
-
 const ETeamAttitude::Type IFactionAgentInterface::GetAttitudeTowards(const AActor& Other) const
 {
 	const FFaction OtherFaction = IFactionAgentInterface::Execute_GetFaction(&Other);
@@ -66,4 +54,18 @@ void IFactionAgentInterface::Execute_SetFaction(AActor* Other, const FFaction& N
 			IFactionAgentInterface::Execute_EventSetFaction(Other, NewFaction);
 		}
 	}
+}
+
+FFaction IFactionAgentInterface::GetFaction() const
+{
+	FFaction Faction;
+	// By default call BP event
+	IFactionAgentInterface::Execute_EventGetFaction(Cast<UObject>(this), Faction);
+	return Faction;
+}
+
+void IFactionAgentInterface::SetFaction(const FFaction & Faction)
+{
+	// By default call BP event
+	IFactionAgentInterface::Execute_EventSetFaction(Cast<UObject>(this), Faction);
 }
