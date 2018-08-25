@@ -17,7 +17,7 @@ class FACTIONS_API UFactionAgentInterface : public UGenericTeamAgentInterface
 };
 
 /**
- * 
+ *
  */
 class FACTIONS_API IFactionAgentInterface : public IGenericTeamAgentInterface
 {
@@ -25,21 +25,6 @@ class FACTIONS_API IFactionAgentInterface : public IGenericTeamAgentInterface
 
 
 public:
-
-	/** Retrieve faction identifier in form of Faction */
-	UFUNCTION(BlueprintImplementableEvent, Category = Faction, meta = (DisplayName = "Get Faction"))
-	void EventGetFaction(FFaction& OutFaction) const;
-
-	/** Assigns faction */
-	UFUNCTION(BlueprintImplementableEvent, Category = Faction, meta = (DisplayName = "Set Faction"))
-	void EventSetFaction(const FFaction& Faction);
-
-
-	/** Retrieve faction identifier in form of Faction */
-	virtual FFaction GetFaction() const;
-
-	/** Assigns faction */
-	virtual void SetFaction(const FFaction& Faction);
 
 	/** Retrieve owner attitude towards given Other object */
 	virtual const ETeamAttitude::Type GetAttitudeTowards(const AActor& Other) const;
@@ -49,9 +34,27 @@ public:
 		return GetAttitudeTowards(Other) == ETeamAttitude::Hostile;
 	}
 
+	/** @return the current faction */
 	static const FFaction Execute_GetFaction(const AActor* Other);
 
+	/** @param Faction that will be assigned */
 	static void Execute_SetFaction(AActor* Other, const FFaction& NewFaction);
+
+protected:
+
+	/** @return the current faction */
+	virtual FFaction GetFaction() const;
+
+	/** @param Faction that will be assigned */
+	virtual void SetFaction(const FFaction& Faction);
+
+	/** @return the current faction */
+	UFUNCTION(BlueprintImplementableEvent, Category = Faction, meta = (DisplayName = "Get Faction"))
+	void EventGetFaction(FFaction& OutFaction) const;
+
+	/** @param Faction that will be assigned */
+	UFUNCTION(BlueprintImplementableEvent, Category = Faction, meta = (DisplayName = "Set Faction"))
+	void EventSetFaction(const FFaction& Faction);
 
 private:
 
