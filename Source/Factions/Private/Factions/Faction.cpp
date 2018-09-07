@@ -94,6 +94,16 @@ const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) co
 	return FoundRelationPtr->Attitude;
 }
 
+FString FFaction::GetDisplayName() const
+{
+	FFactionInfo Info;
+	if (GetFactionInfo(Info))
+	{
+		return Info.DisplayName.IsEmpty() ? ToString() : Info.DisplayName.ToString();
+	}
+	return ToString();
+}
+
 const FGenericTeamId FFaction::GetTeam() const
 {
 	if (IsNone()) {

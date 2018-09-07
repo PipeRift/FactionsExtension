@@ -11,6 +11,17 @@
 
 #include "FactionsLibrary.generated.h"
 
+
+UENUM()
+enum class EFactionTestMode : uint8
+{
+	IsTheSame,
+	IsFriendly,
+	IsNeutral,
+	IsHostile
+};
+
+
 /**
  *
  */
@@ -140,6 +151,17 @@ public:
 	static FORCEINLINE bool IsNeutralFaction(const FFaction One, const FFaction Other) {
 		return GetAttitudeToFaction(One, Other) == ETeamAttitude::Neutral;
 	}
+	/**
+	* Find the information of a faction
+	* @param Faction to search for
+	* @param Info associated to the faction, if found
+	* @return true if the faction was valid and information was found
+	*/
+	UFUNCTION(BlueprintPure, Category = Factions)
+	static FORCEINLINE FString GetDisplayName(const FFaction Faction)
+	{
+		return Faction.GetDisplayName();
+	}
 
 	/**
 	 * Registry a new faction.
@@ -180,4 +202,14 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = Factions)
 	static bool UnregistryRelation(const FFactionRelation& Relation);
+
+	/**
+	 * Get all actors in the world with a certain faction
+	 * @param Faction to check actors for
+	 * @param Comparison relation between the actor and the faction
+	 * @param ActorClass limits the actors to be found by that class
+	 * @return true if operation was successful and the array of actors
+	 */
+	UFUNCTION(BlueprintCallable, Category = Factions, meta = (WorldContext = "ContextObject", AdvancedDisplay="ActorClass", DeterminesOutputType = "ActorClass", DynamicOutputParam = "OutActors"))
+	static bool GetAllActorsWithFaction(const UObject* ContextObject, const FFaction Faction, EFactionTestMode Comparison, TSubclassOf<AActor> ActorClass, TArray<AActor*>& OutActors);
 };

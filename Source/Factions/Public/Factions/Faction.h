@@ -62,6 +62,12 @@ public:
 	/**
 	 * Attitude evaluation
 	 */
+	FORCEINLINE bool IsFriendlyTowards(const FFaction& Other) const {
+		return GetAttitudeTowards(Other) == ETeamAttitude::Friendly;
+	}
+	FORCEINLINE bool IsNeutralTowards(const FFaction& Other) const {
+		return GetAttitudeTowards(Other) == ETeamAttitude::Neutral;
+	}
 	FORCEINLINE bool IsHostileTowards(const FFaction& Other) const {
 		return GetAttitudeTowards(Other) == ETeamAttitude::Hostile;
 	}
@@ -88,6 +94,12 @@ public:
 	FName GetIdName() const {
 		return Name;
 	}
+
+	FString ToString() const {
+		return GetIdName().ToString();
+	}
+
+	FString GetDisplayName() const;
 
 	const FGenericTeamId GetTeam() const;
 };
