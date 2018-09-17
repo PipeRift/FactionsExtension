@@ -18,32 +18,12 @@
       {
         "Name": "Factions",
         "Type": "Runtime",
-        "LoadingPhase": "PreDefault",
-        "WhitelistPlatforms": [
-            "Win64",
-            "Win32",
-            "Linux",
-            "HTML5",
-            "Android",
-            "PS4",
-            "XboxOne",
-            "Switch"
-        ]
+        "LoadingPhase": "PreDefault"
       },
       {
         "Name": "FactionsEditor",
         "Type": "Editor",
-        "LoadingPhase": "PostEngineInit",
-        "WhitelistPlatforms": [
-          "Win64",
-          "Win32",
-          "Linux",
-          "HTML5",
-          "Android",
-          "PS4",
-          "XboxOne",
-          "Switch"
-        ]
+        "LoadingPhase": "PostEngineInit"
       }
     ]
 }
