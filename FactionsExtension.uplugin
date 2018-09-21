@@ -1,7 +1,7 @@
 {
     "FileVersion": 3,
-    "Version": 15,
-    "VersionName": "1.7",
+    "Version": 16,
+    "VersionName": "1.7b",
     "FriendlyName": "Factions Extension",
     "Description": "Add factions and relations in your game using C++ or Blueprints",
     "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/29a33bd0c38e4b8f9626f495bb47dca8",
@@ -27,7 +27,8 @@
             "Android",
             "PS4",
             "XboxOne",
-            "Switch"
+            "Switch",
+            "Mac"
         ]
       },
       {
@@ -42,7 +43,8 @@
           "Android",
           "PS4",
           "XboxOne",
-          "Switch"
+          "Switch",
+          "Mac"
         ]
       }
     ]
