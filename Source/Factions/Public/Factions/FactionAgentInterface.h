@@ -42,10 +42,14 @@ public:
 
 protected:
 
-	/** @return the current faction */
+	/** Returns the current faction (Call Execute_GetFaction instead for BP and C++ support) 
+	 * @return the current faction
+	 */
 	virtual FFaction GetFaction() const;
 
-	/** @param Faction that will be assigned */
+	/** Set the current faction (Call Execute_SetFaction instead for BP and C++ support) 
+	 * @param Faction that will be assigned
+	 */
 	virtual void SetFaction(const FFaction& Faction);
 
 	/** @return the current faction */
