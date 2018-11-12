@@ -36,6 +36,8 @@ struct FFactionInfoMapItem {
 
 class FFactionsSettingsDetails : public IDetailCustomization, public FEditorUndoClient
 {
+	static const FName NewFactionName;
+
 public:
 
 	/** Makes a new instance of this detail layout class for a specific detail view requesting it */
