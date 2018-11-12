@@ -376,6 +376,8 @@ bool SFactionViewItem::IsValueEnabled(TWeakPtr<IPropertyHandle> WeakHandlePtr) c
  * FFactionsSettingsDetails
  */
 
+const FName FFactionsSettingsDetails::NewFactionName{ "New Faction" };
+
 TSharedRef<IDetailCustomization> FFactionsSettingsDetails::MakeInstance()
 {
 	return MakeShareable(new FFactionsSettingsDetails);
@@ -713,12 +715,12 @@ void FFactionsSettingsDetails::OnFactionFilterChanged(const FText& Text)
 
 FReply FFactionsSettingsDetails::OnNewFaction()
 {
-	if (Settings.IsValid() && !Settings->Factions.Contains({}))
+	if (Settings.IsValid() && !Settings->Factions.Contains(NewFactionName))
 	{
 		const FScopedTransaction Transaction(LOCTEXT("Faction_New", "Add new faction"));
 		Settings->Modify();
 
-		Settings->Factions.Add({});
+		Settings->Factions.Emplace(NewFactionName);
 		Settings->SaveConfig(CPF_Config);
 
 		RefreshFactions();
