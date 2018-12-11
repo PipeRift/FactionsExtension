@@ -5,6 +5,7 @@
 #include "GenericTeamAgentInterface.h"
 
 #include "Faction.h"
+#include <Engine/Texture.h>
 #include "FactionInfo.generated.h"
 
 #define LOCTEXT_NAMESPACE "FactionInfo"
@@ -48,6 +49,11 @@ public:
 	/** Attitude this faction will have against others. Relations will override it. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	TEnumAsByte<ETeamAttitude::Type> DefaultAttitudeTowardsOthers;
+
+	/** Icon of the faction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
+	TSoftObjectPtr<UTexture> Icon;
+
 };
 
 #undef LOCTEXT_NAMESPACE
