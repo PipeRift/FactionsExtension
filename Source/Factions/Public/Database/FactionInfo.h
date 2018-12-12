@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "GenericTeamAgentInterface.h"
+#include <GenericTeamAgentInterface.h>
+#include <Engine/Texture.h>
 
 #include "Faction.h"
-#include <Engine/Texture.h>
+#include "CustomFactionInfo.h"
 #include "FactionInfo.generated.h"
 
 #define LOCTEXT_NAMESPACE "FactionInfo"
@@ -17,7 +18,7 @@
 USTRUCT(BlueprintType)
 struct FACTIONS_API FFactionInfo
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	FFactionInfo(FLinearColor InColor = FColor::Cyan)
@@ -54,6 +55,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	TSoftObjectPtr<UTexture> Icon;
 
+	UPROPERTY(Instanced, EditAnywhere, BlueprintReadOnly, Category = "Faction")
+	UCustomFactionInfo* CustomInfo;
 };
 
 #undef LOCTEXT_NAMESPACE
