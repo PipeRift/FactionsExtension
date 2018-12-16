@@ -23,9 +23,10 @@ struct FACTIONS_API FFactionInfo
 public:
 	FFactionInfo(FLinearColor InColor = FColor::Cyan)
 		: DisplayName(LOCTEXT("FactionDisplayName", ""))
-		, Color(FColor::Cyan)
+		, Color(InColor)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
+		, CustomInfo(nullptr)
 	{}
 
 	FFactionInfo(FText DisplayName, FLinearColor InColor = FColor::Cyan)
@@ -33,6 +34,7 @@ public:
 		, Color(InColor)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
+		, CustomInfo(nullptr)
 	{}
 
 	/** Name of the faction */
