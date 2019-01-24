@@ -19,7 +19,7 @@ From here we click on **Add**, inside Interfaces and search for FactionAgentInte
 
 Factions require your actor to define how to get and set a faction. That can be done overriding **GetFaction** and **SetFaction**.
 
-A common implementation would be to have a **class variable** (of type *"Faction"*), and then return it at GetFaction and set it at SetFaction:
+A common implementation would be to have a **variable** (of type *"Faction"*), and then return it with GetFaction and set it with SetFaction:
 
  ![](https://i.imgur.com/imuFDXn.png)
 
