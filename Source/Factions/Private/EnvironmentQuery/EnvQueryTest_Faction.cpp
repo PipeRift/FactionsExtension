@@ -17,6 +17,8 @@ UEnvQueryTest_Faction::UEnvQueryTest_Faction()
 	Cost = EEnvTestCost::Low;
 	SetWorkOnFloatValues(false);
 	ValidItemType = UEnvQueryItemType_ActorBase::StaticClass();
+
+	BoolValue.DefaultValue = false;
 }
 
 void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const
