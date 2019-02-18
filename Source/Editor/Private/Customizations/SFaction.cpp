@@ -65,7 +65,7 @@ void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESele
 	if (SelectedNamePtr.IsValid())
 	{
 		FName SelectedName = *SelectedNamePtr;
-		const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+		const auto& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 		if (SelectedName != NO_FACTION_NAME && AllFactions.Contains(SelectedName))
 		{
@@ -88,7 +88,7 @@ FText SFaction::GetSelectedItem() const
 
 	FName Name;
 	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 	if (RowResult != FPropertyAccess::MultipleValues)
 	{
@@ -108,7 +108,7 @@ void SFaction::GetFactionNames(TArray<FName>& Names) const
 		return;
 	}
 
-	for (const auto& KeyValue : Settings->Factions)
+	for (const auto& KeyValue : Settings->GetFactionInfos())
 	{
 		Names.Add(KeyValue.Key);
 	}

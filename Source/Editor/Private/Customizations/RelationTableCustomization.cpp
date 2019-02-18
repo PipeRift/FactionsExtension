@@ -1,6 +1,6 @@
 ﻿// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "RelationDatabaseCustomization.h"
+#include "RelationTableCustomization.h"
 
 #include <Editor.h>
 #include <ScopedTransaction.h>
@@ -16,15 +16,15 @@
 #include "FactionsSettings.h"
 #include "Faction.h"
 
-#define LOCTEXT_NAMESPACE "FRelationDatabaseCustomization"
+#define LOCTEXT_NAMESPACE "FRelationTableCustomization"
 
 
-const FName FRelationDatabaseCustomization::FactionAId("Faction A");
-const FName FRelationDatabaseCustomization::FactionBId("Faction B");
-const FName FRelationDatabaseCustomization::AttitudeId("Reaction");
-const FName FRelationDatabaseCustomization::DeleteId("Delete");
+const FName FRelationTableCustomization::FactionAId("Faction A");
+const FName FRelationTableCustomization::FactionBId("Faction B");
+const FName FRelationTableCustomization::AttitudeId("Reaction");
+const FName FRelationTableCustomization::DeleteId("Delete");
 
-const FName FRelationDatabaseCustomization::NameMember("Name");
+const FName FRelationTableCustomization::NameMember("Name");
 
 
 class SRelationViewItem : public SMultiColumnTableRow<TSharedPtr<uint32>>
@@ -32,7 +32,7 @@ class SRelationViewItem : public SMultiColumnTableRow<TSharedPtr<uint32>>
 public:
 	SLATE_BEGIN_ARGS(SRelationViewItem) {}
 	/** The widget that owns the tree.  We'll only keep a weak reference to it. */
-	SLATE_ARGUMENT(TSharedPtr<FRelationDatabaseCustomization>, Customization)
+	SLATE_ARGUMENT(TSharedPtr<FRelationTableCustomization>, Customization)
 	SLATE_ARGUMENT(uint32, Index)
 	SLATE_END_ARGS()
 
@@ -52,28 +52,28 @@ public:
 	/** Overridden from SMultiColumnTableRow.  Generates a widget for this column of the list view. */
 	virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& Name) override
 	{
-		TSharedPtr<FRelationDatabaseCustomization> CustomizationPtr = Customization.Pin();
+		TSharedPtr<FRelationTableCustomization> CustomizationPtr = Customization.Pin();
 
 		return CustomizationPtr.IsValid()? CustomizationPtr->MakeColumnWidget(Index, Name) : SNullWidget::NullWidget;
 	}
 
 private:
 	/** Weak reference to the database customization that owns our list */
-	TWeakPtr<FRelationDatabaseCustomization> Customization;
+	TWeakPtr<FRelationTableCustomization> Customization;
 
 	uint32 Index;
 };
 
 
-TSharedRef<IPropertyTypeCustomization> FRelationDatabaseCustomization::MakeInstance()
+TSharedRef<IPropertyTypeCustomization> FRelationTableCustomization::MakeInstance()
 {
-	return MakeShareable(new FRelationDatabaseCustomization);
+	return MakeShareable(new FRelationTableCustomization);
 }
 
-void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FRelationDatabase, ConfigList));
+	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FRelationTable, ConfigList));
 	ListHandleArray = ListHandle->AsArray();
 
 	RefreshRelations();
@@ -107,7 +107,7 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 			[
 				SNew(SSearchBox)
 				.InitialText(FText::GetEmpty())
-				.OnTextChanged(this, &FRelationDatabaseCustomization::OnFactionFilterChanged, FactionAId)
+				.OnTextChanged(this, &FRelationTableCustomization::OnFactionFilterChanged, FactionAId)
 			]
 		]
 	]
@@ -133,7 +133,7 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 			[
 				SNew(SSearchBox)
 				.InitialText(FText::GetEmpty())
-				.OnTextChanged(this, &FRelationDatabaseCustomization::OnFactionFilterChanged, FactionBId)
+				.OnTextChanged(this, &FRelationTableCustomization::OnFactionFilterChanged, FactionBId)
 			]
 		]
 	]
@@ -157,9 +157,9 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 	RelationListView = SNew(SListView<TSharedPtr<uint32>>)
 		.ListItemsSource(&VisibleRelations)
 		.HeaderRow(RelationsHeaderRow)
-		.OnGenerateRow(this, &FRelationDatabaseCustomization::MakeRelationWidget)
-		.OnListViewScrolled(this, &FRelationDatabaseCustomization::OnRelationsScrolled)
-		.OnSelectionChanged(this, &FRelationDatabaseCustomization::OnRelationSelected)
+		.OnGenerateRow(this, &FRelationTableCustomization::MakeRelationWidget)
+		.OnListViewScrolled(this, &FRelationTableCustomization::OnRelationsScrolled)
+		.OnSelectionChanged(this, &FRelationTableCustomization::OnRelationSelected)
 		.ExternalScrollbar(VerticalScrollBar)
 		.ConsumeMouseWheel(EConsumeMouseWheel::Always)
 		.SelectionMode(ESelectionMode::None)
@@ -194,7 +194,7 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 					.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
 					.Text(LOCTEXT("Relations_New", "New"))
 					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-					.OnClicked(this, &FRelationDatabaseCustomization::OnNewRelation)
+					.OnClicked(this, &FRelationTableCustomization::OnNewRelation)
 				]
 				+ SHorizontalBox::Slot()
 				.Padding(2.f, 0.f)
@@ -205,7 +205,7 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 					.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
 					.Text(LOCTEXT("Relations_Clear", "Clear"))
 					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-					.OnClicked(this, &FRelationDatabaseCustomization::OnClearRelations)
+					.OnClicked(this, &FRelationTableCustomization::OnClearRelations)
 				]
 			]
 			+ SVerticalBox::Slot()
@@ -236,16 +236,16 @@ void FRelationDatabaseCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 	GEditor->RegisterForUndo(this);
 }
 
-void FRelationDatabaseCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {}
 
-FRelationDatabaseCustomization::~FRelationDatabaseCustomization()
+FRelationTableCustomization::~FRelationTableCustomization()
 {
 	GEditor->UnregisterForUndo(this);
 }
 
 
-TSharedRef<SWidget> FRelationDatabaseCustomization::CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle)
+TSharedRef<SWidget> FRelationTableCustomization::CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle)
 {
 	return SNew(SBox)
 	.Padding(1)
@@ -256,14 +256,14 @@ TSharedRef<SWidget> FRelationDatabaseCustomization::CreateFactionWidget(TSharedR
 	];
 }
 
-TSharedRef<ITableRow> FRelationDatabaseCustomization::MakeRelationWidget(TSharedPtr<uint32> RelationIndex, const TSharedRef<STableViewBase>& OwnerTable)
+TSharedRef<ITableRow> FRelationTableCustomization::MakeRelationWidget(TSharedPtr<uint32> RelationIndex, const TSharedRef<STableViewBase>& OwnerTable)
 {
 	return SNew(SRelationViewItem, OwnerTable)
 		.Customization(SharedThis(this))
 		.Index(*RelationIndex);
 }
 
-TSharedRef<SWidget> FRelationDatabaseCustomization::MakeColumnWidget(uint32 RelationIndex, FName ColumnName)
+TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 RelationIndex, FName ColumnName)
 {
 	uint32 Num;
 	ListHandleArray->GetNumElements(Num);
@@ -331,7 +331,7 @@ TSharedRef<SWidget> FRelationDatabaseCustomization::MakeColumnWidget(uint32 Rela
 					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
 					.TextFlowDirection(ETextFlowDirection::Auto)
 					.ContentPadding(2)
-					.OnClicked(this, &FRelationDatabaseCustomization::OnDeleteRelation, RelationIndex)
+					.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)
 				];
 		}
 	}
@@ -339,7 +339,7 @@ TSharedRef<SWidget> FRelationDatabaseCustomization::MakeColumnWidget(uint32 Rela
 	return SNullWidget::NullWidget;
 }
 
-void FRelationDatabaseCustomization::PostUndo(bool bSuccess)
+void FRelationTableCustomization::PostUndo(bool bSuccess)
 {
 	if (bSuccess && StructHandle.IsValid())
 	{
@@ -347,7 +347,7 @@ void FRelationDatabaseCustomization::PostUndo(bool bSuccess)
 	}
 }
 
-void FRelationDatabaseCustomization::PostRedo(bool bSuccess)
+void FRelationTableCustomization::PostRedo(bool bSuccess)
 {
 	if (bSuccess && StructHandle.IsValid())
 	{
@@ -355,17 +355,17 @@ void FRelationDatabaseCustomization::PostRedo(bool bSuccess)
 	}
 }
 
-void FRelationDatabaseCustomization::OnRelationsScrolled(double InScrollOffset)
+void FRelationTableCustomization::OnRelationsScrolled(double InScrollOffset)
 {
 
 }
 
-void FRelationDatabaseCustomization::OnRelationSelected(TSharedPtr<uint32> InNewSelection, ESelectInfo::Type InSelectInfo)
+void FRelationTableCustomization::OnRelationSelected(TSharedPtr<uint32> InNewSelection, ESelectInfo::Type InSelectInfo)
 {
 
 }
 
-void FRelationDatabaseCustomization::RefreshRelations()
+void FRelationTableCustomization::RefreshRelations()
 {
 	AvailableRelations.Empty();
 	VisibleRelations.Empty();
@@ -405,7 +405,7 @@ void FRelationDatabaseCustomization::RefreshRelations()
 	}
 }
 
-void FRelationDatabaseCustomization::OnFactionFilterChanged(const FText& Text, FName Faction)
+void FRelationTableCustomization::OnFactionFilterChanged(const FText& Text, FName Faction)
 {
 	if (Faction == FactionAId)
 		FilterFactionA = Text.ToString();
@@ -415,7 +415,7 @@ void FRelationDatabaseCustomization::OnFactionFilterChanged(const FText& Text, F
 	RefreshRelations();
 }
 
-FReply FRelationDatabaseCustomization::OnNewRelation()
+FReply FRelationTableCustomization::OnNewRelation()
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_New", "Added new relation"));
 	GetOuter()->Modify();
@@ -426,7 +426,7 @@ FReply FRelationDatabaseCustomization::OnNewRelation()
 	return FReply::Handled();
 }
 
-FReply FRelationDatabaseCustomization::OnDeleteRelation(uint32 Index)
+FReply FRelationTableCustomization::OnDeleteRelation(uint32 Index)
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_DeleteRelation", "Deleted relation"));
 	GetOuter()->Modify();
@@ -437,7 +437,7 @@ FReply FRelationDatabaseCustomization::OnDeleteRelation(uint32 Index)
 	return FReply::Handled();
 }
 
-FReply FRelationDatabaseCustomization::OnClearRelations()
+FReply FRelationTableCustomization::OnClearRelations()
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_ClearRelations", "Deleted all relations"));
 	GetOuter()->Modify();
@@ -448,7 +448,7 @@ FReply FRelationDatabaseCustomization::OnClearRelations()
 	return FReply::Handled();
 }
 
-UObject* FRelationDatabaseCustomization::GetOuter() const
+UObject* FRelationTableCustomization::GetOuter() const
 {
 	if (!StructHandle.IsValid())
 		return nullptr;

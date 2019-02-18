@@ -7,12 +7,12 @@
 #include <Widgets/Views/SListView.h>
 
 
-class FRelationDatabaseCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
+class FRelationTableCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
 {
 
 public:
 
-	FRelationDatabaseCustomization()
+	FRelationTableCustomization()
 		: FilterFactionA{ "" }
 		, FilterFactionB{ "" }
 	{};
@@ -28,7 +28,7 @@ public:
 	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 
-	~FRelationDatabaseCustomization();
+	~FRelationTableCustomization();
 
 
 	TSharedRef<SWidget> MakeColumnWidget(uint32 RelationIndex, FName ColumnName);

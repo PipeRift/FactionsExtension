@@ -660,7 +660,7 @@ void FFactionsSettingsDetails::RefreshFactions()
 	{
 		FName LastSelection = CurrentSelection.IsValid() ? CurrentSelection.Pin()->Name : FName{};
 
-		TMap<FName, FFactionInfo>& Factions = Settings->Internal_GetFactions();
+		TMap<FName, FFactionInfo>& Factions = Settings->Internal_GetFactionInfos();
 		// Reserve space while cleaning
 		AvailableFactions.Empty(Factions.Num());
 		VisibleFactions.Empty(Factions.Num());
@@ -676,7 +676,7 @@ void FFactionsSettingsDetails::RefreshFactions()
 		for (const auto& Faction : AvailableFactions)
 		{
 			FString DisplayName{};
-			const FFactionInfo* FoundInfo = Settings->Factions.Find(Faction->Name);
+			const FFactionInfo* FoundInfo = Settings->GetFactionInfos().Find(Faction->Name);
 			if (FoundInfo)
 				DisplayName = FoundInfo->DisplayName.ToString();
 
@@ -716,12 +716,12 @@ void FFactionsSettingsDetails::OnFactionFilterChanged(const FText& Text)
 
 FReply FFactionsSettingsDetails::OnNewFaction()
 {
-	if (Settings.IsValid() && !Settings->Factions.Contains(NewFactionName))
+	if (Settings.IsValid() && !Settings->GetFactionInfos().Contains(NewFactionName))
 	{
 		const FScopedTransaction Transaction(LOCTEXT("Faction_New", "Add new faction"));
 		Settings->Modify();
 
-		Settings->Factions.Emplace(NewFactionName);
+		Settings->Internal_GetFactionInfos().Emplace(NewFactionName);
 		Settings->SaveConfig(CPF_Config);
 
 		RefreshFactions();
@@ -738,7 +738,7 @@ FReply FFactionsSettingsDetails::OnClearFactions()
 		const FScopedTransaction Transaction(LOCTEXT("Faction_Clear", "Delete all factions"));
 		Settings->Modify();
 
-		Settings->Factions.Empty();
+		Settings->Internal_GetFactionInfos().Empty();
 		Settings->SaveConfig(CPF_Config);
 
 		RefreshFactions();
@@ -757,16 +757,18 @@ void FFactionsSettingsDetails::OnFactionIdChange(const FText& NewIdText, ETextCo
 	check(Faction.IsValid());
 
 	FName NewId{ *NewIdText.ToString() };
-	if (!Settings->Factions.Contains(NewId))
+
+	const auto& Factions = Settings->GetFactionInfos();
+	if (!Factions.Contains(NewId))
 	{
 		const FScopedTransaction Transaction(LOCTEXT("Faction_Rename", "Rename faction"));
 		Settings->Modify();
 
 		//Copy faction info
-		FFactionInfo Info = *Settings->Factions.Find(Faction->Name);
+		FFactionInfo Info = *Factions.Find(Faction->Name);
 
-		Settings->Factions.Remove(Faction->Name);
-		Settings->Factions.Add(NewId, MoveTemp(Info));
+		Settings->Internal_GetFactionInfos().Remove(Faction->Name);
+		Settings->Internal_GetFactionInfos().Add(NewId, MoveTemp(Info));
 		Settings->SaveConfig(CPF_Config);
 
 		// Selection will be kept if we update the name and then refresh
@@ -782,7 +784,7 @@ FReply FFactionsSettingsDetails::OnDeleteFaction(const TSharedPtr<FFactionInfoMa
 		const FScopedTransaction Transaction(LOCTEXT("Faction_Delete", "Delete faction"));
 		Settings->Modify();
 
-		Settings->Factions.Remove(Faction->Name);
+		Settings->Internal_GetFactionInfos().Remove(Faction->Name);
 		Settings->SaveConfig(CPF_Config);
 
 		RefreshFactions();

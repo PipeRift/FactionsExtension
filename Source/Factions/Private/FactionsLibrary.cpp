@@ -31,9 +31,11 @@ void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	Factions.Reserve(Factions.Num() + Settings->Factions.Num());
+	const auto& AllFactions = Settings->GetFactionInfos();
 
-	for (const auto& Entry : Settings->Factions)
+	Factions.Reserve(Factions.Num() + AllFactions.Num());
+
+	for (const auto& Entry : AllFactions)
 	{
 		Factions.Add({Entry.Key});
 	}

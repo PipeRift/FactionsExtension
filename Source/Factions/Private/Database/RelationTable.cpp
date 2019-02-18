@@ -1,9 +1,9 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "RelationDatabase.h"
+#include "RelationTable.h"
 
 
-void FRelationDatabase::IndexRelations()
+void FRelationTable::IndexRelations()
 {
 	// Avoid memory deallocation
 	IndexedList.Empty(ConfigList.Num());

@@ -7,7 +7,7 @@
 #include "FactionCustomization.h"
 #include "FactionInfoCustomization.h"
 #include "FactionRelationCustomization.h"
-#include "RelationDatabaseCustomization.h"
+#include "RelationTableCustomization.h"
 
 #include "Customizations/FactionPinFactory.h"
 #include "Customizations/FactionsSettingsDetails.h"
@@ -60,7 +60,7 @@ void FFactionsEditorModule::RegisterPropertyTypeCustomizations()
 	RegisterCustomPropertyTypeLayout("Faction",         FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FFactionCustomization::MakeInstance));
 	RegisterCustomPropertyTypeLayout("FactionInfo",     FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FFactionInfoCustomization::MakeInstance));
 	RegisterCustomPropertyTypeLayout("FactionRelation", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FFactionRelationCustomization::MakeInstance));
-	RegisterCustomPropertyTypeLayout("RelationDatabase", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FRelationDatabaseCustomization::MakeInstance));
+	RegisterCustomPropertyTypeLayout("RelationDatabase", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FRelationTableCustomization::MakeInstance));
 
 	RegisterCustomPinFactory<FFactionPinFactory>();
 }

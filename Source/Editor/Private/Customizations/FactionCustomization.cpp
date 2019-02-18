@@ -25,13 +25,9 @@ bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle>
 	return false;
 }
 
-void FFactionCustomization::GetAllItems(TArray<FString>& Values) const {
-	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
-	if (!Settings) {
-		return;
-	}
-
-	for (const auto& KeyValue : Settings->Factions)
+void FFactionCustomization::GetAllItems(TArray<FString>& Values) const
+{
+	for (const auto& KeyValue : GetDefault<UFactionsSettings>()->GetFactionInfos())
 	{
 		Values.Add(KeyValue.Key.ToString());
 	}
@@ -42,11 +38,11 @@ void FFactionCustomization::GetAllItems(TArray<FString>& Values) const {
 
 void FFactionCustomization::OnItemSelected(FString Value)
 {
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const auto& Factions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 	FName NameValue = FName(*Value);
 
-	if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
+	if (NameValue != NO_FACTION_NAME && Factions.Contains(NameValue))
 	{
 		NameHandle->SetValue(NameValue);
 	}
@@ -62,7 +58,7 @@ FText FFactionCustomization::GetSelectedText() const
 {
 	FName Name;
 	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 	if (RowResult != FPropertyAccess::MultipleValues)
 	{

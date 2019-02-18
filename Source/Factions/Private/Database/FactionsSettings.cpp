@@ -7,29 +7,24 @@
 UFactionsSettings::UFactionsSettings()
 	: Super()
 {
-	Factions.Add(TEXT("Default"), FFactionInfo(FColor::Blue));
+	FactionList.RegistryFaction(TEXT("Default"), { FColor::Blue });
 
 	FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UFactionsSettings::OnWorldInitialization);
 }
 
 bool UFactionsSettings::Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo)
 {
-	// Faction already exists
-	if (Factions.Contains(Name))
-		return false;
-
-	Factions.Add(Name, FactionInfo);
-	return true;
+	return !FactionList.RegistryFaction(Name, FactionInfo).IsNone();
 }
 
 bool UFactionsSettings::Internal_UnregistryFaction(FFaction Faction)
 {
-	if (Faction.IsNone())
-		return false;
-
-	Factions.Remove(Faction.GetIdName());
-	MarkPackageDirty();
-	return true;
+	if (FactionList.UnregistryFaction(Faction))
+	{
+		MarkPackageDirty();
+		return true;
+	}
+	return false;
 }
 
 bool UFactionsSettings::Internal_RegistryRelation(const FFactionRelation& Relation)
