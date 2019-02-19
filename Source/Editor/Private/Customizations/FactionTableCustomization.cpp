@@ -65,17 +65,21 @@ public:
 		{
 			return SNew(SBox)
 			.Padding(1)
-			.HAlign(HAlign_Center)
-			.VAlign(VAlign_Center)
-			.MaxDesiredWidth(20.f)
-			.MaxDesiredHeight(20.f)
+			.MinDesiredWidth(22.f)
 			[
 				SNew(SButton)
-				.Text(LOCTEXT("Relations_Delete", "✖"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-				.TextFlowDirection(ETextFlowDirection::Auto)
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
 				.ContentPadding(2)
+				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+				.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
 				.OnClicked(Customization.Pin().Get(), &FFactionTableCustomization::OnDeleteFaction, Item)
+				[
+					SNew(STextBlock)
+					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
+					//.Text(LOCTEXT("Relations_Delete", "✖"))
+					.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
+				]
 			];
 		}
 
@@ -295,7 +299,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	.HAlignCell(HAlign_Right)
 	.VAlignCell(VAlign_Center)
 	.VAlignHeader(VAlign_Center)
-	.FixedWidth(20.f)
+	.FixedWidth(22.f)
 	.HeaderContentPadding(FMargin(0, 3))
 	[
 		SNew(STextBlock).Text(LOCTEXT("FactionColumnDelete", ""))
@@ -308,7 +312,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 		//.OnListViewScrolled(this, &FFactionTableCustomization::OnScrolled)
 		.OnSelectionChanged(this, &FFactionTableCustomization::SetSelection)
 		.ExternalScrollbar(VerticalScrollBar)
-		.ConsumeMouseWheel(EConsumeMouseWheel::Always)
+		.ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
 		.SelectionMode(ESelectionMode::Single)
 		.AllowOverscroll(EAllowOverscroll::No);
 
@@ -317,6 +321,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	.VAlign(VAlign_Top)
 	[
 		SNew(SBox)
+		.Padding(FMargin{0,10,0,20})
 		.VAlign(VAlign_Fill)
 		[
 			SNew(SHorizontalBox)
@@ -324,7 +329,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 			.FillWidth(1.f)
 			[
 				SNew(SBox)
-				.HeightOverride(240.f)
+				.MaxDesiredHeight(180.f)
 				[
 					ListView.ToSharedRef()
 				]
@@ -345,7 +350,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	[
 		SNew(SBox)
 		.Padding(FMargin{ 10, 10, 10, 10 })
-		.HeightOverride(240.f)
+		.MinDesiredHeight(180.f)
 		[
 			SAssignNew(FactionInfoContainer, SVerticalBox)
 		]
@@ -414,30 +419,30 @@ void FFactionTableCustomization::SetSelection(FFactionViewItemPtr InNewSelection
 				if (ChildProperty->GetProperty()->GetFName() != GET_MEMBER_NAME_CHECKED(FFactionInfo, Color))
 				{
 					TSharedRef<SHorizontalBox> PropertyBox = SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						.HAlign(HAlign_Fill)
-						.FillWidth(0.35f)
-						[
-							ChildProperty->CreatePropertyNameWidget()
-						]
 					+ SHorizontalBox::Slot()
-						.HAlign(HAlign_Left)
-						.FillWidth(0.65f)
-						[
-							SNew(SBox)
-							.MinDesiredWidth(150.f)
+					.HAlign(HAlign_Fill)
+					.FillWidth(0.35f)
+					[
+						ChildProperty->CreatePropertyNameWidget()
+					]
+					+ SHorizontalBox::Slot()
+					.HAlign(HAlign_Left)
+					.FillWidth(0.65f)
+					[
+						SNew(SBox)
+						.MinDesiredWidth(150.f)
 						.MaxDesiredWidth(250.f)
 						[
 							ChildProperty->CreatePropertyValueWidget()
 						]
-						];
+					];
 
 					FactionInfoContainer->AddSlot()
-						.VAlign(VAlign_Top)
-						.AutoHeight()
-						[
-							PropertyBox
-						];
+					.VAlign(VAlign_Top)
+					.AutoHeight()
+					[
+						PropertyBox
+					];
 				}
 			}
 		}

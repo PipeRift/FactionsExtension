@@ -79,6 +79,61 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 	RefreshRelations();
 
 
+	HeaderRow
+	.NameContent()
+	.VAlign(VAlign_Top)
+	[
+		SNew(SBox)
+		.Padding(FMargin{ 0, 10 })
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			[
+				SNew(STextBlock)
+				.TextStyle(FEditorStyle::Get(), "LargeText")
+				.Text(LOCTEXT("Relations_Title", "Relations"))
+			]
+			+ SHorizontalBox::Slot()
+			.Padding(2.f, 0.f)
+			.HAlign(HAlign_Right)
+			.FillWidth(1.f)
+			[
+				SNew(SButton)
+				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
+				.Text(LOCTEXT("Relations_New", "New"))
+				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
+				.OnClicked(this, &FRelationTableCustomization::OnNewRelation)
+			]
+			+ SHorizontalBox::Slot()
+			.Padding(2.f, 0.f)
+			.HAlign(HAlign_Right)
+			.AutoWidth()
+			[
+				SNew(SButton)
+				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
+				.Text(LOCTEXT("Relations_Clear", "Clear"))
+				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
+				.OnClicked(this, &FRelationTableCustomization::OnClearRelations)
+			]
+		]
+	]
+	.ValueContent()
+	.HAlign(HAlign_Left)
+	.VAlign(VAlign_Center)
+	[
+		SNew(SBox)
+		.Padding(FMargin{ 10, 0 })
+		[
+			SNew(STextBlock)
+			.Text(this, &FRelationTableCustomization::GetHeaderValueText)
+		]
+	];
+
+	GEditor->RegisterForUndo(this);
+}
+
+void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+{
 	TSharedRef<SScrollBar> VerticalScrollBar = SNew(SScrollBar)
 		.Orientation(Orient_Vertical)
 		.Thickness(FVector2D(8.0f, 8.0f));
@@ -112,7 +167,8 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 		]
 	]
 	+ SHeaderRow::Column(FactionBId)
-	.HAlignCell(HAlign_Left).FillWidth(1)
+	.HAlignCell(HAlign_Left)
+	.FillWidth(1)
 	.HeaderContentPadding(FMargin(0, 3))
 	[
 		SNew(SHorizontalBox)
@@ -138,7 +194,7 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 		]
 	]
 	+ SHeaderRow::Column(AttitudeId)
-	.HAlignCell(HAlign_Left).FillWidth(1.5)
+	.HAlignCell(HAlign_Left).FillWidth(3)
 	.HeaderContentPadding(FMargin(0, 3))
 	[
 		SNew(STextBlock)
@@ -146,7 +202,7 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 	]
 	+ SHeaderRow::Column(DeleteId)
 	.HAlignCell(HAlign_Right)
-	.ManualWidth(20.f)
+	.ManualWidth(22.f)
 	.HeaderContentPadding(FMargin(0, 3))
 	[
 		SNew(STextBlock)
@@ -161,83 +217,40 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 		.OnListViewScrolled(this, &FRelationTableCustomization::OnRelationsScrolled)
 		.OnSelectionChanged(this, &FRelationTableCustomization::OnRelationSelected)
 		.ExternalScrollbar(VerticalScrollBar)
-		.ConsumeMouseWheel(EConsumeMouseWheel::Always)
+		.ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
 		.SelectionMode(ESelectionMode::None)
 		.AllowOverscroll(EAllowOverscroll::No);
 
 
-	HeaderRow
+	StructBuilder.AddCustomRow(LOCTEXT("RelationsPropertySearch", "Relations"))
 	.WholeRowContent()
 	.HAlign(HAlign_Fill)
 	[
 		SNew(SBox)
-		.Padding(FMargin{ 0.f, 0.f, 0.f, 4.f })
+		.Padding(FMargin{0,10,0,20})
 		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(0, 10)
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.f)
 			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
+				SNew(SBox)
+				.MaxDesiredWidth(300.f)
 				[
-					SNew(STextBlock)
-					.TextStyle(FEditorStyle::Get(), "LargeText")
-					.Text(LOCTEXT("Relations_Title", "Relations"))
-				]
-				+ SHorizontalBox::Slot()
-				.Padding(2.f, 0.f)
-				.HAlign(HAlign_Right)
-				.FillWidth(1.f)
-				[
-					SNew(SButton)
-					.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
-					.Text(LOCTEXT("Relations_New", "New"))
-					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-					.OnClicked(this, &FRelationTableCustomization::OnNewRelation)
-				]
-				+ SHorizontalBox::Slot()
-				.Padding(2.f, 0.f)
-				.HAlign(HAlign_Right)
-				.AutoWidth()
-				[
-					SNew(SButton)
-					.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
-					.Text(LOCTEXT("Relations_Clear", "Clear"))
-					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-					.OnClicked(this, &FRelationTableCustomization::OnClearRelations)
+					RelationListView.ToSharedRef()
 				]
 			]
-			+ SVerticalBox::Slot()
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.FillWidth(1.f)
+				SNew(SBox)
+				.WidthOverride(16.f)
 				[
-					SNew(SBox)
-					.HeightOverride(400.f)
-					[
-						RelationListView.ToSharedRef()
-					]
-				]
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				[
-					SNew(SBox)
-					.WidthOverride(16.f)
-					[
-						VerticalScrollBar
-					]
+					VerticalScrollBar
 				]
 			]
 		]
 	];
-
-	GEditor->RegisterForUndo(this);
 }
-
-void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
-{}
 
 FRelationTableCustomization::~FRelationTableCustomization()
 {
@@ -320,19 +333,22 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 		else if (ColumnName == DeleteId)
 		{
 			return SNew(SBox)
-				.Padding(1)
+			.Padding(1)
+			.MinDesiredWidth(22.f)
+			[
+				SNew(SButton)
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
-				.MaxDesiredWidth(20.f)
-				.MaxDesiredHeight(20.f)
+				.ContentPadding(2)
+				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+				.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
+				.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)
 				[
-					SNew(SButton)
-					.Text(LOCTEXT("Relations_Delete", "✖"))
-					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-					.TextFlowDirection(ETextFlowDirection::Auto)
-					.ContentPadding(2)
-					.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)
-				];
+					SNew(STextBlock)
+					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
+					.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
+				]
+			];
 		}
 	}
 
@@ -458,6 +474,15 @@ UObject* FRelationTableCustomization::GetOuter() const
 	StructHandle->GetOuterObjects(Objects);
 
 	return Objects.Num() ? Objects[0] : nullptr;
+}
+
+FText FRelationTableCustomization::GetHeaderValueText() const
+{
+	uint32 Num;
+	if (ListHandleArray->GetNumElements(Num) != FPropertyAccess::Success)
+		return FText::GetEmpty();
+
+	return FText::Format(LOCTEXT("ValueDescription", "{0} relations"), FText::AsNumber(Num));
 }
 
 #undef LOCTEXT_NAMESPACE

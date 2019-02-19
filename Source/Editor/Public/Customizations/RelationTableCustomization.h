@@ -59,6 +59,8 @@ private:
 
 	UObject* GetOuter() const;
 
+	FText GetHeaderValueText() const;
+
 
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
