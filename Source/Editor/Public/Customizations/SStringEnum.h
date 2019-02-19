@@ -20,11 +20,11 @@ public:
 	SLATE_END_ARGS()
 
 	/**
-		* Construct the faction widget from a declaration
-		*
-		* @param InArgs    Widget declaration from which to construct the faction.
-		*/
-	void Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _FactionHandle);
+	 * Construct the faction widget from a declaration
+	 *
+	 * @param InArgs    Widget declaration from which to construct the faction.
+	 */
+	void Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _Handle);
 
 private:
 

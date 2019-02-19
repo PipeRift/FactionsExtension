@@ -7,10 +7,10 @@
 #include "FactionCustomization.h"
 #include "FactionInfoCustomization.h"
 #include "FactionRelationCustomization.h"
+#include "FactionTableCustomization.h"
 #include "RelationTableCustomization.h"
 
 #include "Customizations/FactionPinFactory.h"
-#include "Customizations/FactionsSettingsDetails.h"
 
 
 DEFINE_LOG_CATEGORY(LogFactionsEditor)
@@ -55,12 +55,11 @@ void FFactionsEditorModule::ShutdownModule()
 
 void FFactionsEditorModule::RegisterPropertyTypeCustomizations()
 {
-	RegisterCustomClassLayout("FactionsSettings", FOnGetDetailCustomizationInstance::CreateStatic(&FFactionsSettingsDetails::MakeInstance));
-
 	RegisterCustomPropertyTypeLayout("Faction",         FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FFactionCustomization::MakeInstance));
 	RegisterCustomPropertyTypeLayout("FactionInfo",     FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FFactionInfoCustomization::MakeInstance));
 	RegisterCustomPropertyTypeLayout("FactionRelation", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FFactionRelationCustomization::MakeInstance));
-	RegisterCustomPropertyTypeLayout("RelationDatabase", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FRelationTableCustomization::MakeInstance));
+	RegisterCustomPropertyTypeLayout("FactionTable",    FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FFactionTableCustomization::MakeInstance));
+	RegisterCustomPropertyTypeLayout("RelationTable",   FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FRelationTableCustomization::MakeInstance));
 
 	RegisterCustomPinFactory<FFactionPinFactory>();
 }
