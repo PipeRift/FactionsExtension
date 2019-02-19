@@ -4,6 +4,9 @@
 
 #include <Editor.h>
 #include <ScopedTransaction.h>
+#include <PropertyHandle.h>
+#include <Layout/WidgetPath.h>
+#include <Framework/Application/SlateApplication.h>
 #include <Widgets/Input/SButton.h>
 #include <Widgets/Colors/SColorBlock.h>
 #include <Widgets/Colors/SColorPicker.h>
@@ -11,12 +14,11 @@
 
 #define LOCTEXT_NAMESPACE "SFactionColor"
 
-
-bool IsValueEnabled(TWeakPtr<IPropertyHandle> WeakHandlePtr)
+bool IsEditable(TSharedPtr<IPropertyHandle> WeakHandlePtr)
 {
 	if (WeakHandlePtr.IsValid())
 	{
-		return !WeakHandlePtr.Pin()->IsEditConst();
+		return !WeakHandlePtr->IsEditConst();
 	}
 	return false;
 }
@@ -26,11 +28,11 @@ bool IsValueEnabled(TWeakPtr<IPropertyHandle> WeakHandlePtr)
 * SFactionColor
 */
 
-void SFactionColor::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _Handle)
+void SFactionColor::Construct(const FArguments& InArgs, TSharedPtr<IPropertyHandle> _Handle)
 {
 	ColorProperty = _Handle;
 
-	if (ColorProperty->IsValidHandle())
+	if (ColorProperty.IsValid() && ColorProperty->IsValidHandle())
 	{
 		bColorIsLinear = CastChecked<UStructProperty>(ColorProperty->GetProperty())->Struct->GetFName() == NAME_LinearColor;
 		bColorIgnoreAlpha = ColorProperty->GetProperty()->HasMetaData(TEXT("HideAlphaChannel"));
@@ -52,7 +54,7 @@ void SFactionColor::Construct(const FArguments& InArgs, TSharedRef<IPropertyHand
 			.IgnoreAlpha(bColorIgnoreAlpha)
 			.OnMouseButtonDown(this, &SFactionColor::OnMouseButtonDownColorBlock)
 			.Size(FVector2D(35.0f, 12.0f))
-			.IsEnabled(&IsValueEnabled, ColorProperty)
+			.IsEnabled(this, &SFactionColor::IsValueEnabled)
 		]
 		+ SHorizontalBox::Slot()
 		.VAlign(VAlign_Center)
@@ -67,6 +69,11 @@ void SFactionColor::Construct(const FArguments& InArgs, TSharedRef<IPropertyHand
 			.Size(FVector2D(35.0f, 12.0f))
 		]
 	];
+}
+
+SFactionColor::~SFactionColor()
+{
+	DestroyColorPicker();
 }
 
 void SFactionColor::CreateColorPicker(bool bUseAlpha)
@@ -186,6 +193,9 @@ void SFactionColor::OnColorPickerInteractiveEnd()
 
 FPropertyAccess::Result SFactionColor::GetColorAsLinear(FLinearColor& OutColor) const
 {
+	if (!ColorProperty.IsValid())
+		return FPropertyAccess::Fail;
+
 	// Default to full alpha in case the alpha component is disabled.
 	OutColor.A = 1.0f;
 
@@ -227,12 +237,17 @@ FReply SFactionColor::OnMouseButtonDownColorBlock(const FGeometry& MyGeometry, c
 		return FReply::Unhandled();
 	}
 
-	if (IsValueEnabled(ColorProperty))
+	if (IsEditable(ColorProperty))
 	{
 		CreateColorPicker(true);
 	}
 
 	return FReply::Handled();
+}
+
+bool SFactionColor::IsValueEnabled() const
+{
+	return IsEditable(ColorProperty);
 }
 
 #undef LOCTEXT_NAMESPACE

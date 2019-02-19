@@ -31,7 +31,7 @@ struct FFactionViewItem {
 
 	FName GetName() const {
 		FName Name;
-		ItemProperty->GetValue(Name);
+		GetKeyProperty()->GetValue(Name);
 		return Name;
 	}
 
@@ -43,6 +43,8 @@ struct FFactionViewItem {
 
 	bool IsValid() const { return Id != INDEX_NONE && ItemProperty.IsValid(); }
 };
+
+using FFactionViewItemPtr = TSharedPtr<FFactionViewItem>;
 
 
 class FFactionTableCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
@@ -76,24 +78,32 @@ private:
 	TSharedRef<SWidget> CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle);
 
 	/** Make the widget for a row entry in the data table row list view */
-	TSharedRef<ITableRow> MakeFactionWidget(const FFactionViewItem& Item, const TSharedRef<STableViewBase>& OwnerTable);
+	TSharedRef<ITableRow> MakeFactionWidget(FFactionViewItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
 
-	void OnScrolled(double InScrollOffset);
+	void OnSelected(FFactionViewItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
 
-	void OnSelected(TSharedPtr<FFactionViewItem> InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
-
-	void SetSelection(FFactionViewItem InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
+	void SetSelection(FFactionViewItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
 
 
 	void RefreshView();
 
 	void OnFilterChanged(const FText& Text);
 
+
 	FReply OnNewFaction();
-	FReply OnDeleteFaction(const TSharedPtr<FFactionViewItem> Faction);
+
+public:
+
+	FReply OnDeleteFaction(FFactionViewItemPtr Faction);
+	void OnFactionIdChange(const FText& NewIdText, ETextCommit::Type CommitInfo, const FFactionViewItemPtr& Item);
+
+private:
+
 	FReply OnClearFactions();
 
 	UObject* GetOuter() const;
+
+	FText GetHeaderValueText() const;
 
 
 	/** Handle to the struct properties being customized */
@@ -103,19 +113,21 @@ private:
 
 
 	/** Array of the factions that are available for editing */
-	TArray<FFactionViewItem> AvailableFactions;
+	TArray<FFactionViewItemPtr> AvailableFactions;
 
 	/** Array of the factions that are available for editing */
-	TArray<FFactionViewItem> VisibleFactions;
+	TArray<FFactionViewItemPtr> VisibleFactions;
 
 	/** List view responsible for showing the rows in VisibleRows for each entry in Factions */
-	TSharedPtr<SListView<FFactionViewItem>> ListView;
+	TSharedPtr<SListView<FFactionViewItemPtr>> ListView;
 
-	FFactionViewItem CurrentSelection;
+	TWeakPtr<FFactionViewItem> CurrentSelection;
 
 	FString Filter;
 
 	TSharedPtr<SVerticalBox> FactionInfoContainer;
+
+	FSimpleDelegate OnItemsNumChanged;
 
 public:
 

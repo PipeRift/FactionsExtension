@@ -17,7 +17,7 @@ struct FACTIONS_API FFactionTable
 	GENERATED_BODY()
 
 
-	UPROPERTY(config, SaveGame)
+	UPROPERTY(config, EditAnywhere, Category = "Factions", SaveGame)
 	TMap<FName, FFactionInfo> Items;
 
 

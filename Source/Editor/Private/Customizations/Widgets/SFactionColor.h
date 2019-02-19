@@ -11,11 +11,13 @@ public:
 	SLATE_END_ARGS()
 
 	/** Construct function for this widget */
-	void Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _Handle);
+	void Construct(const FArguments& InArgs, TSharedPtr<IPropertyHandle> _Handle);
+
+	~SFactionColor();
 
 private:
 
-	TSharedRef<IPropertyHandle> ColorProperty;
+	TSharedPtr<IPropertyHandle> ColorProperty;
 
 
 	/**
@@ -81,6 +83,8 @@ private:
 		FLinearColor LinearColor;
 		FColor SrgbColor;
 	};
+
+	bool IsValueEnabled() const;
 
 	/** Saved per struct colors in case the user clicks cancel in the color picker */
 	TArray<FLinearOrSrgbColor> SavedPreColorPickerColors;
