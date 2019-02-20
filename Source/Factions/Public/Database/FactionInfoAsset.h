@@ -2,19 +2,19 @@
 
 #pragma once
 
-#include "GenericTeamAgentInterface.h"
+#include <Engine/DataAsset.h>
 
 #include "Faction.h"
-#include "CustomFactionInfo.generated.h"
+#include "FactionInfoAsset.generated.h"
 
-#define LOCTEXT_NAMESPACE "FactionInfo"
+#define LOCTEXT_NAMESPACE "FactionInfoAsset"
 
 
 /**
  * Struct containing information about a faction. Static use.
  */
-UCLASS(Blueprintable, EditInlineNew)
-class FACTIONS_API UCustomFactionInfo : public UObject
+UCLASS(Blueprintable, Abstract)
+class FACTIONS_API UFactionInfoAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 };

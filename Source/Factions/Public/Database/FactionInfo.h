@@ -6,7 +6,7 @@
 #include <Engine/Texture.h>
 
 #include "Faction.h"
-#include "CustomFactionInfo.h"
+#include "FactionInfoAsset.h"
 #include "FactionInfo.generated.h"
 
 #define LOCTEXT_NAMESPACE "FactionInfo"
@@ -26,7 +26,7 @@ public:
 		, Color(InColor)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
-		, CustomInfo(nullptr)
+		, InfoAsset()
 	{}
 
 	FFactionInfo(FText DisplayName, FLinearColor InColor = FColor::Cyan)
@@ -34,7 +34,7 @@ public:
 		, Color(InColor)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
-		, CustomInfo(nullptr)
+		, InfoAsset()
 	{}
 
 	/** Name of the faction */
@@ -57,8 +57,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	TSoftObjectPtr<UTexture> Icon;
 
-	UPROPERTY(Instanced, EditAnywhere, BlueprintReadOnly, Category = "Faction")
-	UCustomFactionInfo* CustomInfo;
+	/** Asset containing optional extra fields for a faction.
+	 * Create a class from UFactionInfoAsset to create your own fields (either in C++ or BPs)
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction, meta = (DisplayThumbnail = false))
+	TAssetPtr<UFactionInfoAsset> InfoAsset;
 };
 
 #undef LOCTEXT_NAMESPACE

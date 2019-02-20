@@ -15,8 +15,6 @@ void FFactionsModule::StartupModule()
 {
 	UE_LOG(LogFactions, Log, TEXT("Factions: Log Started"));
 
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-
 	RegisterSettings();
 
 	CacheFactionInformation();
@@ -27,8 +25,6 @@ void FFactionsModule::StartupModule()
 void FFactionsModule::ShutdownModule()
 {
 	UE_LOG(LogFactions, Log, TEXT("Factions: Log Ended"));
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
 
 	FGameDelegates::Get().GetEndPlayMapDelegate().Remove(OnEndPlayHandle);
 

@@ -8,10 +8,7 @@ public class FactionsEditor : ModuleRules
 	public FactionsEditor(ReadOnlyTargetRules TargetRules) : base(TargetRules)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-
-		PublicIncludePaths.AddRange(new string[] {
-			Path.Combine(ModuleDirectory, "Public/Customizations")
-		});
+        
 
 		PublicDependencyModuleNames.AddRange(new string[] {
 			"Core",
