@@ -49,7 +49,7 @@ bool FFaction::SetFactionInfo(const FFactionInfo& NewInfo) const
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	if (Settings->GetFactionList().SetInfo(*this, NewInfo))
+	if (Settings->GetFactionTable().SetInfo(*this, NewInfo))
 	{
 		Settings->MarkPackageDirty();
 		return true;

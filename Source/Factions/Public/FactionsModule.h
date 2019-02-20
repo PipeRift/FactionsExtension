@@ -58,6 +58,7 @@ private:
 	// Callbacks for when the settings were saved.
 	bool HandleSettingsSaved();
 
+	void UpdateSettingsDeprecations();
 	void CacheFactionInformation();
 
 

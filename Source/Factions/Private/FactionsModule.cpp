@@ -70,6 +70,8 @@ void FFactionsModule::RegisterSettings()
 			SettingsSection->OnModified().BindRaw(this, &FFactionsModule::HandleSettingsSaved);
 		}
 	}
+
+	UpdateSettingsDeprecations();
 #endif
 }
 
@@ -105,6 +107,17 @@ bool FFactionsModule::HandleSettingsSaved()
 
 	CacheFactionInformation();
 	return true;
+}
+
+void FFactionsModule::UpdateSettingsDeprecations()
+{
+#if WITH_EDITOR
+	UFactionsSettings* Settings = GetMutableDefault<UFactionsSettings>();
+	if (Settings->UpdateDeprecations())
+	{
+		Settings->SaveConfig();
+	}
+#endif
 }
 
 void FFactionsModule::CacheFactionInformation()

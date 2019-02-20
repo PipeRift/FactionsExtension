@@ -12,10 +12,7 @@ FFaction UFactionsLibrary::RegistryFaction(const FName& Name, const FFactionInfo
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	Settings->Internal_RegistryFaction(Name, FactionInfo);
-
-	// Return the faction, won't be valid if its not registered
-	return { Name };
+	return Settings->GetFactionTable().RegistryFaction(Name, FactionInfo);
 }
 
 bool UFactionsLibrary::UnregistryFaction(FFaction Faction)
@@ -23,7 +20,7 @@ bool UFactionsLibrary::UnregistryFaction(FFaction Faction)
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	return Settings->Internal_UnregistryFaction(Faction);
+	return Settings->GetFactionTable().UnregistryFaction(Faction);
 }
 
 void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)

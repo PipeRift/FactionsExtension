@@ -12,21 +12,6 @@ UFactionsSettings::UFactionsSettings()
 	FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UFactionsSettings::OnWorldInitialization);
 }
 
-bool UFactionsSettings::Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo)
-{
-	return !FactionList.RegistryFaction(Name, FactionInfo).IsNone();
-}
-
-bool UFactionsSettings::Internal_UnregistryFaction(FFaction Faction)
-{
-	if (FactionList.UnregistryFaction(Faction))
-	{
-		MarkPackageDirty();
-		return true;
-	}
-	return false;
-}
-
 bool UFactionsSettings::Internal_RegistryRelation(const FFactionRelation& Relation)
 {
 	if (!Relation.IsValid())
@@ -84,4 +69,20 @@ bool UFactionsSettings::CanEditChange(const UProperty* InProperty) const
 
 	return bCanEdit;
 }
+
+bool UFactionsSettings::UpdateDeprecations()
+{
+	if (Factions_DEPRECATED.Num() > 0)
+	{
+		// Update deprecated factions
+		for (const auto& FactionItem : Factions_DEPRECATED)
+		{
+			FactionList.RegistryFaction(FactionItem.Key, FactionItem.Value);
+		}
+		Factions_DEPRECATED.Empty();
+		return true;
+	}
+	return false;
+}
+
 #endif //WITH_EDITOR

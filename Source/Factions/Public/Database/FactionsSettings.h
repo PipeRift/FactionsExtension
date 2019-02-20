@@ -55,9 +55,6 @@ public:
 
 	UFactionsSettings();
 
-	bool Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo);
-	bool Internal_UnregistryFaction(FFaction Faction);
-
 	bool Internal_RegistryRelation(const FFactionRelation& Relation);
 	bool Internal_UnregistryRelation(const FFactionRelation& Relation);
 
@@ -77,14 +74,10 @@ protected:
 
 public:
 
-	FFactionTable& GetFactionList() { return FactionList; }
-	const TMap<FName, FFactionInfo>& GetFactionInfos() const { return FactionList.Items; }
+	bool UpdateDeprecations();
 
-	/**
-	* Editor only usage
-	* @return all factions as a reference
-	*/
-	TMap<FName, FFactionInfo>& Internal_GetFactionInfos() { return FactionList.Items; }
+	FFactionTable& GetFactionTable() { return FactionList; }
+	const TMap<FName, FFactionInfo>& GetFactionInfos() const { return FactionList.Items; }
 
 	/** Gets the member name for the factions */
 	static FName GetFactionsPropertyName() { return GET_MEMBER_NAME_CHECKED(UFactionsSettings, Factions_DEPRECATED); }
