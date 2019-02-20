@@ -73,5 +73,7 @@ protected:
 	* This is for override purposes.
 	*/
 	virtual void OnItemSelected(FString Value) {}
+
+	virtual FSlateColor GetForegroundColor() const;
 };
 

@@ -56,20 +56,32 @@ void FFactionCustomization::OnItemSelected(FString Value)
 /** Display the current column selection */
 FText FFactionCustomization::GetSelectedText() const
 {
-	FName Name;
-	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
-
-	if (RowResult != FPropertyAccess::MultipleValues)
+	FName Id = GetIdValue();
+	if (!Id.IsNone())
 	{
-		const FFactionInfo* Info = AllFactions.Find(Name);
-		if (Info)
-		{
-			return FText::FromName(Name);
-		}
-		return FText::FromName(NO_FACTION_NAME);
+		return FText::FromName(Id);
 	}
-	return LOCTEXT("MultipleValues", "Multiple Values");
+	return FText::FromName(NO_FACTION_NAME);
+}
+
+FSlateColor FFactionCustomization::GetForegroundColor() const
+{
+	FName Id = GetIdValue();
+
+	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactionInfos().Contains(Id))
+	{
+		return FStringEnumCustomization::GetForegroundColor();
+	}
+
+	return FLinearColor::Red;
+}
+
+FName FFactionCustomization::GetIdValue() const
+{
+	FName Id;
+	if(NameHandle->GetValue(Id) == FPropertyAccess::Success)
+		return Id;
+	return FName{};
 }
 
 #undef LOCTEXT_NAMESPACE

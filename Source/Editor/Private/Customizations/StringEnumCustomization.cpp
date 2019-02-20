@@ -24,6 +24,7 @@ void FStringEnumCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle>
 		.MinDesiredWidth(125.0f)
 		[
 			SAssignNew(ComboButton, SComboButton)
+			.ForegroundColor(this, &FStringEnumCustomization::GetForegroundColor)
 			.ToolTipText(this, &FStringEnumCustomization::GetSelectedText)
 			.OnGetMenuContent(this, &FStringEnumCustomization::GetListContent)
 			.OnComboBoxOpened(this, &FStringEnumCustomization::HandleMenuOpen)
@@ -142,6 +143,11 @@ void FStringEnumCustomization::GetAllItems(TArray<FString>& Values) const {
 FText FStringEnumCustomization::GetSelectedText() const
 {
 	return FText::FromString(GetSelectedItem());
+}
+
+FSlateColor FStringEnumCustomization::GetForegroundColor() const
+{
+	return FCoreStyle::Get().GetSlateColor("InvertedForeground");
 }
 
 
