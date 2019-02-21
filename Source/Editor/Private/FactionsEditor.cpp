@@ -4,14 +4,14 @@
 
 #include "Kismet2/KismetEditorUtilities.h"
 
-#include "FactionCustomization.h"
-#include "FactionInfoCustomization.h"
-#include "FactionRelationCustomization.h"
-#include "FactionTableCustomization.h"
-#include "RelationTableCustomization.h"
+#include "Customizations/FactionCustomization.h"
+#include "Customizations/FactionInfoCustomization.h"
+#include "Customizations/FactionRelationCustomization.h"
+#include "Customizations/FactionTableCustomization.h"
+#include "Customizations/RelationTableCustomization.h"
+#include "Customizations/FactionPinFactory.h"
 
 #include "Asset/AssetTypeAction_FactionInfoAsset.h"
-#include "Customizations/FactionPinFactory.h"
 
 
 DEFINE_LOG_CATEGORY(LogFactionsEditor)

@@ -11,7 +11,7 @@
 #include <Widgets/Input/SSearchBox.h>
 #include <Widgets/Input/SButton.h>
 
-#include "Customization/SFaction.h"
+#include "Customizations/SFaction.h"
 
 #include "FactionsSettings.h"
 #include "Faction.h"
