@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -20,11 +20,11 @@ public:
 	SLATE_END_ARGS()
 
 	/**
-		* Construct the faction widget from a declaration
-		*
-		* @param InArgs    Widget declaration from which to construct the faction.
-		*/
-	void Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _FactionHandle);
+	 * Construct the faction widget from a declaration
+	 *
+	 * @param InArgs    Widget declaration from which to construct the faction.
+	 */
+	void Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _Handle);
 
 private:
 

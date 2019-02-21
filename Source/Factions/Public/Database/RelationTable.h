@@ -1,22 +1,21 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #pragma once
 
-#include "GenericTeamAgentInterface.h"
-
 #include "Faction.h"
 #include "FactionRelation.h"
-#include "RelationDatabase.generated.h"
+#include "RelationTable.generated.h"
 
-#define LOCTEXT_NAMESPACE "RelationDatabase"
+
+#define LOCTEXT_NAMESPACE "RelationTable"
 
 /**
  * Contains all faction relations
  */
 USTRUCT()
-struct FRelationDatabase
+struct FRelationTable
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 

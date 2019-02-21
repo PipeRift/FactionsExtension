@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #include "EnvQueryTest_Faction.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h"
@@ -17,6 +17,8 @@ UEnvQueryTest_Faction::UEnvQueryTest_Faction()
 	Cost = EEnvTestCost::Low;
 	SetWorkOnFloatValues(false);
 	ValidItemType = UEnvQueryItemType_ActorBase::StaticClass();
+
+	BoolValue.DefaultValue = false;
 }
 
 void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const

@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -48,6 +48,10 @@ private:
 	* This is for override purposes.
 	*/
 	void GetFactionNames(TArray<FName>& Names) const;
+
+	FSlateColor GetForegroundColor() const;
+
+	FName GetIdValue() const;
 
 
 	TSharedPtr<IPropertyHandle> FactionHandle;

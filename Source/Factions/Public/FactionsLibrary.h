@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -52,7 +52,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Target"))
 	static FORCEINLINE FFaction GetFaction(const AActor* Target)
 	{
-		return IFactionAgentInterface::Execute_GetFaction(Target);
+		return IFactionAgentInterface::GetFaction(Target);
 	}
 
 	/** Sets the faction of an actor. Won't apply if the actor doesn't implement FactionAgentInterface.
@@ -62,7 +62,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Factions, meta = (DefaultToSelf = "Target"))
 	static void SetFaction(AActor* Target, const FFaction NewFaction)
 	{
-		IFactionAgentInterface::Execute_SetFaction(Target, NewFaction);
+		IFactionAgentInterface::SetFaction(Target, NewFaction);
 	}
 
 	/** @return true if this faction is none */

@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #include "FactionsModule.h"
 #include "GameplayTagsManager.h"
@@ -15,8 +15,6 @@ void FFactionsModule::StartupModule()
 {
 	UE_LOG(LogFactions, Log, TEXT("Factions: Log Started"));
 
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-
 	RegisterSettings();
 
 	CacheFactionInformation();
@@ -27,8 +25,6 @@ void FFactionsModule::StartupModule()
 void FFactionsModule::ShutdownModule()
 {
 	UE_LOG(LogFactions, Log, TEXT("Factions: Log Ended"));
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
 
 	FGameDelegates::Get().GetEndPlayMapDelegate().Remove(OnEndPlayHandle);
 
@@ -70,6 +66,8 @@ void FFactionsModule::RegisterSettings()
 			SettingsSection->OnModified().BindRaw(this, &FFactionsModule::HandleSettingsSaved);
 		}
 	}
+
+	UpdateSettingsDeprecations();
 #endif
 }
 
@@ -105,6 +103,17 @@ bool FFactionsModule::HandleSettingsSaved()
 
 	CacheFactionInformation();
 	return true;
+}
+
+void FFactionsModule::UpdateSettingsDeprecations()
+{
+#if WITH_EDITOR
+	UFactionsSettings* Settings = GetMutableDefault<UFactionsSettings>();
+	if (Settings->UpdateDeprecations())
+	{
+		Settings->SaveConfig();
+	}
+#endif
 }
 
 void FFactionsModule::CacheFactionInformation()

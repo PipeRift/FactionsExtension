@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 #pragma once
 
 #include <IPropertyTypeCustomization.h>
@@ -7,12 +7,12 @@
 #include <Widgets/Views/SListView.h>
 
 
-class FRelationDatabaseCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
+class FRelationTableCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
 {
 
 public:
 
-	FRelationDatabaseCustomization()
+	FRelationTableCustomization()
 		: FilterFactionA{ "" }
 		, FilterFactionB{ "" }
 	{};
@@ -28,7 +28,7 @@ public:
 	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 
-	~FRelationDatabaseCustomization();
+	~FRelationTableCustomization();
 
 
 	TSharedRef<SWidget> MakeColumnWidget(uint32 RelationIndex, FName ColumnName);
@@ -59,6 +59,8 @@ private:
 
 	UObject* GetOuter() const;
 
+	FText GetHeaderValueText() const;
+
 
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
@@ -79,10 +81,10 @@ private:
 	FString FilterFactionB;
 
 
+	static const FName DeleteId;
 	static const FName FactionAId;
 	static const FName FactionBId;
 	static const FName AttitudeId;
-	static const FName DeleteId;
 
 	static const FName NameMember;
 };

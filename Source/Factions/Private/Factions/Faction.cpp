@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #include "Faction.h"
 #include "FactionsSettings.h"
@@ -16,7 +16,7 @@ FFaction::FFaction(const FGenericTeamId& InTeam)
 		if (Settings)
 		{
 			TArray<FName> Keys;
-			Settings->Factions.GetKeys(Keys);
+			Settings->GetFactionInfos().GetKeys(Keys);
 
 			if (Keys.IsValidIndex(InTeam.GetId()))
 			{
@@ -33,7 +33,7 @@ bool FFaction::GetFactionInfo(FFactionInfo& Info) const
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	const FFactionInfo* FoundInfo = Settings->Factions.Find(Name);
+	const FFactionInfo* FoundInfo = Settings->GetFactionInfos().Find(Name);
 	if (FoundInfo)
 	{
 		Info = *FoundInfo;
@@ -49,15 +49,11 @@ bool FFaction::SetFactionInfo(const FFactionInfo& NewInfo) const
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	FFactionInfo* FoundInfo = Settings->Factions.Find(Name);
-	if (FoundInfo)
+	if (Settings->GetFactionTable().SetInfo(*this, NewInfo))
 	{
-		*FoundInfo = NewInfo;
 		Settings->MarkPackageDirty();
 		return true;
 	}
-
-	// If the faction is not found, we couldn't have set the new Info
 	return false;
 }
 
@@ -68,7 +64,7 @@ bool FFaction::IsNone() const
 
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
-	return !Settings->Factions.Contains(Name);
+	return !Settings->GetFactionInfos().Contains(Name);
 }
 
 const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) const
@@ -114,7 +110,7 @@ const FGenericTeamId FFaction::GetTeam() const
 	check(Settings);
 
 	TArray<FName> Keys;
-	Settings->Factions.GetKeys(Keys);
+	Settings->GetFactionInfos().GetKeys(Keys);
 
 	//Find Id
 	const int32 Id = Keys.IndexOfByKey(Name);

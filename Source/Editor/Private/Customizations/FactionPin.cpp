@@ -1,6 +1,6 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionPin.h"
+#include "Customizations/FactionPin.h"
 
 #include "Kismet2/KismetEditorUtilities.h"
 #include "EdGraph/EdGraphPin.h"
@@ -82,12 +82,7 @@ void SFactionPin::ApplyDefaultValue()
 
 void SFactionPin::GetEnumItems(TArray<FString>& Values)
 {
-	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
-	if (!Settings) {
-		return;
-	}
-
-	for (const auto& KeyValue : Settings->Factions)
+	for (const auto& KeyValue : GetDefault<UFactionsSettings>()->GetFactionInfos())
 	{
 		Values.Add(KeyValue.Key.ToString());
 	}
@@ -98,7 +93,7 @@ void SFactionPin::GetEnumItems(TArray<FString>& Values)
 
 void SFactionPin::OnItemSelected(FString Value)
 {
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 	FName NameValue = FName(*Value);
 
@@ -116,9 +111,9 @@ FText SFactionPin::GetSelectedItem() const
 	//Call parent but don't use it. This is for widget logic
 	SStringEnumPin::GetSelectedItem();
 
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const auto& Factions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
-	if (AllFactions.Contains(FactionDefaultNameValue))
+	if (Factions.Contains(FactionDefaultNameValue))
 	{
 		//Return name with prefix number
 		return FText::FromName(FactionDefaultNameValue);

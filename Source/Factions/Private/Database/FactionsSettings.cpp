@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #include "FactionsSettings.h"
 #include "FactionsModule.h"
@@ -7,29 +7,9 @@
 UFactionsSettings::UFactionsSettings()
 	: Super()
 {
-	Factions.Add(TEXT("Default"), FFactionInfo(FColor::Blue));
+	FactionList.RegistryFaction(TEXT("Default"), { FColor::Blue });
 
 	FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UFactionsSettings::OnWorldInitialization);
-}
-
-bool UFactionsSettings::Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo)
-{
-	// Faction already exists
-	if (Factions.Contains(Name))
-		return false;
-
-	Factions.Add(Name, FactionInfo);
-	return true;
-}
-
-bool UFactionsSettings::Internal_UnregistryFaction(FFaction Faction)
-{
-	if (Faction.IsNone())
-		return false;
-
-	Factions.Remove(Faction.GetIdName());
-	MarkPackageDirty();
-	return true;
 }
 
 bool UFactionsSettings::Internal_RegistryRelation(const FFactionRelation& Relation)
@@ -89,4 +69,20 @@ bool UFactionsSettings::CanEditChange(const UProperty* InProperty) const
 
 	return bCanEdit;
 }
+
+bool UFactionsSettings::UpdateDeprecations()
+{
+	if (Factions_DEPRECATED.Num() > 0)
+	{
+		// Update deprecated factions
+		for (const auto& FactionItem : Factions_DEPRECATED)
+		{
+			FactionList.RegistryFaction(FactionItem.Key, FactionItem.Value);
+		}
+		Factions_DEPRECATED.Empty();
+		return true;
+	}
+	return false;
+}
+
 #endif //WITH_EDITOR

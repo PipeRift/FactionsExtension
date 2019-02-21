@@ -1,6 +1,6 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionInfoCustomization.h"
+#include "Customizations/FactionInfoCustomization.h"
 
 #include "DetailWidgetRow.h"
 #include "IDetailChildrenBuilder.h"
@@ -19,34 +19,33 @@ void FFactionInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Stru
 {
 	TSharedPtr<IPropertyHandle> NameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName));
 
-	HeaderRow
-	.NameContent()
+	HeaderRow.NameContent()
 	[
-		SNew(STextBlock)
-		.Font(FEditorStyle::GetFontStyle({ "PropertyWindow.NormalFont" }))
-		.ColorAndOpacity(FColor::White)
-		.Text(this, &FFactionInfoCustomization::GetTextFromHandle, NameHandle.ToSharedRef())
+		StructPropertyHandle->CreatePropertyNameWidget()
+	]
+	.ValueContent()
+	[
+		NameHandle->CreatePropertyValueWidget()
 	];
 }
 
 void FFactionInfoCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	TSharedPtr<IPropertyHandle> DisplayNameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName));
-	TSharedPtr<IPropertyHandle> ColorHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
-	TSharedPtr<IPropertyHandle> ItselfHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, AttitudeTowardsItself));
-	TSharedPtr<IPropertyHandle> OthersHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DefaultAttitudeTowardsOthers));
+	TSharedPtr<IPropertyHandle> NameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName));
 
-	StructBuilder.AddProperty(DisplayNameHandle.ToSharedRef());
-	StructBuilder.AddProperty(ColorHandle.ToSharedRef());
-	StructBuilder.AddProperty(ItselfHandle.ToSharedRef());
-	StructBuilder.AddProperty(OthersHandle.ToSharedRef());
-}
+	uint32 Num = 0;
+	StructPropertyHandle->GetNumChildren(Num);
 
-FText FFactionInfoCustomization::GetTextFromHandle(TSharedRef<IPropertyHandle> Handle) const
-{
-	FName Text;
-	Handle->GetValue(Text);
-	return FText::FromName(Text);
+	for (uint32 I = 0; I < Num; ++I)
+	{
+		TSharedPtr<IPropertyHandle> PropHandle = StructPropertyHandle->GetChildHandle(I);
+		check(PropHandle);
+
+		if (PropHandle->GetProperty() != NameHandle->GetProperty())
+		{
+			StructBuilder.AddProperty(PropHandle.ToSharedRef());
+		}
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -58,6 +58,7 @@ private:
 	// Callbacks for when the settings were saved.
 	bool HandleSettingsSaved();
 
+	void UpdateSettingsDeprecations();
 	void CacheFactionInformation();
 
 

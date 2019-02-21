@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #include "FactionsLibrary.h"
 #include <EngineUtils.h>
@@ -12,10 +12,7 @@ FFaction UFactionsLibrary::RegistryFaction(const FName& Name, const FFactionInfo
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	Settings->Internal_RegistryFaction(Name, FactionInfo);
-
-	// Return the faction, won't be valid if its not registered
-	return { Name };
+	return Settings->GetFactionTable().RegistryFaction(Name, FactionInfo);
 }
 
 bool UFactionsLibrary::UnregistryFaction(FFaction Faction)
@@ -23,7 +20,7 @@ bool UFactionsLibrary::UnregistryFaction(FFaction Faction)
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	return Settings->Internal_UnregistryFaction(Faction);
+	return Settings->GetFactionTable().UnregistryFaction(Faction);
 }
 
 void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
@@ -31,9 +28,11 @@ void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	Factions.Reserve(Factions.Num() + Settings->Factions.Num());
+	const auto& AllFactions = Settings->GetFactionInfos();
 
-	for (const auto& Entry : Settings->Factions)
+	Factions.Reserve(Factions.Num() + AllFactions.Num());
+
+	for (const auto& Entry : AllFactions)
 	{
 		Factions.Add({Entry.Key});
 	}

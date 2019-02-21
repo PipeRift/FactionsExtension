@@ -1,6 +1,6 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionRelationCustomization.h"
+#include "Customizations/FactionRelationCustomization.h"
 
 #include "DetailWidgetRow.h"
 #include "IDetailPropertyRow.h"
@@ -8,7 +8,7 @@
 #include "Widgets/Views/SListView.h"
 
 #include "FactionsSettings.h"
-#include "SFaction.h"
+#include "Customizations/SFaction.h"
 
 #define LOCTEXT_NAMESPACE "FFactionRelationCustomization"
 

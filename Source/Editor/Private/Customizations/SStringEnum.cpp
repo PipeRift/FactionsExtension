@@ -1,6 +1,6 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "SStringEnum.h"
+#include "Customizations/SStringEnum.h"
 #include <PropertyEditorModule.h>
 
 #include "FactionsSettings.h"
@@ -63,7 +63,7 @@ void SStringEnum::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ES
 	if (SelectedNamePtr.IsValid())
 	{
 		FName SelectedName = *SelectedNamePtr;
-		const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+		const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 		if (SelectedName != NO_FACTION_NAME && AllFactions.Contains(SelectedName))
 		{
@@ -86,7 +86,7 @@ FText SStringEnum::GetSelectedItem() const
 
 	FName Name;
 	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 	if (RowResult != FPropertyAccess::MultipleValues)
 	{
@@ -106,7 +106,7 @@ void SStringEnum::GetFactionNames(TArray<FName>& Names) const
 		return;
 	}
 
-	for (const auto& KeyValue : Settings->Factions)
+	for (const auto& KeyValue : Settings->GetFactionInfos())
 	{
 		Names.Add(KeyValue.Key);
 	}

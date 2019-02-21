@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -6,8 +6,9 @@
 
 #include <Engine/World.h>
 
-#include "FactionInfo.h"
-#include "RelationDatabase.h"
+#include "FactionTable.h"
+#include "RelationTable.h"
+#include "Reputation/ReputationStep.h"
 #include "FactionsSettings.generated.h"
 
 
@@ -19,25 +20,40 @@ class FACTIONS_API UFactionsSettings : public UObject
 {
 	GENERATED_BODY()
 
-public:
-
-	UFactionsSettings();
+protected:
 
 	/** Faction used when an Actor doesn't implement a FactionAgentInterface */
 	//UPROPERTY(config, EditAnywhere, Category = Custom)
 	//FFaction DefaultFaction;
 
-	UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
-	TMap<FName, FFactionInfo> Factions;
+	// #TODO: Move deprecated factions into FactionList on PostLoad
+	UPROPERTY(config, SaveGame)
+	TMap<FName, FFactionInfo> Factions_DEPRECATED;
 
-	UPROPERTY(config, EditAnywhere, Category = Relations, SaveGame)
-	FRelationDatabase Relations;
+	UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
+	FFactionTable FactionList;
+
+public:
+
+	UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
+	FRelationTable Relations;
+
+
+	/** Begin Reputation */
+	UPROPERTY(config, EditAnywhere, Category = Reputation, SaveGame)
+	FReputationStep DefaultStep;
+
+	UPROPERTY(config, EditAnywhere, Category = Reputation, SaveGame)
+	TArray<FReputationStep> PositiveSteps;
+
+	UPROPERTY(config, EditAnywhere, Category = Reputation, SaveGame)
+	TArray<FReputationStep> NegativeSteps;
+	/** End Reputation */
 
 
 public:
 
-	bool Internal_RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo);
-	bool Internal_UnregistryFaction(FFaction Faction);
+	UFactionsSettings();
 
 	bool Internal_RegistryRelation(const FFactionRelation& Relation);
 	bool Internal_UnregistryRelation(const FFactionRelation& Relation);
@@ -58,13 +74,14 @@ protected:
 
 public:
 
-	/**
-	* Editor only usage
-	* @return all factions as a reference
-	*/
-	TMap<FName, FFactionInfo>& Internal_GetFactions() { return Factions; }
+	bool UpdateDeprecations();
 
 	/** Gets the member name for the factions */
-	static FName GetFactionsPropertyName() { return GET_MEMBER_NAME_CHECKED(UFactionsSettings, Factions); }
+	static FName GetFactionsPropertyName() { return GET_MEMBER_NAME_CHECKED(UFactionsSettings, Factions_DEPRECATED); }
 #endif
+
+public:
+
+	FFactionTable& GetFactionTable() { return FactionList; }
+	const TMap<FName, FFactionInfo>& GetFactionInfos() const { return FactionList.Items; }
 };

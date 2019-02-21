@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 #pragma once
 
 #include <IPropertyTypeCustomization.h>
@@ -73,5 +73,7 @@ protected:
 	* This is for override purposes.
 	*/
 	virtual void OnItemSelected(FString Value) {}
+
+	virtual FSlateColor GetForegroundColor() const;
 };
 

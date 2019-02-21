@@ -1,11 +1,12 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
 #pragma once
 
-#include "GenericTeamAgentInterface.h"
+#include <GenericTeamAgentInterface.h>
+#include <Engine/Texture.h>
 
 #include "Faction.h"
-#include <Engine/Texture.h>
+#include "FactionInfoAsset.h"
 #include "FactionInfo.generated.h"
 
 #define LOCTEXT_NAMESPACE "FactionInfo"
@@ -17,14 +18,15 @@
 USTRUCT(BlueprintType)
 struct FACTIONS_API FFactionInfo
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	FFactionInfo(FLinearColor InColor = FColor::Cyan)
 		: DisplayName(LOCTEXT("FactionDisplayName", ""))
-		, Color(FColor::Cyan)
+		, Color(InColor)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
+		, InfoAsset()
 	{}
 
 	FFactionInfo(FText DisplayName, FLinearColor InColor = FColor::Cyan)
@@ -32,6 +34,7 @@ public:
 		, Color(InColor)
 		, AttitudeTowardsItself(ETeamAttitude::Friendly)
 		, DefaultAttitudeTowardsOthers(ETeamAttitude::Neutral)
+		, InfoAsset()
 	{}
 
 	/** Name of the faction */
@@ -54,6 +57,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	TSoftObjectPtr<UTexture> Icon;
 
+	/** Asset containing optional extra fields for a faction.
+	 * Create a class from UFactionInfoAsset to create your own fields (either in C++ or BPs)
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction, meta = (DisplayThumbnail = false))
+	TAssetPtr<UFactionInfoAsset> InfoAsset;
 };
 
 #undef LOCTEXT_NAMESPACE

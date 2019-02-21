@@ -1,6 +1,6 @@
-// Copyright 2015-2018 Piperift. All Rights Reserved.
+// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionCustomization.h"
+#include "Customizations/FactionCustomization.h"
 
 #include "FactionsModule.h"
 
@@ -25,13 +25,9 @@ bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle>
 	return false;
 }
 
-void FFactionCustomization::GetAllItems(TArray<FString>& Values) const {
-	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
-	if (!Settings) {
-		return;
-	}
-
-	for (const auto& KeyValue : Settings->Factions)
+void FFactionCustomization::GetAllItems(TArray<FString>& Values) const
+{
+	for (const auto& KeyValue : GetDefault<UFactionsSettings>()->GetFactionInfos())
 	{
 		Values.Add(KeyValue.Key.ToString());
 	}
@@ -42,11 +38,11 @@ void FFactionCustomization::GetAllItems(TArray<FString>& Values) const {
 
 void FFactionCustomization::OnItemSelected(FString Value)
 {
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
+	const auto& Factions = GetDefault<UFactionsSettings>()->GetFactionInfos();
 
 	FName NameValue = FName(*Value);
 
-	if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
+	if (NameValue != NO_FACTION_NAME && Factions.Contains(NameValue))
 	{
 		NameHandle->SetValue(NameValue);
 	}
@@ -60,20 +56,32 @@ void FFactionCustomization::OnItemSelected(FString Value)
 /** Display the current column selection */
 FText FFactionCustomization::GetSelectedText() const
 {
-	FName Name;
-	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->Factions;
-
-	if (RowResult != FPropertyAccess::MultipleValues)
+	FName Id = GetIdValue();
+	if (!Id.IsNone())
 	{
-		const FFactionInfo* Info = AllFactions.Find(Name);
-		if (Info)
-		{
-			return FText::FromName(Name);
-		}
-		return FText::FromName(NO_FACTION_NAME);
+		return FText::FromName(Id);
 	}
-	return LOCTEXT("MultipleValues", "Multiple Values");
+	return FText::FromName(NO_FACTION_NAME);
+}
+
+FSlateColor FFactionCustomization::GetForegroundColor() const
+{
+	FName Id = GetIdValue();
+
+	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactionInfos().Contains(Id))
+	{
+		return FStringEnumCustomization::GetForegroundColor();
+	}
+
+	return FLinearColor::Red;
+}
+
+FName FFactionCustomization::GetIdValue() const
+{
+	FName Id;
+	if(NameHandle.IsValid() && NameHandle->GetValue(Id) == FPropertyAccess::Success)
+		return Id;
+	return FName{};
 }
 
 #undef LOCTEXT_NAMESPACE
