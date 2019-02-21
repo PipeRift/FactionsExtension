@@ -49,6 +49,10 @@ private:
 	*/
 	void GetFactionNames(TArray<FName>& Names) const;
 
+	FSlateColor GetForegroundColor() const;
+
+	FName GetIdValue() const;
+
 
 	TSharedPtr<IPropertyHandle> FactionHandle;
 	TSharedPtr<IPropertyHandle> NameHandle;

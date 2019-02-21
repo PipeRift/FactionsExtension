@@ -131,9 +131,8 @@ private:
 
 public:
 
-	static const FName ColumnSelect;
+	static const FName ColumnDelete;
 	static const FName ColumnId;
 	static const FName ColumnColor;
-	static const FName ColumnDelete;
 };
 

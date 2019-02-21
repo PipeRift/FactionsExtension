@@ -139,10 +139,19 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 		.Thickness(FVector2D(8.0f, 8.0f));
 
 	TSharedRef<SHeaderRow> RelationsHeaderRow = SNew(SHeaderRow)
+	+ SHeaderRow::Column(DeleteId)
+	.HAlignCell(HAlign_Fill)
+	.VAlignCell(VAlign_Fill)
+	.VAlignHeader(VAlign_Center)
+	.FixedWidth(22.f)
+	[
+		SNew(STextBlock)
+		.Text(FText::GetEmpty())
+	]
 	+ SHeaderRow::Column(FactionAId)
 	.HAlignCell(HAlign_Left)
 	.FillWidth(1)
-	.HeaderContentPadding(FMargin(0, 3))
+	.HeaderContentPadding(FMargin(5, 3))
 	[
 		SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
@@ -169,7 +178,7 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 	+ SHeaderRow::Column(FactionBId)
 	.HAlignCell(HAlign_Left)
 	.FillWidth(1)
-	.HeaderContentPadding(FMargin(0, 3))
+	.HeaderContentPadding(FMargin(5, 3))
 	[
 		SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
@@ -194,19 +203,11 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 		]
 	]
 	+ SHeaderRow::Column(AttitudeId)
-	.HAlignCell(HAlign_Left).FillWidth(3)
-	.HeaderContentPadding(FMargin(0, 3))
+	.HAlignCell(HAlign_Left)
+	.HeaderContentPadding(FMargin(5, 3))
 	[
 		SNew(STextBlock)
 		.Text(FText::FromName(AttitudeId))
-	]
-	+ SHeaderRow::Column(DeleteId)
-	.HAlignCell(HAlign_Right)
-	.ManualWidth(22.f)
-	.HeaderContentPadding(FMargin(0, 3))
-	[
-		SNew(STextBlock)
-		.Text(FText::GetEmpty())
 	];
 
 
@@ -285,69 +286,45 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 	if (Num > RelationIndex)
 	{
 		const TSharedPtr<IPropertyHandle> RelationHandle = ListHandleArray->GetElement(RelationIndex);
-		if (!RelationHandle.IsValid())
-		{
-			return SNullWidget::NullWidget;
-		}
+		check(RelationHandle.IsValid());
 
-		TSharedPtr<SWidget> Widget{};
-		if (ColumnName == FactionAId)
+		if (ColumnName == DeleteId)
+		{
+			return SNew(SButton)
+			.HAlign(HAlign_Center)
+			.VAlign(VAlign_Center)
+			.ContentPadding(FMargin{ 0, 1, 0, 0 })
+			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+			.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
+			.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)
+			[
+				SNew(STextBlock)
+				.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
+				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
+			];
+		}
+		else if (ColumnName == FactionAId)
 		{
 			const TSharedPtr<IPropertyHandle> FactionHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA)) };
-			if (FactionHandle.IsValid())
-			{
-				Widget = CreateFactionWidget(FactionHandle.ToSharedRef());
-			}
+
+			return CreateFactionWidget(FactionHandle.ToSharedRef());
 		}
 		else if (ColumnName == FactionBId)
 		{
 			const TSharedPtr<IPropertyHandle> FactionHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB)) };
-			if (FactionHandle.IsValid())
-			{
-				Widget = CreateFactionWidget(FactionHandle.ToSharedRef());
-			}
+
+			return CreateFactionWidget(FactionHandle.ToSharedRef());
 		}
 		else if (ColumnName == AttitudeId)
 		{
 			const TSharedPtr<IPropertyHandle> AttitudeHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Attitude)) };
-			if (AttitudeHandle.IsValid())
-			{
-				Widget = SNew(SBox)
-					.HAlign(HAlign_Fill)
-					.MinDesiredWidth(100.f)
-					[
-						AttitudeHandle->CreatePropertyValueWidget()
-					];
-			}
-		}
 
-		if (Widget.IsValid())
-		{
 			return SNew(SBox)
-				.Padding(0)
-				.MinDesiredWidth(20.f)
-				[
-					Widget.ToSharedRef()
-				];
-		}
-		else if (ColumnName == DeleteId)
-		{
-			return SNew(SBox)
-			.Padding(1)
-			.MinDesiredWidth(22.f)
+			.HAlign(HAlign_Fill)
+			.Padding(FMargin{3,0})
+			.MinDesiredWidth(100.f)
 			[
-				SNew(SButton)
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				.ContentPadding(2)
-				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-				.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
-				.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)
-				[
-					SNew(STextBlock)
-					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
-					.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
-				]
+				AttitudeHandle->CreatePropertyValueWidget()
 			];
 		}
 	}

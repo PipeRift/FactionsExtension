@@ -81,10 +81,10 @@ private:
 	FString FilterFactionB;
 
 
+	static const FName DeleteId;
 	static const FName FactionAId;
 	static const FName FactionBId;
 	static const FName AttitudeId;
-	static const FName DeleteId;
 
 	static const FName NameMember;
 };

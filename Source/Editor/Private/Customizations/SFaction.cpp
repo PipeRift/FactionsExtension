@@ -21,7 +21,7 @@ void SFaction::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _
 		.OnComboBoxOpening(this, &SFaction::UpdateItems, false)
 		.OnSelectionChanged(this, &SFaction::OnSelectionChanged)
 		.ButtonStyle(FEditorStyle::Get(), "FlatButton")
-		.ForegroundColor(FSlateColor::UseForeground())
+		.ForegroundColor(this, &SFaction::GetForegroundColor)
 		//.InitiallySelectedItem(GetVariableFactionValue())
 		[
 			SNew(STextBlock)
@@ -83,20 +83,10 @@ void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESele
 
 FText SFaction::GetSelectedItem() const
 {
-	if (!NameHandle.IsValid())
-		return FText::FromName(NO_FACTION_NAME);
-
-	FName Name;
-	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
-
-	if (RowResult != FPropertyAccess::MultipleValues)
+	FName Id = GetIdValue();
+	if (!Id.IsNone())
 	{
-		if (AllFactions.Contains(Name))
-		{
-			//Return name with prefix number
-			return FText::FromName(Name);
-		}
+		return FText::FromName(Id);
 	}
 	return FText::FromName(NO_FACTION_NAME);
 }
@@ -104,9 +94,7 @@ FText SFaction::GetSelectedItem() const
 void SFaction::GetFactionNames(TArray<FName>& Names) const
 {
 	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
-	if (!Settings) {
-		return;
-	}
+	check(Settings);
 
 	for (const auto& KeyValue : Settings->GetFactionInfos())
 	{
@@ -115,4 +103,24 @@ void SFaction::GetFactionNames(TArray<FName>& Names) const
 	// Make sure None is at the start
 	Names.Remove(NO_FACTION_NAME);
 	Names.Insert(NO_FACTION_NAME, 0);
+}
+
+FSlateColor SFaction::GetForegroundColor() const
+{
+	FName Id = GetIdValue();
+
+	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactionInfos().Contains(Id))
+	{
+		return FSlateColor::UseForeground();
+	}
+
+	return FLinearColor::Red;
+}
+
+FName SFaction::GetIdValue() const
+{
+	FName Id;
+	if (NameHandle.IsValid() && NameHandle->GetValue(Id) == FPropertyAccess::Success)
+		return Id;
+	return FName{};
 }

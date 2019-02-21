@@ -79,7 +79,7 @@ FSlateColor FFactionCustomization::GetForegroundColor() const
 FName FFactionCustomization::GetIdValue() const
 {
 	FName Id;
-	if(NameHandle->GetValue(Id) == FPropertyAccess::Success)
+	if(NameHandle.IsValid() && NameHandle->GetValue(Id) == FPropertyAccess::Success)
 		return Id;
 	return FName{};
 }

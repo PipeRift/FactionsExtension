@@ -20,7 +20,6 @@
 
 #define LOCTEXT_NAMESPACE "FFactionTableCustomization"
 
-const FName FFactionTableCustomization::ColumnSelect("Select");
 const FName FFactionTableCustomization::ColumnId("Id");
 const FName FFactionTableCustomization::ColumnColor("Color");
 const FName FFactionTableCustomization::ColumnDelete("Delete");
@@ -53,39 +52,32 @@ public:
 	/** Overridden from SMultiColumnTableRow.  Generates a widget for this column of the list view. */
 	virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& Column) override
 	{
-		if (Column == FFactionTableCustomization::ColumnSelect)
+		if (Column == FFactionTableCustomization::ColumnDelete)
 		{
-			return SNew(STextBlock).Text(LOCTEXT("FactionColumnSelect_Value", "⊙"));
+			return SNew(SButton)
+			.VAlign(VAlign_Center)
+			.HAlign(HAlign_Center)
+			.ContentPadding(FMargin{0, 1, 0, 0})
+			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+			.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
+			.OnClicked(Customization.Pin().Get(), &FFactionTableCustomization::OnDeleteFaction, Item)
+			[
+				SNew(STextBlock)
+				.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
+				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
+			];
 		}
 		else if (Column == FFactionTableCustomization::ColumnColor)
 		{
-			return SNew(SFactionColor, Item->GetColorProperty());
-		}
-		else if (Column == FFactionTableCustomization::ColumnDelete)
-		{
 			return SNew(SBox)
-			.Padding(1)
-			.MinDesiredWidth(22.f)
+			.Padding(FMargin{ 5, 3 })
 			[
-				SNew(SButton)
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				.ContentPadding(2)
-				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-				.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
-				.OnClicked(Customization.Pin().Get(), &FFactionTableCustomization::OnDeleteFaction, Item)
-				[
-					SNew(STextBlock)
-					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
-					//.Text(LOCTEXT("Relations_Delete", "✖"))
-					.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
-				]
+				SNew(SFactionColor, Item->GetColorProperty())
 			];
 		}
 
 		return SNew(SBox)
-		.Padding(FMargin{ 5.0f, 3.f })
-		.MinDesiredHeight(25.f)
+		.Padding(FMargin{ 5, 0 })
 		[
 			SAssignNew(IdNameSwitcher, SWidgetSwitcher)
 			+ SWidgetSwitcher::Slot()
@@ -244,18 +236,18 @@ void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Str
 
 void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-
 	TSharedRef<SScrollBar> VerticalScrollBar = SNew(SScrollBar)
 		.Orientation(Orient_Vertical)
 		.Thickness(FVector2D(8.0f, 8.0f));
 
 	TSharedRef<SHeaderRow> ListHeaderRow = SNew(SHeaderRow)
-	+ SHeaderRow::Column(ColumnSelect).HAlignCell(HAlign_Center)
-	.VAlignCell(VAlign_Center)
+	+ SHeaderRow::Column(ColumnDelete)
+	.HAlignCell(HAlign_Fill)
+	.VAlignCell(VAlign_Fill)
 	.VAlignHeader(VAlign_Center)
-	.FixedWidth(20.f)
+	.FixedWidth(22.f)
 	[
-		SNew(STextBlock).Text(LOCTEXT("FactionColumnSelect", ""))
+		SNew(STextBlock).Text(LOCTEXT("FactionColumnDelete", ""))
 	]
 	+ SHeaderRow::Column(ColumnId)
 	.HAlignCell(HAlign_Fill)
@@ -266,15 +258,16 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	[
 		SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
-		.Padding(2, 0)
+		.Padding(5, 0)
 		.HAlign(HAlign_Left)
 		[
 			SNew(STextBlock)
-			.Text(LOCTEXT("FactionColumnTitle", "Faction Id"))
+			.Text(LOCTEXT("FactionColumnId", "Faction Id"))
+			.ToolTipText(LOCTEXT("FactionColumnIdTooltip", "A faction's Id serves as its unique identifier. For setting a name use the Display Name"))
 		]
 		+ SHorizontalBox::Slot()
 		.HAlign(HAlign_Right)
-		.Padding(4, 0)
+		.Padding(5, 0)
 		[
 			SNew(SBox)
 			.MaxDesiredHeight(20.f)
@@ -287,22 +280,13 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 		]
 	]
 	+ SHeaderRow::Column(ColumnColor)
-	.HAlignCell(HAlign_Right)
+	.HAlignCell(HAlign_Center)
 	.VAlignCell(VAlign_Center)
 	.VAlignHeader(VAlign_Center)
-	.FixedWidth(60.f)
-	.HeaderContentPadding(FMargin(0, 3))
+	.FixedWidth(70.f)
+	.HeaderContentPadding(FMargin(5, 3))
 	[
 		SNew(STextBlock).Text(LOCTEXT("FactionColumnColor", "Color"))
-	]
-	+ SHeaderRow::Column(ColumnDelete)
-	.HAlignCell(HAlign_Right)
-	.VAlignCell(VAlign_Center)
-	.VAlignHeader(VAlign_Center)
-	.FixedWidth(22.f)
-	.HeaderContentPadding(FMargin(0, 3))
-	[
-		SNew(STextBlock).Text(LOCTEXT("FactionColumnDelete", ""))
 	];
 
 	ListView = SNew(SListView<FFactionViewItemPtr>)
@@ -321,7 +305,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	.VAlign(VAlign_Top)
 	[
 		SNew(SBox)
-		.Padding(FMargin{0,10,0,20})
+		.Padding(FMargin{ 0,10,0,20 })
 		.VAlign(VAlign_Fill)
 		[
 			SNew(SHorizontalBox)
@@ -349,14 +333,18 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	.HAlign(HAlign_Fill)
 	[
 		SNew(SBox)
-		.Padding(FMargin{ 10, 10, 10, 10 })
+		.Padding(10)
 		.MinDesiredHeight(180.f)
 		[
 			SAssignNew(FactionInfoContainer, SVerticalBox)
 		]
 	];
-}
 
+	if (!CurrentSelection.IsValid() && AvailableFactions.Num() > 0)
+	{
+		SetSelection(AvailableFactions[0]);
+	}
+}
 
 FFactionTableCustomization::~FFactionTableCustomization()
 {
