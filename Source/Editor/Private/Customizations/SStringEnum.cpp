@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "SStringEnum.h"
+#include "Customizations/SStringEnum.h"
 #include <PropertyEditorModule.h>
 
 #include "FactionsSettings.h"

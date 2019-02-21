@@ -76,10 +76,12 @@ public:
 
 	bool UpdateDeprecations();
 
-	FFactionTable& GetFactionTable() { return FactionList; }
-	const TMap<FName, FFactionInfo>& GetFactionInfos() const { return FactionList.Items; }
-
 	/** Gets the member name for the factions */
 	static FName GetFactionsPropertyName() { return GET_MEMBER_NAME_CHECKED(UFactionsSettings, Factions_DEPRECATED); }
 #endif
+
+public:
+
+	FFactionTable& GetFactionTable() { return FactionList; }
+	const TMap<FName, FFactionInfo>& GetFactionInfos() const { return FactionList.Items; }
 };

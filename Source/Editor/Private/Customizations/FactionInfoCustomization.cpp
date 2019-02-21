@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionInfoCustomization.h"
+#include "Customizations/FactionInfoCustomization.h"
 
 #include "DetailWidgetRow.h"
 #include "IDetailChildrenBuilder.h"
@@ -18,10 +18,10 @@ TSharedRef<IPropertyTypeCustomization> FFactionInfoCustomization::MakeInstance()
 void FFactionInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	TSharedPtr<IPropertyHandle> NameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName));
-	
+
 	HeaderRow.NameContent()
 	[
-		StructPropertyHandle->CreatePropertyNameWidget()	
+		StructPropertyHandle->CreatePropertyNameWidget()
 	]
 	.ValueContent()
 	[
@@ -40,7 +40,7 @@ void FFactionInfoCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> St
 	{
 		TSharedPtr<IPropertyHandle> PropHandle = StructPropertyHandle->GetChildHandle(I);
 		check(PropHandle);
-		
+
 		if (PropHandle->GetProperty() != NameHandle->GetProperty())
 		{
 			StructBuilder.AddProperty(PropHandle.ToSharedRef());

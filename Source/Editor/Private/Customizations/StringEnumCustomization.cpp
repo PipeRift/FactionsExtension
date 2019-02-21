@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "StringEnumCustomization.h"
+#include "Customizations/StringEnumCustomization.h"
 
 #include <DetailWidgetRow.h>
 #include <Widgets/Input/SSearchBox.h>

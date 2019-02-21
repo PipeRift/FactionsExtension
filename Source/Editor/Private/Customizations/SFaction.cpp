@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "SFaction.h"
+#include "Customizations/SFaction.h"
 
 #include "FactionsSettings.h"
 #include "PropertyEditorModule.h"

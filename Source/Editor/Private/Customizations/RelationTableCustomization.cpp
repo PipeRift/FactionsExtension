@@ -1,6 +1,6 @@
 ﻿// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "RelationTableCustomization.h"
+#include "Customizations/RelationTableCustomization.h"
 
 #include <Editor.h>
 #include <ScopedTransaction.h>
@@ -11,7 +11,7 @@
 #include <Widgets/Input/SSearchBox.h>
 #include <Widgets/Input/SButton.h>
 
-#include "SFaction.h"
+#include "Customization/SFaction.h"
 
 #include "FactionsSettings.h"
 #include "Faction.h"

@@ -1,6 +1,6 @@
 ﻿// Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionTableCustomization.h"
+#include "Customizations/FactionTableCustomization.h"
 
 #include <Editor.h>
 #include <ScopedTransaction.h>
@@ -11,7 +11,7 @@
 #include <Widgets/Input/SButton.h>
 #include <Widgets/Layout/SWidgetSwitcher.h>
 
-#include "SFaction.h"
+#include "Customizations/SFaction.h"
 
 #include "FactionsSettings.h"
 #include "FactionTable.h"

@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionPin.h"
+#include "Customizations/FactionPin.h"
 
 #include "Kismet2/KismetEditorUtilities.h"
 #include "EdGraph/EdGraphPin.h"

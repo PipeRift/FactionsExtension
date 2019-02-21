@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "AssetTypeAction_FactionInfoAsset.h"
+#include "Asset/AssetTypeAction_FactionInfoAsset.h"
 #include "FactionInfoAsset.h"
 #include "FactionsModule.h"
 

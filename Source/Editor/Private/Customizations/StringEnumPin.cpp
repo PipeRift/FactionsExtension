@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "StringEnumPin.h"
+#include "Customizations/StringEnumPin.h"
 
 #include <Kismet2/KismetEditorUtilities.h>
 #include <EdGraph/EdGraphPin.h>

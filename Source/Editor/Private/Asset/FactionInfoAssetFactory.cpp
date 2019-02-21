@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionInfoAssetFactory.h"
+#include "Asset/FactionInfoAssetFactory.h"
 
 #include <ClassViewerModule.h>
 #include <ClassViewerFilter.h>

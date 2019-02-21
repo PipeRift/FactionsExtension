@@ -1,6 +1,6 @@
 // Copyright 2015-2019 Piperift. All Rights Reserved.
 
-#include "FactionRelationCustomization.h"
+#include "Customizations/FactionRelationCustomization.h"
 
 #include "DetailWidgetRow.h"
 #include "IDetailPropertyRow.h"
