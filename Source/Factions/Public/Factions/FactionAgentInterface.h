@@ -98,9 +98,9 @@ private:
 	/** DEPRECATIONS */
 public:
 
-	UE_DEPRECATED(1.7, "Use 'GetFaction' instead.")
+	DEPRECATED(1.7, "Use 'GetFaction' instead.")
 	static FFaction Execute_GetFaction(const AActor* Other) { return GetFaction(Other); }
 
-	UE_DEPRECATED(1.7, "Use 'SetFaction' instead.")
+	DEPRECATED(1.7, "Use 'SetFaction' instead.")
 	static void Execute_SetFaction(AActor* Other, const FFaction& NewFaction) { SetFaction(Other, NewFaction); }
 };
