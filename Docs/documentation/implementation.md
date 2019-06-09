@@ -43,7 +43,7 @@ Add **IFactionAgentInterface** to any Actor:
 
 In order for the system to read our faction, we need to provide a getter and a setter. The returned variable depends on what your code needs.
 
-![Get & Set](E:\Piperift\Marketplace\FactionsExtension\Plugins\FactionsExtension\Docs\documentation\img\cpp_set&get.png)
+![Get & Set](img/cpp_set&get.png)
 
 A common case is to have a Faction variable exposed to the editor *(like in the example)*. You could also set dependent factions by getting another actor's Faction *(e.g Inside a controller)*.
 
