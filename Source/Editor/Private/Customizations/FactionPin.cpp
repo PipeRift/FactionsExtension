@@ -39,7 +39,7 @@ void SFactionPin::ParseDefaultValue()
 		NameString = NameString.RightChop(1);
 
 		//Get parameter string value
-		NameString.Split("=", NULL, &NameString);
+		NameString.Split("=", nullptr, &NameString);
 		if (NameString.StartsWith(TEXT("\"")) && NameString.EndsWith(TEXT("\"")))
 		{
 			NameString = NameString.LeftChop(1);
