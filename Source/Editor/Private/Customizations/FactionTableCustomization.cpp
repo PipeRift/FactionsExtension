@@ -113,7 +113,7 @@ private:
 
 	FText GetIdAsText() const { return FText::FromName(Item->GetName()); }
 
-	FReply OnIdNameDoubleClicked(const FGeometry&, const FPointerEvent&);
+	FReply OnIdNameDoubleClicked();
 
 	void OnIdNameCommited(const FText& InText, ETextCommit::Type InCommitType) const;
 
@@ -126,7 +126,7 @@ private:
 };
 
 
-FReply SFactionViewItem::OnIdNameDoubleClicked(const FGeometry&, const FPointerEvent&)
+FReply SFactionViewItem::OnIdNameDoubleClicked()
 {
 	FReply Reply = FReply::Unhandled();
 
