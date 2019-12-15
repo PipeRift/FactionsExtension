@@ -17,7 +17,7 @@ struct FFactionInfo;
 USTRUCT(BlueprintType)
 struct FACTIONS_API FFaction
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	static const FFaction NoFaction;
 

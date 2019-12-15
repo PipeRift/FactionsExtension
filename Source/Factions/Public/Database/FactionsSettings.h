@@ -26,10 +26,6 @@ protected:
 	//UPROPERTY(config, EditAnywhere, Category = Custom)
 	//FFaction DefaultFaction;
 
-	// #TODO: Move deprecated factions into FactionList on PostLoad
-	UPROPERTY(config, SaveGame)
-	TMap<FName, FFactionInfo> Factions_DEPRECATED;
-
 	UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
 	FFactionTable FactionList;
 
@@ -37,18 +33,6 @@ public:
 
 	UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
 	FRelationTable Relations;
-
-
-	/** Begin Reputation */
-	UPROPERTY(config, EditAnywhere, Category = Reputation, SaveGame)
-	FReputationStep DefaultStep;
-
-	UPROPERTY(config, EditAnywhere, Category = Reputation, SaveGame)
-	TArray<FReputationStep> PositiveSteps;
-
-	UPROPERTY(config, EditAnywhere, Category = Reputation, SaveGame)
-	TArray<FReputationStep> NegativeSteps;
-	/** End Reputation */
 
 
 public:
@@ -71,13 +55,6 @@ protected:
 
 #if WITH_EDITOR
 	virtual bool CanEditChange(const UProperty* InProperty) const override;
-
-public:
-
-	bool UpdateDeprecations();
-
-	/** Gets the member name for the factions */
-	static FName GetFactionsPropertyName() { return GET_MEMBER_NAME_CHECKED(UFactionsSettings, Factions_DEPRECATED); }
 #endif
 
 public:

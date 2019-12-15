@@ -14,36 +14,47 @@
     "EnabledByDefault": true,
     "CanContainContent": false,
     "IsBetaVersion": false,
-    "Modules": [
-      {
-        "Name": "Factions",
-        "Type": "Runtime",
-        "LoadingPhase": "PreDefault",
-        "WhitelistPlatforms": [
-            "Win64",
-            "Win32",
-            "Linux",
-            "Android",
-            "PS4",
-            "XboxOne",
-            "Switch",
-            "Mac"
-        ]
-      },
-      {
-        "Name": "FactionsEditor",
-        "Type": "Editor",
-        "LoadingPhase": "PostEngineInit",
-        "WhitelistPlatforms": [
-          "Win64",
-          "Win32",
-          "Linux",
-          "Android",
-          "PS4",
-          "XboxOne",
-          "Switch",
-          "Mac"
-        ]
-      }
-    ]
+  "Modules": [
+    {
+      "Name": "Factions",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Win32",
+        "Linux",
+        "Android",
+        "PS4",
+        "XboxOne",
+        "Switch",
+        "Mac"
+      ]
+    },
+    {
+      "Name": "FactionsEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Win32",
+        "Linux",
+        "Android",
+        "PS4",
+        "XboxOne",
+        "Switch",
+        "Mac"
+      ]
+    },
+    {
+      "Name": "FactionsExtensionTest",
+      "Type": "DeveloperTool",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Win32",
+        "Linux",
+        "Mac"
+      ]
+    }
+  ]
 }
