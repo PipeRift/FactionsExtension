@@ -49,7 +49,7 @@
     },
     {
       "Name": "FactionsExtensionTest",
-      "Type": "DeveloperTool",
+      "Type": "Developer",
       "LoadingPhase": "PreDefault",
       "WhitelistPlatforms": [
         "Win64",
