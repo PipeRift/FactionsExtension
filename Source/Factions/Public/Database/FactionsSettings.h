@@ -54,7 +54,7 @@ protected:
 	void OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS);
 
 #if WITH_EDITOR
-	virtual bool CanEditChange(const FProperty* InProperty) const override;
+	virtual bool CanEditChange(const UProperty* InProperty) const override;
 #endif
 
 public:

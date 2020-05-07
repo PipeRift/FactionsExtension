@@ -55,7 +55,7 @@ void UFactionsSettings::OnWorldInitialization(UWorld* World, const UWorld::Initi
 }
 
 #if WITH_EDITOR
-bool UFactionsSettings::CanEditChange(const FProperty* InProperty) const
+bool UFactionsSettings::CanEditChange(const UProperty* InProperty) const
 {
 	bool bCanEdit = Super::CanEditChange(InProperty);
 
