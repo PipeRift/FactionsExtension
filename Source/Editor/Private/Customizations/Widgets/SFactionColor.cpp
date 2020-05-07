@@ -34,7 +34,7 @@ void SFactionColor::Construct(const FArguments& InArgs, TSharedPtr<IPropertyHand
 
 	if (ColorProperty.IsValid() && ColorProperty->IsValidHandle())
 	{
-		bColorIsLinear = CastChecked<UStructProperty>(ColorProperty->GetProperty())->Struct->GetFName() == NAME_LinearColor;
+		bColorIsLinear = CastFieldChecked<FStructProperty>(ColorProperty->GetProperty())->Struct->GetFName() == NAME_LinearColor;
 		bColorIgnoreAlpha = ColorProperty->GetProperty()->HasMetaData(TEXT("HideAlphaChannel"));
 	}
 	bDontUpdateWhileEditingColor = true;
