@@ -5,7 +5,7 @@ stages:
 
 variables:
   plugin: FactionsExtension
-  engine_version: 26
+  engine_version: 25
 
 cache:
   paths:
