@@ -20,7 +20,7 @@ void SFaction::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _
 		.OnGenerateWidget(this, &SFaction::HandleStringEnumComboBoxGenerateWidget)
 		.OnComboBoxOpening(this, &SFaction::UpdateItems, false)
 		.OnSelectionChanged(this, &SFaction::OnSelectionChanged)
-		.ButtonStyle(FEditorStyle::Get(), "FlatButton")
+		.ButtonStyle(FAppStyle::Get(), "FlatButton")
 		.ForegroundColor(this, &SFaction::GetForegroundColor)
 		//.InitiallySelectedItem(GetVariableFactionValue())
 		[

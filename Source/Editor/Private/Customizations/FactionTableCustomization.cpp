@@ -44,7 +44,7 @@ public:
 
 		SMultiColumnTableRow<FFactionViewItemPtr>::Construct(
 			FSuperRowType::FArguments()
-			.Style(FEditorStyle::Get(), "DataTableEditor.CellListViewRow"),
+			.Style(FAppStyle::Get(), "DataTableEditor.CellListViewRow"),
 			InOwnerTableView
 		);
 	}
@@ -58,12 +58,12 @@ public:
 			.VAlign(VAlign_Center)
 			.HAlign(HAlign_Center)
 			.ContentPadding(FMargin{0, 1, 0, 0})
-			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-			.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
+			.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+			.ForegroundColor(FAppStyle::GetSlateColor("DefaultForeground"))
 			.OnClicked(Customization.Pin().Get(), &FFactionTableCustomization::OnDeleteFaction, Item)
 			[
 				SNew(STextBlock)
-				.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
+				.Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
 				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
 			];
 		}
@@ -192,7 +192,7 @@ void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Str
 			+ SHorizontalBox::Slot()
 			[
 				SNew(STextBlock)
-				.TextStyle(FEditorStyle::Get(), "LargeText")
+				.TextStyle(FAppStyle::Get(), "LargeText")
 				.Text(LOCTEXT("FactionsTitle", "Factions"))
 			]
 			+ SHorizontalBox::Slot()
@@ -201,9 +201,9 @@ void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Str
 			.FillWidth(1.f)
 			[
 				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
+				.ContentPadding(FAppStyle::GetMargin("StandardDialog.ContentPadding"))
 				.Text(LOCTEXT("Relations_New", "New"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
+				.ButtonStyle(FAppStyle::Get(), "FlatButton.Light")
 				.OnClicked(this, &FFactionTableCustomization::OnNewFaction)
 			]
 			+ SHorizontalBox::Slot()
@@ -212,9 +212,9 @@ void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Str
 			.AutoWidth()
 			[
 				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
+				.ContentPadding(FAppStyle::GetMargin("StandardDialog.ContentPadding"))
 				.Text(LOCTEXT("Relations_Clear", "Clear"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
+				.ButtonStyle(FAppStyle::Get(), "FlatButton.Light")
 				.OnClicked(this, &FFactionTableCustomization::OnClearFactions)
 			]
 		]

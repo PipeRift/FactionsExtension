@@ -36,7 +36,7 @@ void FFactionsModule::ShutdownModule()
 		if (FactionManager.IsValid())
 		{
 			FactionManager->RemoveFromRoot();
-			FactionManager->MarkPendingKill();
+			FactionManager->MarkAsGarbage();
 		}
 	}
 }
@@ -109,7 +109,7 @@ void FFactionsModule::CacheFactionInformation()
 	if (FactionManager.IsValid())
 	{
 		FactionManager->RemoveFromRoot();
-		FactionManager->MarkPendingKill();
+		FactionManager->MarkAsGarbage();
 	}
 
 	// Create new infos from settings, and don't allow GC destruction

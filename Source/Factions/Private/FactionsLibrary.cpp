@@ -70,7 +70,7 @@ bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, con
 			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
 			{
 				AActor* Actor = *It;
-				if (!Actor->IsPendingKill() && UFactionsLibrary::GetFaction(Actor) == Faction)
+				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor) == Faction)
 					OutActors.Add(Actor);
 			}
 			break;
@@ -78,7 +78,7 @@ bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, con
 			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
 			{
 				AActor* Actor = *It;
-				if (!Actor->IsPendingKill() && UFactionsLibrary::GetFaction(Actor).IsFriendlyTowards(Faction))
+				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsFriendlyTowards(Faction))
 					OutActors.Add(Actor);
 			}
 			break;
@@ -86,7 +86,7 @@ bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, con
 			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
 			{
 				AActor* Actor = *It;
-				if (!Actor->IsPendingKill() && UFactionsLibrary::GetFaction(Actor).IsNeutralTowards(Faction))
+				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsNeutralTowards(Faction))
 					OutActors.Add(Actor);
 			}
 			break;
@@ -94,7 +94,7 @@ bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, con
 			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
 			{
 				AActor* Actor = *It;
-				if (!Actor->IsPendingKill() && UFactionsLibrary::GetFaction(Actor).IsHostileTowards(Faction))
+				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsHostileTowards(Faction))
 					OutActors.Add(Actor);
 			}
 			break;

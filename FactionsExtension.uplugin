@@ -10,7 +10,7 @@
   "CreatedByURL": "http://piperift.com/",
   "DocsURL": "https://piperift.com/FactionsExtension/",
   "SupportURL": "info@piperift.com",
-  "EngineVersion": "4.26",
+  "EngineVersion": "5.1",
   "EnabledByDefault": true,
   "CanContainContent": false,
   "IsBetaVersion": false,
@@ -18,43 +18,17 @@
     {
       "Name": "Factions",
       "Type": "Runtime",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win64",
-        "Win32",
-        "Linux",
-        "Android",
-        "PS4",
-        "XboxOne",
-        "Switch",
-        "Mac"
-      ]
+      "LoadingPhase": "PreDefault"
     },
     {
       "Name": "FactionsEditor",
       "Type": "Editor",
-      "LoadingPhase": "PostEngineInit",
-      "WhitelistPlatforms": [
-        "Win64",
-        "Win32",
-        "Linux",
-        "Android",
-        "PS4",
-        "XboxOne",
-        "Switch",
-        "Mac"
-      ]
+      "LoadingPhase": "PostEngineInit"
     },
     {
       "Name": "FactionsExtensionTest",
       "Type": "DeveloperTool",
-      "LoadingPhase": "PreDefault",
-      "WhitelistPlatforms": [
-        "Win64",
-        "Win32",
-        "Linux",
-        "Mac"
-      ]
+      "LoadingPhase": "PreDefault"
     }
   ]
 }

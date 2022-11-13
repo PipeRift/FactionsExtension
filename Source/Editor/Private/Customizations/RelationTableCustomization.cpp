@@ -44,7 +44,7 @@ public:
 
 		SMultiColumnTableRow<TSharedPtr<uint32>>::Construct(
 			FSuperRowType::FArguments()
-			.Style(FEditorStyle::Get(), "DataTableEditor.CellListViewRow"),
+			.Style(FAppStyle::Get(), "DataTableEditor.CellListViewRow"),
 			InOwnerTableView
 		);
 	}
@@ -90,7 +90,7 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 			+ SHorizontalBox::Slot()
 			[
 				SNew(STextBlock)
-				.TextStyle(FEditorStyle::Get(), "LargeText")
+				.TextStyle(FAppStyle::Get(), "LargeText")
 				.Text(LOCTEXT("Relations_Title", "Relations"))
 			]
 			+ SHorizontalBox::Slot()
@@ -99,9 +99,9 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 			.FillWidth(1.f)
 			[
 				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
+				.ContentPadding(FAppStyle::GetMargin("StandardDialog.ContentPadding"))
 				.Text(LOCTEXT("Relations_New", "New"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
+				.ButtonStyle(FAppStyle::Get(), "FlatButton.Light")
 				.OnClicked(this, &FRelationTableCustomization::OnNewRelation)
 			]
 			+ SHorizontalBox::Slot()
@@ -110,9 +110,9 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 			.AutoWidth()
 			[
 				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
+				.ContentPadding(FAppStyle::GetMargin("StandardDialog.ContentPadding"))
 				.Text(LOCTEXT("Relations_Clear", "Clear"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
+				.ButtonStyle(FAppStyle::Get(), "FlatButton.Light")
 				.OnClicked(this, &FRelationTableCustomization::OnClearRelations)
 			]
 		]
@@ -294,12 +294,12 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 			.HAlign(HAlign_Center)
 			.VAlign(VAlign_Center)
 			.ContentPadding(FMargin{ 0, 1, 0, 0 })
-			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-			.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
+			.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+			.ForegroundColor(FAppStyle::GetSlateColor("DefaultForeground"))
 			.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)
 			[
 				SNew(STextBlock)
-				.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
+				.Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
 				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
 			];
 		}

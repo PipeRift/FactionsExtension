@@ -61,7 +61,7 @@ public:
 	 * Create a class from UFactionInfoAsset to create your own fields (either in C++ or BPs)
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction, meta = (DisplayThumbnail = false))
-	TAssetPtr<UFactionInfoAsset> InfoAsset;
+	TSoftObjectPtr<UFactionInfoAsset> InfoAsset;
 };
 
 #undef LOCTEXT_NAMESPACE
