@@ -3,33 +3,39 @@
 #include "FactionTable.h"
 
 
-FFaction FFactionTable::RegistryFaction(FName Name, FFactionInfo Info)
+FFaction FFactionTable::AddFaction(FName Id, const FFactionBehavior& Behavior,
+								   const FFactionDescriptor& Descriptor)
 {
-	if (Items.Contains(Name))
-		return {};
-
-	Items.Add(Name, Info);
-	return { Name };
+	Behaviors.Emplace(Id, Behavior);
+	Descriptors.Emplace(Id, Descriptor);
+	return {Id};
 }
 
-bool FFactionTable::UnregistryFaction(FFaction Faction)
+void FFactionTable::RemoveFaction(FFaction Faction)
 {
-	if (Faction.IsNone())
-		return false;
-
-	return Items.Remove(Faction.GetIdName()) > 0;
-}
-
-bool FFactionTable::SetInfo(FFaction Faction, const FFactionInfo& NewInfo)
-{
-	if (Faction.IsNone())
-		return false;
-
-	FFactionInfo* const Info = Items.Find(Faction.GetIdName());
-	if (Info)
+	if (!Faction.IsNone())
 	{
-		*Info = NewInfo;
-		return true;
+		Behaviors.Remove(Faction.GetIdName());
+		Descriptors.Remove(Faction.GetIdName());
 	}
-	return false;
+}
+
+FFactionBehavior* FFactionTable::GetBehavior(FFaction Faction)
+{
+	return (!Faction.IsNone())? Behaviors.Find(Faction.GetIdName()) : nullptr;
+}
+
+const FFactionBehavior* FFactionTable::GetBehavior(FFaction Faction) const
+{
+	return (!Faction.IsNone())? Behaviors.Find(Faction.GetIdName()) : nullptr;
+}
+
+FFactionDescriptor* FFactionTable::GetDescriptor(FFaction Faction)
+{
+	return (!Faction.IsNone())? Descriptors.Find(Faction.GetIdName()) : nullptr;
+}
+
+const FFactionDescriptor* FFactionTable::GetDescriptor(FFaction Faction) const
+{
+	return (!Faction.IsNone())? Descriptors.Find(Faction.GetIdName()) : nullptr;
 }

@@ -1,13 +1,13 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
-#include "Asset/FactionInfoAssetFactory.h"
+#include "Asset/FactionDescriptorAssetFactory.h"
 
 #include <ClassViewerModule.h>
 #include <ClassViewerFilter.h>
 #include "Kismet2/SClassPickerDialog.h"
-#include "FactionInfoAsset.h"
+#include "FactionDescriptorAsset.h"
 
-#define LOCTEXT_NAMESPACE "FactionInfoAsset"
+#define LOCTEXT_NAMESPACE "FactionDescriptorAsset"
 
 
 class FAssetClassParentFilter : public IClassViewerFilter
@@ -33,10 +33,10 @@ public:
 };
 
 
-UFactionInfoAssetFactory::UFactionInfoAssetFactory()
+UFactionDescriptorAssetFactory::UFactionDescriptorAssetFactory()
 	: Super()
 {
-	SupportedClass = UFactionInfoAsset::StaticClass();
+	SupportedClass = UFactionDescriptorAsset::StaticClass();
 
 	//bText = true;
 	bCreateNew = true;
@@ -44,7 +44,7 @@ UFactionInfoAssetFactory::UFactionInfoAssetFactory()
 	bEditAfterNew = true;
 }
 
-bool UFactionInfoAssetFactory::ConfigureProperties()
+bool UFactionDescriptorAssetFactory::ConfigureProperties()
 {
 	// nullptr the AssetClass so we can check for selection
 	AssetClass = nullptr;
@@ -60,11 +60,11 @@ bool UFactionInfoAssetFactory::ConfigureProperties()
 	Options.ClassFilter = Filter;
 
 	Filter->DisallowedClassFlags = CLASS_Abstract | CLASS_Deprecated | CLASS_NewerVersionExists;
-	Filter->AllowedChildrenOfClasses.Add(UFactionInfoAsset::StaticClass());
+	Filter->AllowedChildrenOfClasses.Add(UFactionDescriptorAsset::StaticClass());
 
-	const FText TitleText = LOCTEXT("CreateItemAssetOptions", "Pick Faction Info Type");
+	const FText TitleText = LOCTEXT("CreateItemAssetOptions", "Pick Faction Descriptor Type");
 	UClass* ChosenClass = nullptr;
-	const bool bPressedOk = SClassPickerDialog::PickClass(TitleText, Options, ChosenClass, UFactionInfoAsset::StaticClass());
+	const bool bPressedOk = SClassPickerDialog::PickClass(TitleText, Options, ChosenClass, UFactionDescriptorAsset::StaticClass());
 
 	if (bPressedOk)
 	{
@@ -74,17 +74,17 @@ bool UFactionInfoAssetFactory::ConfigureProperties()
 	return bPressedOk;
 }
 
-UObject* UFactionInfoAssetFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
+UObject* UFactionDescriptorAssetFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
 	if (AssetClass != nullptr)
 	{
-		return NewObject<UFactionInfoAsset>(InParent, AssetClass, Name, Flags);
+		return NewObject<UFactionDescriptorAsset>(InParent, AssetClass, Name, Flags);
 	}
 	else if(Class != nullptr)
 	{
 		// if we have no asset class, use the passed-in class instead
-		check(Class == UFactionInfoAsset::StaticClass() || Class->IsChildOf(UFactionInfoAsset::StaticClass()));
-		return NewObject<UFactionInfoAsset>(InParent, Class, Name, Flags);
+		check(Class == UFactionDescriptorAsset::StaticClass() || Class->IsChildOf(UFactionDescriptorAsset::StaticClass()));
+		return NewObject<UFactionDescriptorAsset>(InParent, Class, Name, Flags);
 	}
 
 	return nullptr;

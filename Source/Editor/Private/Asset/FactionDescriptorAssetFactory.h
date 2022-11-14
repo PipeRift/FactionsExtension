@@ -3,21 +3,21 @@
 #pragma once
 
 #include "Factories/Factory.h"
-#include "FactionInfoAsset.h"
-#include "FactionInfoAssetFactory.generated.h"
+#include "FactionDescriptorAsset.h"
+#include "FactionDescriptorAssetFactory.generated.h"
 
 
 UCLASS()
-class UFactionInfoAssetFactory : public UFactory
+class UFactionDescriptorAssetFactory : public UFactory
 {
 	GENERATED_BODY()
 
 
 	UPROPERTY()
-	TSubclassOf<UFactionInfoAsset> AssetClass;
+	TSubclassOf<UFactionDescriptorAsset> AssetClass;
 
 
-	UFactionInfoAssetFactory();
+	UFactionDescriptorAssetFactory();
 
 	// UFactory interface
 	/** For selecting a certain faction info subclass*/

@@ -7,20 +7,20 @@
 #include "FactionsModule.h"
 
 
-FFaction UFactionsLibrary::RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo)
+FFaction UFactionsLibrary::AddFaction(const FName& Name, const FFactionBehavior& Behavior, const FFactionDescriptor& Descriptor)
 {
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	return Settings->GetFactionTable().RegistryFaction(Name, FactionInfo);
+	return Settings->GetFactions().AddFaction(Name, Behavior, Descriptor);
 }
 
-bool UFactionsLibrary::UnregistryFaction(FFaction Faction)
+void UFactionsLibrary::RemoveFaction(FFaction Faction)
 {
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	return Settings->GetFactionTable().UnregistryFaction(Faction);
+	Settings->GetFactions().RemoveFaction(Faction);
 }
 
 void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
@@ -28,7 +28,7 @@ void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	const auto& AllFactions = Settings->GetFactionInfos();
+	const auto& AllFactions = Settings->GetFactions().Descriptors;
 
 	Factions.Reserve(Factions.Num() + AllFactions.Num());
 
@@ -38,20 +38,20 @@ void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
 	}
 }
 
-bool UFactionsLibrary::RegistryRelation(const FFactionRelation& NewRelation)
+bool UFactionsLibrary::AddRelation(const FFactionRelation& NewRelation)
 {
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	return Settings->Internal_RegistryRelation(NewRelation);
+	return Settings->Internal_AddRelation(NewRelation);
 }
 
-bool UFactionsLibrary::UnregistryRelation(const FFactionRelation& Relation)
+bool UFactionsLibrary::RemoveRelation(const FFactionRelation& Relation)
 {
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	return Settings->Internal_UnregistryRelation(Relation);
+	return Settings->Internal_RemoveRelation(Relation);
 }
 
 bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, const FFaction Faction, EFactionTestMode Comparison, TSubclassOf<AActor> ActorClass, TArray<AActor*>& OutActors)

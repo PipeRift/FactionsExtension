@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "Kismet/BlueprintFunctionLibrary.h"
+#include <Kismet/BlueprintFunctionLibrary.h>
 
 #include "Factions/Faction.h"
-#include "Database/FactionInfo.h"
+#include "Database/FactionBehavior.h"
+#include "Database/FactionDescriptor.h"
 #include "Factions/FactionAgentInterface.h"
 #include "FactionsSettings.h"
 
@@ -75,24 +76,29 @@ public:
 	/**
 	 * Find the information of a faction
 	 * @param Faction to search for
-	 * @param Info associated to the faction, if found
+	 * @param Descriptor of the faction, if found
 	 * @return true if the faction was valid and information was found
 	 */
 	UFUNCTION(BlueprintPure, Category = Factions)
-	static FORCEINLINE bool GetFactionInfo(const FFaction Faction, FFactionInfo& Info)
+	static FORCEINLINE bool GetFactionDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor)
 	{
-		return Faction.GetFactionInfo(Info);
+		if (auto* Found = Faction.GetDescriptor())
+		{
+			Descriptor = *Found;
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Replace the information of an existing faction
 	 * @param Faction to change
-	 * @param Info to replace the previous one
+	 * @param Descriptor to assign
 	 * @return true if the faction was found and modified
 	 */
 	UFUNCTION(BlueprintCallable, Category = Factions)
-	static bool SetFactionInfo(const FFaction Faction, const FFactionInfo& Info) {
-		return Faction.SetFactionInfo(Info);
+	static bool SetFactionDescriptor(const FFaction Faction, const FFactionDescriptor& Descriptor) {
+		return Faction.SetDescriptor(Descriptor);
 	}
 
 	/** @return One's attitude towards Other actor */
@@ -170,7 +176,7 @@ public:
 	 * @return the created faction
 	 */
 	UFUNCTION(BlueprintCallable, Category = Factions)
-	static FFaction RegistryFaction(const FName& Name, const FFactionInfo& FactionInfo);
+	static FFaction AddFaction(const FName& Name, const FFactionBehavior& Behavior, const FFactionDescriptor& Descriptor);
 
 	/**
 	* Remove a faction from the database
@@ -178,7 +184,7 @@ public:
 	* @return true if the faction was removed
 	*/
 	UFUNCTION(BlueprintCallable, Category = Factions)
-	static bool UnregistryFaction(FFaction Faction);
+	static void RemoveFaction(FFaction Faction);
 
 	/**
 	 * @return all currently registered factions
@@ -193,7 +199,7 @@ public:
 	* @return true if the relation was registered, false if the two factions were the same or invalid.
 	*/
 	UFUNCTION(BlueprintCallable, Category = Factions)
-	static bool RegistryRelation(const FFactionRelation& NewRelation);
+	static bool AddRelation(const FFactionRelation& NewRelation);
 
 	/**
 	* Remove a relation from the database
@@ -201,7 +207,7 @@ public:
 	* @return true if the relation was unregistered
 	*/
 	UFUNCTION(BlueprintCallable, Category = Factions)
-	static bool UnregistryRelation(const FFactionRelation& Relation);
+	static bool RemoveRelation(const FFactionRelation& Relation);
 
 	/**
 	 * Get all actors in the world with a certain faction

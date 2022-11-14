@@ -13,8 +13,7 @@ class FRelationTableCustomization : public IPropertyTypeCustomization, public FE
 public:
 
 	FRelationTableCustomization()
-		: FilterFactionA{ "" }
-		, FilterFactionB{ "" }
+		: FilterText{ "" }
 	{};
 
 	/**
@@ -51,11 +50,12 @@ private:
 
 	void RefreshRelations();
 
-	void OnFactionFilterChanged(const FText& Text, FName Faction);
+	void OnFilterChanged(const FText& Text);
+	EVisibility GetFilterVisibility() const;
 
-	FReply OnNewRelation();
+	void OnNewRelation();
 	FReply OnDeleteRelation(uint32 Index);
-	FReply OnClearRelations();
+	void OnClearRelations();
 
 	UObject* GetOuter() const;
 
@@ -77,8 +77,7 @@ private:
 	/** List view responsible for showing the rows in VisibleRows for each entry in AvailableColumns */
 	TSharedPtr<SListView<TSharedPtr<uint32>>> RelationListView;
 
-	FString FilterFactionA;
-	FString FilterFactionB;
+	FString FilterText;
 
 
 	static const FName DeleteId;

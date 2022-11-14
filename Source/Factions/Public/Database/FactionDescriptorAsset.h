@@ -5,16 +5,16 @@
 #include <Engine/DataAsset.h>
 
 #include "Faction.h"
-#include "FactionInfoAsset.generated.h"
+#include "FactionDescriptorAsset.generated.h"
 
-#define LOCTEXT_NAMESPACE "FactionInfoAsset"
+#define LOCTEXT_NAMESPACE "FactionDescriptorAsset"
 
 
 /**
  * Struct containing information about a faction. Static use.
  */
 UCLASS(Blueprintable, Abstract)
-class FACTIONS_API UFactionInfoAsset : public UPrimaryDataAsset
+class FACTIONS_API UFactionDescriptorAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 };

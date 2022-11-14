@@ -7,12 +7,12 @@
 UFactionsSettings::UFactionsSettings()
 	: Super()
 {
-	FactionList.RegistryFaction(TEXT("Default"), { FColor::Blue });
+	Factions.AddFaction(TEXT("Default"), {}, { FColor::Blue });
 
 	FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UFactionsSettings::OnWorldInitialization);
 }
 
-bool UFactionsSettings::Internal_RegistryRelation(const FFactionRelation& Relation)
+bool UFactionsSettings::Internal_AddRelation(const FFactionRelation& Relation)
 {
 	if (!Relation.IsValid())
 		return false;
@@ -25,7 +25,7 @@ bool UFactionsSettings::Internal_RegistryRelation(const FFactionRelation& Relati
 	return false;
 }
 
-bool UFactionsSettings::Internal_UnregistryRelation(const FFactionRelation& Relation)
+bool UFactionsSettings::Internal_RemoveRelation(const FFactionRelation& Relation)
 {
 	if (!Relation.IsValid())
 		return false;

@@ -5,7 +5,8 @@
 #include <CoreMinimal.h>
 #include <UObject/ObjectMacros.h>
 
-#include "FactionInfo.h"
+#include "FactionDescriptor.h"
+#include "FactionBehavior.h"
 #include "FactionTable.generated.h"
 
 
@@ -18,13 +19,19 @@ struct FACTIONS_API FFactionTable
 
 
 	UPROPERTY(config, EditAnywhere, Category = "Factions", SaveGame)
-	TMap<FName, FFactionInfo> Items;
+	TMap<FName, FFactionBehavior> Behaviors;
+
+	UPROPERTY(config, EditAnywhere, Category = "Factions", SaveGame)
+	TMap<FName, FFactionDescriptor> Descriptors;
 
 
-	FFaction RegistryFaction(FName Name, FFactionInfo Info);
-	bool UnregistryFaction(FFaction Faction);
+	FFaction AddFaction(FName Id, const FFactionBehavior& Behavior, const FFactionDescriptor& Descriptor);
+	void RemoveFaction(FFaction Faction);
 
-	bool SetInfo(FFaction Faction, const FFactionInfo& NewInfo);
+	FFactionBehavior* GetBehavior(FFaction Faction);
+	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
+	FFactionDescriptor* GetDescriptor(FFaction Faction);
+	const FFactionBehavior* GetBehavior(FFaction Faction) const;
 };
 
 

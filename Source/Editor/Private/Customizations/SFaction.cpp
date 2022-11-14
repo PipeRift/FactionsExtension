@@ -65,7 +65,7 @@ void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESele
 	if (SelectedNamePtr.IsValid())
 	{
 		FName SelectedName = *SelectedNamePtr;
-		const auto& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
+		const auto& AllFactions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
 
 		if (SelectedName != NO_FACTION_NAME && AllFactions.Contains(SelectedName))
 		{
@@ -96,7 +96,7 @@ void SFaction::GetFactionNames(TArray<FName>& Names) const
 	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
 	check(Settings);
 
-	for (const auto& KeyValue : Settings->GetFactionInfos())
+	for (const auto& KeyValue : Settings->GetFactions().Descriptors)
 	{
 		Names.Add(KeyValue.Key);
 	}
@@ -109,7 +109,7 @@ FSlateColor SFaction::GetForegroundColor() const
 {
 	FName Id = GetIdValue();
 
-	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactionInfos().Contains(Id))
+	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactions().Descriptors.Contains(Id))
 	{
 		return FSlateColor::UseForeground();
 	}

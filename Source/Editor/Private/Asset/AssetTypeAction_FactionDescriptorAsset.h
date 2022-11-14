@@ -4,7 +4,7 @@
 
 #include "AssetTypeActions_Base.h"
 
-class FACTIONSEDITOR_API FAssetTypeAction_FactionInfoAsset : public FAssetTypeActions_Base
+class FACTIONSEDITOR_API FAssetTypeAction_FactionDescriptorAsset : public FAssetTypeActions_Base
 {
 public:
 	// IAssetTypeActions interface

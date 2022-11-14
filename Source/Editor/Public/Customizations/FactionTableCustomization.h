@@ -2,31 +2,32 @@
 #pragma once
 
 #include <IPropertyTypeCustomization.h>
-#include <PropertyHandle.h>
 #include <EditorUndoClient.h>
+#include <IStructureDetailsView.h>
+#include <PropertyHandle.h>
 #include <Widgets/Views/SListView.h>
 
 
-struct FFactionViewItem {
-	FFactionViewItem() : Id{ INDEX_NONE }, ItemProperty{} {}
-	FFactionViewItem(int32 Id, const TSharedPtr<IPropertyHandle>& Property)
-		: Id{ Id }, ItemProperty{ Property }
+struct FFactionListItem {
+	FFactionListItem() : Id{ INDEX_NONE } {}
+	FFactionListItem(int32 Id, const TSharedPtr<IPropertyHandle>& Property)
+		: Id{ Id }, Property{ Property }
 	{}
 
 	int32 Id;
-	TSharedPtr<IPropertyHandle> ItemProperty;
+	TSharedPtr<IPropertyHandle> Property;
 
 
 	TSharedPtr<IPropertyHandle> GetKeyProperty() const {
-		return ItemProperty->GetKeyHandle();
+		return Property->GetKeyHandle();
 	}
 
 	TSharedPtr<IPropertyHandle> GetValueProperty() const {
-		return ItemProperty;
+		return Property;
 	}
 
 	TSharedPtr<IPropertyHandle> GetColorProperty() const {
-		return ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
+		return Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, Color));
 	}
 
 	FName GetName() const {
@@ -37,14 +38,14 @@ struct FFactionViewItem {
 
 	FString GetDisplayName() const {
 		FString DisplayName;
-		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName))->GetValue(DisplayName);
+		Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, DisplayName))->GetValue(DisplayName);
 		return DisplayName;
 	}
 
-	bool IsValid() const { return Id != INDEX_NONE && ItemProperty.IsValid(); }
+	bool IsValid() const { return Id != INDEX_NONE && Property.IsValid(); }
 };
 
-using FFactionViewItemPtr = TSharedPtr<FFactionViewItem>;
+using FFactionListItemPtr = TSharedPtr<FFactionListItem>;
 
 
 class FFactionTableCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
@@ -75,31 +76,24 @@ public:
 
 private:
 
-	TSharedRef<SWidget> CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle);
+	void SetSelection(FFactionListItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
 
-	/** Make the widget for a row entry in the data table row list view */
-	TSharedRef<ITableRow> MakeFactionWidget(FFactionViewItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
-
-	void OnSelected(FFactionViewItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
-
-	void SetSelection(FFactionViewItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
-
-
-	void RefreshView();
+	void RefreshList();
+	TSharedRef<ITableRow> MakeListRow(FFactionListItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
 
 	void OnFilterChanged(const FText& Text);
 
 
-	FReply OnNewFaction();
+	void OnNewFaction();
 
 public:
 
-	FReply OnDeleteFaction(FFactionViewItemPtr Faction);
-	void OnFactionIdChange(const FText& NewIdText, ETextCommit::Type CommitInfo, const FFactionViewItemPtr& Item);
+	FReply OnDeleteFaction(FFactionListItemPtr Faction);
+	void OnFactionIdChange(const FText& NewIdText, ETextCommit::Type CommitInfo, const FFactionListItemPtr& Item);
 
 private:
 
-	FReply OnClearFactions();
+	void OnClearFactions();
 
 	UObject* GetOuter() const;
 
@@ -108,24 +102,24 @@ private:
 
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
-	TSharedPtr<IPropertyHandle> ItemsHandle;
-	TSharedPtr<IPropertyHandleMap> ItemsHandleMap;
+	TSharedPtr<IPropertyHandle> BehaviorsHandle;
+	TSharedPtr<IPropertyHandle> DescriptorsHandle;
 
 
 	/** Array of the factions that are available for editing */
-	TArray<FFactionViewItemPtr> AvailableFactions;
+	TArray<FFactionListItemPtr> AvailableFactions;
 
 	/** Array of the factions that are available for editing */
-	TArray<FFactionViewItemPtr> VisibleFactions;
+	TArray<FFactionListItemPtr> VisibleFactions;
 
 	/** List view responsible for showing the rows in VisibleRows for each entry in Factions */
-	TSharedPtr<SListView<FFactionViewItemPtr>> ListView;
+	TSharedPtr<SListView<FFactionListItemPtr>> ListView;
 
-	TWeakPtr<FFactionViewItem> CurrentSelection;
+	TWeakPtr<FFactionListItem> CurrentSelection;
 
 	FString Filter;
 
-	TSharedPtr<SVerticalBox> FactionInfoContainer;
+	TSharedPtr<IStructureDetailsView> DescriptorDetailsView;
 
 	FSimpleDelegate OnItemsNumChanged;
 

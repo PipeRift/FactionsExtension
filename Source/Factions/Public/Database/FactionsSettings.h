@@ -26,12 +26,12 @@ protected:
 	//UPROPERTY(config, EditAnywhere, Category = Custom)
 	//FFaction DefaultFaction;
 
-	UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
-	FFactionTable FactionList;
+	UPROPERTY(config, EditAnywhere, SaveGame)
+	FFactionTable Factions;
 
 public:
 
-	UPROPERTY(config, EditAnywhere, Category = Factions, SaveGame)
+	UPROPERTY(config, EditAnywhere, SaveGame)
 	FRelationTable Relations;
 
 
@@ -39,13 +39,16 @@ public:
 
 	UFactionsSettings();
 
-	bool Internal_RegistryRelation(const FFactionRelation& Relation);
-	bool Internal_UnregistryRelation(const FFactionRelation& Relation);
+	bool Internal_AddRelation(const FFactionRelation& Relation);
+	bool Internal_RemoveRelation(const FFactionRelation& Relation);
 
 	const FFactionRelation* FindRelation(const FFaction& A, const FFaction& B) const
 	{
 		return Relations.GetRelations().Find({ A, B });
 	}
+
+	FFactionTable& GetFactions() { return Factions; }
+	const FFactionTable& GetFactions() const { return Factions; }
 
 protected:
 
@@ -56,9 +59,4 @@ protected:
 #if WITH_EDITOR
 	virtual bool CanEditChange(const FProperty* InProperty) const override;
 #endif
-
-public:
-
-	FFactionTable& GetFactionTable() { return FactionList; }
-	const TMap<FName, FFactionInfo>& GetFactionInfos() const { return FactionList.Items; }
 };

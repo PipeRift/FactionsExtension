@@ -8,7 +8,8 @@
 
 #define NO_FACTION_NAME FName{}
 
-struct FFactionInfo;
+struct FFactionBehavior;
+struct FFactionDescriptor;
 
 
 /**
@@ -44,18 +45,27 @@ public:
 
 
 	/**
-	* Find the information of a faction
-	* @param Info associated to the faction, if found
-	* @return true if the faction was valid and information was found
+	* Retrieve the behavior this faction
+	* @return pointer to the behavior. Null if behavior was not found
 	*/
-	bool GetFactionInfo(FFactionInfo& Info) const;
-
+	const FFactionBehavior* GetBehavior() const;
 	/**
-	* Replace the information of a faction
-	* @param Info to replace the previous one
-	* @return true if the faction was found and modified
+	* Assign new behavior to this faction
+	* @param Behavior to be assigned
+	* @return true if behavior was assigned
 	*/
-	bool SetFactionInfo(const FFactionInfo& NewInfo) const;
+	bool SetBehavior(const FFactionBehavior& Behavior) const;
+	/**
+	* Retrieve the descriptor this faction
+	* @return pointer to the descriptor. Null if descriptor was not found
+	*/
+	const FFactionDescriptor* GetDescriptor() const;
+	/**
+	* Assign new descriptor to this faction
+	* @param Descriptor to be assigned
+	* @return true if descriptor was assigned
+	*/
+	bool SetDescriptor(const FFactionDescriptor& Descriptor) const;
 
 	bool IsNone() const;
 

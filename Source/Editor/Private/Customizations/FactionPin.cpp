@@ -82,7 +82,7 @@ void SFactionPin::ApplyDefaultValue()
 
 void SFactionPin::GetEnumItems(TArray<FString>& Values)
 {
-	for (const auto& KeyValue : GetDefault<UFactionsSettings>()->GetFactionInfos())
+	for (const auto& KeyValue : GetDefault<UFactionsSettings>()->GetFactions().Descriptors)
 	{
 		Values.Add(KeyValue.Key.ToString());
 	}
@@ -93,7 +93,7 @@ void SFactionPin::GetEnumItems(TArray<FString>& Values)
 
 void SFactionPin::OnItemSelected(FString Value)
 {
-	const TMap<FName, FFactionInfo>& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
+	const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
 
 	FName NameValue = FName(*Value);
 
@@ -111,7 +111,7 @@ FText SFactionPin::GetSelectedItem() const
 	//Call parent but don't use it. This is for widget logic
 	SStringEnumPin::GetSelectedItem();
 
-	const auto& Factions = GetDefault<UFactionsSettings>()->GetFactionInfos();
+	const auto& Factions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
 
 	if (Factions.Contains(FactionDefaultNameValue))
 	{

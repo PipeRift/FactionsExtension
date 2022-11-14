@@ -20,8 +20,8 @@ END_TESTSPEC(FFactionRegistrySpec)
 void FFactionRegistrySpec::Define()
 {
 	BeforeEach([this]() {
-		FactionA = UFactionsLibrary::RegistryFaction("A", {});
-		FactionB = UFactionsLibrary::RegistryFaction("B", {});
+		FactionA = UFactionsLibrary::AddFaction("A", {}, {});
+		FactionB = UFactionsLibrary::AddFaction("B", {}, {});
 	});
 
 	It("Faction can be registered", [this]()
@@ -31,26 +31,26 @@ void FFactionRegistrySpec::Define()
 
 	It("Faction can be unregistered", [this]()
 	{
-		UFactionsLibrary::UnregistryFaction(FactionA);
+		UFactionsLibrary::RemoveFaction(FactionA);
 		TestTrue(TEXT("Faction is none"), FactionA.IsNone());
 	});
 
 	It("Relation can be registered", [this]()
 	{
-		bool bResult = UFactionsLibrary::RegistryRelation({ FactionA, FactionB });
+		bool bResult = UFactionsLibrary::AddRelation({ FactionA, FactionB });
 		TestTrue(TEXT("Registered relation"), bResult);
 	});
 
 	It("Relation can be unregistered", [this]()
 	{
-		UFactionsLibrary::RegistryRelation({ FactionA, FactionB });
+		UFactionsLibrary::AddRelation({ FactionA, FactionB });
 
-		bool bResult = UFactionsLibrary::UnregistryRelation({ FactionA, FactionB });
+		bool bResult = UFactionsLibrary::RemoveRelation({ FactionA, FactionB });
 		TestTrue(TEXT("Unregistered relation"), bResult);
 	});
 
 	AfterEach([this]() {
-		UFactionsLibrary::UnregistryFaction(FactionA);
-		UFactionsLibrary::UnregistryFaction(FactionB);
+		UFactionsLibrary::RemoveFaction(FactionA);
+		UFactionsLibrary::RemoveFaction(FactionB);
 	});
 }

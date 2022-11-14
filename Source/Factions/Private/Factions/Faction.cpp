@@ -2,7 +2,8 @@
 
 #include "Faction.h"
 #include "FactionsSettings.h"
-#include "FactionInfo.h"
+#include "FactionDescriptor.h"
+#include "FactionBehavior.h"
 #include "FactionsModule.h"
 
 
@@ -16,7 +17,7 @@ FFaction::FFaction(const FGenericTeamId& InTeam)
 		if (Settings)
 		{
 			TArray<FName> Keys;
-			Settings->GetFactionInfos().GetKeys(Keys);
+			Settings->GetFactions().Descriptors.GetKeys(Keys);
 
 			if (Keys.IsValidIndex(InTeam.GetId()))
 			{
@@ -28,29 +29,44 @@ FFaction::FFaction(const FGenericTeamId& InTeam)
 	Name = NO_FACTION_NAME;
 }
 
-bool FFaction::GetFactionInfo(FFactionInfo& Info) const
-{
-	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
-	check(Settings);
-
-	const FFactionInfo* FoundInfo = Settings->GetFactionInfos().Find(Name);
-	if (FoundInfo)
-	{
-		Info = *FoundInfo;
-		return true;
-	}
-
-	//If the faction is not found, return default faction info.
-	return false;
-}
-
-bool FFaction::SetFactionInfo(const FFactionInfo& NewInfo) const
+const FFactionBehavior* FFaction::GetBehavior() const
 {
 	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
 
-	if (Settings->GetFactionTable().SetInfo(*this, NewInfo))
+	return Settings->GetFactions().GetBehavior(*this);
+}
+
+bool FFaction::SetBehavior(const FFactionBehavior& Behavior) const
+{
+	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	check(Settings);
+
+	if (auto* FoundBehavior = Settings->GetFactions().GetBehavior(*this))
 	{
+		*FoundBehavior = Behavior;
+		Settings->MarkPackageDirty();
+		return true;
+	}
+	return false;
+}
+
+const FFactionDescriptor* FFaction::GetDescriptor() const
+{
+	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	check(Settings);
+
+	return Settings->GetFactions().GetDescriptor(*this);
+}
+
+bool FFaction::SetDescriptor(const FFactionDescriptor& Descriptor) const
+{
+	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	check(Settings);
+
+	if (auto* FoundDescriptor = Settings->GetFactions().GetDescriptor(*this))
+	{
+		*FoundDescriptor = Descriptor;
 		Settings->MarkPackageDirty();
 		return true;
 	}
@@ -64,7 +80,7 @@ bool FFaction::IsNone() const
 
 	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
 	check(Settings);
-	return !Settings->GetFactionInfos().Contains(Name);
+	return !Settings->GetFactions().Descriptors.Contains(Name);
 }
 
 const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) const
@@ -75,14 +91,9 @@ const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) co
 	if (FoundRelationPtr == nullptr)
 	{
 		//Relation not found, use default
-		FFactionInfo Info;
-		if (GetFactionInfo(Info))
+		if (const auto* Behavior = GetBehavior())
 		{
-			if (*this == Other)
-			{
-				return Info.AttitudeTowardsItself;
-			}
-			return Info.DefaultAttitudeTowardsOthers;
+			return *this == Other? Behavior->SelfAttitude : Behavior->DefaultAttitude;
 		}
 		return ETeamAttitude::Neutral;
 	}
@@ -92,10 +103,9 @@ const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) co
 
 FString FFaction::GetDisplayName() const
 {
-	FFactionInfo Info;
-	if (GetFactionInfo(Info))
+	if (const auto* Descriptor = GetDescriptor())
 	{
-		return Info.DisplayName.IsEmpty() ? ToString() : Info.DisplayName.ToString();
+		return Descriptor->DisplayName.IsEmpty() ? ToString() : Descriptor->DisplayName.ToString();
 	}
 	return ToString();
 }
@@ -110,7 +120,7 @@ const FGenericTeamId FFaction::GetTeam() const
 	check(Settings);
 
 	TArray<FName> Keys;
-	Settings->GetFactionInfos().GetKeys(Keys);
+	Settings->GetFactions().Descriptors.GetKeys(Keys);
 
 	//Find Id
 	const int32 Id = Keys.IndexOfByKey(Name);
