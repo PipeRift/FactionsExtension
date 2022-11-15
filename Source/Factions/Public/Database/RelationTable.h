@@ -34,7 +34,7 @@ public:
 	TSet<FFactionRelation>& GetRelations() { return IndexedList; }
 
 	// Copies relations to a runtime set for fast searching
-	void IndexRelations();
+	void RefreshIndexCache();
 };
 
 

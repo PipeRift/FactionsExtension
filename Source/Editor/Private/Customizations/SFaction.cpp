@@ -2,7 +2,7 @@
 
 #include "Customizations/SFaction.h"
 
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 #include "PropertyEditorModule.h"
 
 
@@ -65,7 +65,7 @@ void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESele
 	if (SelectedNamePtr.IsValid())
 	{
 		FName SelectedName = *SelectedNamePtr;
-		const auto& AllFactions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
+		const auto& AllFactions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
 
 		if (SelectedName != NO_FACTION_NAME && AllFactions.Contains(SelectedName))
 		{
@@ -93,7 +93,7 @@ FText SFaction::GetSelectedItem() const
 
 void SFaction::GetFactionNames(TArray<FName>& Names) const
 {
-	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
+	const UFactionsSubsystem* Settings = GetDefault<UFactionsSubsystem>();
 	check(Settings);
 
 	for (const auto& KeyValue : Settings->GetFactions().Descriptors)
@@ -109,7 +109,7 @@ FSlateColor SFaction::GetForegroundColor() const
 {
 	FName Id = GetIdValue();
 
-	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactions().Descriptors.Contains(Id))
+	if (Id.IsNone() || GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors.Contains(Id))
 	{
 		return FSlateColor::UseForeground();
 	}

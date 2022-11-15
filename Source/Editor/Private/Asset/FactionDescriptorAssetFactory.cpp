@@ -56,21 +56,18 @@ bool UFactionDescriptorAssetFactory::ConfigureProperties()
 	FClassViewerInitializationOptions Options {};
 	Options.Mode = EClassViewerMode::ClassPicker;
 
-	TSharedPtr<FAssetClassParentFilter> Filter = MakeShared<FAssetClassParentFilter>();
-	Options.ClassFilter = Filter;
-
+	TSharedRef<FAssetClassParentFilter> Filter = MakeShared<FAssetClassParentFilter>();
 	Filter->DisallowedClassFlags = CLASS_Abstract | CLASS_Deprecated | CLASS_NewerVersionExists;
 	Filter->AllowedChildrenOfClasses.Add(UFactionDescriptorAsset::StaticClass());
+	Options.ClassFilters.Add(Filter);
 
 	const FText TitleText = LOCTEXT("CreateItemAssetOptions", "Pick Faction Descriptor Type");
 	UClass* ChosenClass = nullptr;
 	const bool bPressedOk = SClassPickerDialog::PickClass(TitleText, Options, ChosenClass, UFactionDescriptorAsset::StaticClass());
-
 	if (bPressedOk)
 	{
 		AssetClass = ChosenClass;
 	}
-
 	return bPressedOk;
 }
 

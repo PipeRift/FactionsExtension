@@ -1,23 +1,25 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "FactionsLibrary.h"
+
 #include <EngineUtils.h>
 #include <Engine/Engine.h>
 
-#include "FactionsModule.h"
+#include "FactionsSubsystem.h"
 
 
-FFaction UFactionsLibrary::AddFaction(const FName& Name, const FFactionBehavior& Behavior, const FFactionDescriptor& Descriptor)
+FFaction UFactionsLibrary::AddFaction(const FName& Name, const FFactionDescriptor& Descriptor)
 {
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
-	return Settings->GetFactions().AddFaction(Name, Behavior, Descriptor);
+	return Settings->GetFactions().AddFaction(Name, Descriptor);
 }
 
 void UFactionsLibrary::RemoveFaction(FFaction Faction)
 {
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Move this function to subsystem
+	UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
 	Settings->GetFactions().RemoveFaction(Faction);
@@ -25,7 +27,8 @@ void UFactionsLibrary::RemoveFaction(FFaction Faction)
 
 void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
 {
-	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Move this function to subsystem
+	UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
 	const auto& AllFactions = Settings->GetFactions().Descriptors;
@@ -40,7 +43,8 @@ void UFactionsLibrary::GetAllFactions(TArray<FFaction>& Factions)
 
 bool UFactionsLibrary::AddRelation(const FFactionRelation& NewRelation)
 {
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Move this function to subsystem
+	UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
 	return Settings->Internal_AddRelation(NewRelation);
@@ -48,7 +52,8 @@ bool UFactionsLibrary::AddRelation(const FFactionRelation& NewRelation)
 
 bool UFactionsLibrary::RemoveRelation(const FFactionRelation& Relation)
 {
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Move this function to subsystem
+	UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
 	return Settings->Internal_RemoveRelation(Relation);

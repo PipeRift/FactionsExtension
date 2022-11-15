@@ -5,10 +5,9 @@
 #include <Kismet/BlueprintFunctionLibrary.h>
 
 #include "Factions/Faction.h"
-#include "Database/FactionBehavior.h"
 #include "Database/FactionDescriptor.h"
 #include "Factions/FactionAgentInterface.h"
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 
 #include "FactionsLibrary.generated.h"
 
@@ -71,34 +70,6 @@ public:
 	static FORCEINLINE bool FactionIsNone(const FFaction Faction)
 	{
 		return Faction.IsNone();
-	}
-
-	/**
-	 * Find the information of a faction
-	 * @param Faction to search for
-	 * @param Descriptor of the faction, if found
-	 * @return true if the faction was valid and information was found
-	 */
-	UFUNCTION(BlueprintPure, Category = Factions)
-	static FORCEINLINE bool GetFactionDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor)
-	{
-		if (auto* Found = Faction.GetDescriptor())
-		{
-			Descriptor = *Found;
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Replace the information of an existing faction
-	 * @param Faction to change
-	 * @param Descriptor to assign
-	 * @return true if the faction was found and modified
-	 */
-	UFUNCTION(BlueprintCallable, Category = Factions)
-	static bool SetFactionDescriptor(const FFaction Faction, const FFactionDescriptor& Descriptor) {
-		return Faction.SetDescriptor(Descriptor);
 	}
 
 	/** @return One's attitude towards Other actor */
@@ -176,7 +147,7 @@ public:
 	 * @return the created faction
 	 */
 	UFUNCTION(BlueprintCallable, Category = Factions)
-	static FFaction AddFaction(const FName& Name, const FFactionBehavior& Behavior, const FFactionDescriptor& Descriptor);
+	static FFaction AddFaction(const FName& Name, const FFactionDescriptor& Descriptor);
 
 	/**
 	* Remove a faction from the database

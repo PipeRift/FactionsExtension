@@ -5,7 +5,7 @@
 #include "FactionsModule.h"
 
 #include "Faction.h"
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FFactionCustomization"
 
@@ -27,7 +27,7 @@ bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle>
 
 void FFactionCustomization::GetAllItems(TArray<FString>& Values) const
 {
-	for (const auto& KeyValue : GetDefault<UFactionsSettings>()->GetFactions().Descriptors)
+	for (const auto& KeyValue : GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors)
 	{
 		Values.Add(KeyValue.Key.ToString());
 	}
@@ -38,7 +38,7 @@ void FFactionCustomization::GetAllItems(TArray<FString>& Values) const
 
 void FFactionCustomization::OnItemSelected(FString Value)
 {
-	const auto& Factions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
+	const auto& Factions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
 
 	FName NameValue = FName(*Value);
 
@@ -68,7 +68,7 @@ FSlateColor FFactionCustomization::GetForegroundColor() const
 {
 	FName Id = GetIdValue();
 
-	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactions().Descriptors.Contains(Id))
+	if (Id.IsNone() || GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors.Contains(Id))
 	{
 		return FStringEnumCustomization::GetForegroundColor();
 	}

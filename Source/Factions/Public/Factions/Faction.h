@@ -8,7 +8,6 @@
 
 #define NO_FACTION_NAME FName{}
 
-struct FFactionBehavior;
 struct FFactionDescriptor;
 
 
@@ -43,18 +42,6 @@ public:
 
 	FFaction(const FGenericTeamId& InTeam);
 
-
-	/**
-	* Retrieve the behavior this faction
-	* @return pointer to the behavior. Null if behavior was not found
-	*/
-	const FFactionBehavior* GetBehavior() const;
-	/**
-	* Assign new behavior to this faction
-	* @param Behavior to be assigned
-	* @return true if behavior was assigned
-	*/
-	bool SetBehavior(const FFactionBehavior& Behavior) const;
 	/**
 	* Retrieve the descriptor this faction
 	* @return pointer to the descriptor. Null if descriptor was not found

@@ -20,8 +20,8 @@ END_TESTSPEC(FFactionRegistrySpec)
 void FFactionRegistrySpec::Define()
 {
 	BeforeEach([this]() {
-		FactionA = UFactionsLibrary::AddFaction("A", {}, {});
-		FactionB = UFactionsLibrary::AddFaction("B", {}, {});
+		FactionA = UFactionsLibrary::AddFaction("A", {});
+		FactionB = UFactionsLibrary::AddFaction("B", {});
 	});
 
 	It("Faction can be registered", [this]()

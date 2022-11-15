@@ -42,13 +42,6 @@ public:
 
 private:
 
-	FDelegateHandle OnEndPlayHandle;
-
-	void OnEndPlay() {
-		CacheFactionInformation();
-	}
-
-
 	/** Holds a delegate that is executed after the settings section has been modified. */
 	FOnModifiedSettings ModifiedSettingsDelegate;
 
@@ -57,16 +50,4 @@ private:
 
 	// Callbacks for when the settings were saved.
 	bool HandleSettingsSaved();
-
-	void CacheFactionInformation();
-
-
-	static TWeakObjectPtr<class UFactionsSettings> FactionManager;
-
-public:
-
-	static UFactionsSettings* GetFactionManager() {
-		return FactionManager.Get();
-	}
-
 };

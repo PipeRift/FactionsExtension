@@ -15,16 +15,18 @@
 
 #include "Customizations/SFaction.h"
 
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 #include "FactionTable.h"
 #include "Widgets/SFactionColor.h"
 
 
 #define LOCTEXT_NAMESPACE "FFactionTableCustomization"
 
-const FName FFactionTableCustomization::ColumnId("Id");
-const FName FFactionTableCustomization::ColumnColor("Color");
-const FName FFactionTableCustomization::ColumnDelete("Delete");
+const FName FFactionTableCustomization::ColumnId(TEXT("Id"));
+const FName FFactionTableCustomization::ColumnSelfAttitude(TEXT("SelfAttitude"));
+const FName FFactionTableCustomization::ColumnExternalAttitude(TEXT("ExternalAttitude"));
+const FName FFactionTableCustomization::ColumnColor(TEXT("Color"));
+const FName FFactionTableCustomization::ColumnDelete(TEXT("Delete"));
 
 
 class SFactionViewItem : public SMultiColumnTableRow<FFactionListItemPtr>
@@ -69,10 +71,26 @@ public:
 				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
 			];
 		}
+		else if (Column == FFactionTableCustomization::ColumnSelfAttitude)
+		{
+			return SNew(SBox)
+			.Padding(FMargin{ 5, 0 })
+			[
+				Item->GetSelfAttitudeProperty()->CreatePropertyValueWidget()
+			];
+		}
+		else if (Column == FFactionTableCustomization::ColumnExternalAttitude)
+		{
+			return SNew(SBox)
+			.Padding(FMargin{ 5, 0 })
+			[
+				Item->GetExternalAttitudeProperty()->CreatePropertyValueWidget()
+			];
+		}
 		else if (Column == FFactionTableCustomization::ColumnColor)
 		{
 			return SNew(SBox)
-			.Padding(FMargin{ 5, 3 })
+			.Padding(FMargin{ 5, 0 })
 			[
 				SNew(SFactionColor, Item->GetColorProperty())
 			];
@@ -170,9 +188,7 @@ TSharedRef<IPropertyTypeCustomization> FFactionTableCustomization::MakeInstance(
 void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-	BehaviorsHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionTable, Behaviors));
 	DescriptorsHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionTable, Descriptors));
-
 
 	// Refresh when Num changes
 	OnItemsNumChanged = FSimpleDelegate::CreateRaw(this, &FFactionTableCustomization::RefreshList);
@@ -258,6 +274,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
 	FStructureDetailsViewArgs StructDetailView;
 	DescriptorDetailsView = PropertyEditorModule.CreateStructureDetailView(DetailsViewArgs, StructDetailView, {}, LOCTEXT("FactionDetailsName", "Descriptor"));
+	DescriptorDetailsView->GetOnFinishedChangingPropertiesDelegate().AddSP(this, &FFactionTableCustomization::OnFinishedChangingProperties);
 
 	TSharedRef<SScrollBar> VerticalScrollBar = SNew(SScrollBar)
 		.Orientation(Orient_Vertical)
@@ -277,20 +294,37 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	.VAlignCell(VAlign_Center)
 	.VAlignHeader(VAlign_Center)
 	.FillWidth(1.f)
-	.HeaderContentPadding(FMargin(5, 3))
 	[
 		SNew(STextBlock)
 		.Text(LOCTEXT("FactionColumnId", "Id"))
 		.ToolTipText(LOCTEXT("FactionColumnIdTooltip", "A faction's Id serves as its unique identifier. For setting a name use the Display Name"))
+	]
+	+ SHeaderRow::Column(ColumnSelfAttitude)
+	.HAlignCell(HAlign_Center)
+	.VAlignCell(VAlign_Center)
+	.VAlignHeader(VAlign_Center)
+	.FixedWidth(90.f)
+	[
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnSelfAttitude", "To Self"))
+	]
+	+ SHeaderRow::Column(ColumnExternalAttitude)
+	.HAlignCell(HAlign_Center)
+	.VAlignCell(VAlign_Center)
+	.VAlignHeader(VAlign_Center)
+	.FixedWidth(90.f)
+	[
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnExternalAttitude", "To Others"))
 	]
 	+ SHeaderRow::Column(ColumnColor)
 	.HAlignCell(HAlign_Center)
 	.VAlignCell(VAlign_Center)
 	.VAlignHeader(VAlign_Center)
 	.FixedWidth(70.f)
-	.HeaderContentPadding(FMargin(5, 3))
 	[
-		SNew(STextBlock).Text(LOCTEXT("FactionColumnColor", "Color"))
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnColor", "Color"))
 	];
 
 	ListView = SNew(SListView<FFactionListItemPtr>)
@@ -309,23 +343,27 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	.VAlign(VAlign_Top)
 	.HAlign(HAlign_Fill)
 	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		.FillWidth(1.f)
+		SNew(SBox)
+		.Padding(FMargin{0,8,0,16})
 		[
-			SNew(SBox)
-			.MaxDesiredHeight(180.f)
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.f)
 			[
-				ListView.ToSharedRef()
+				SNew(SBox)
+				.MaxDesiredHeight(180.f)
+				[
+					ListView.ToSharedRef()
+				]
 			]
-		]
-		+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			SNew(SBox)
-			.WidthOverride(14.f)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
-				VerticalScrollBar
+				SNew(SBox)
+				.WidthOverride(14.f)
+				[
+					VerticalScrollBar
+				]
 			]
 		]
 	]
@@ -379,6 +417,10 @@ void FFactionTableCustomization::SetSelection(FFactionListItemPtr InNewSelection
 		if (Property.IsValid() && Property->GetValueData(Data) == FPropertyAccess::Result::Success)
 		{
 			TSharedPtr<FStructOnScope> StructScope = MakeShared<FStructOnScope>(FFactionDescriptor::StaticStruct(), (uint8*)Data);
+			if (UObject* Outer = GetOuter())
+			{
+				StructScope->SetPackage(Outer->GetOutermost());
+			}
 			DescriptorDetailsView->SetStructureData(StructScope);
 		}
 	}
@@ -393,7 +435,7 @@ void FFactionTableCustomization::RefreshList()
 		return;
 	}
 
-	const int32 LastSelection = CurrentSelection.IsValid() ? CurrentSelection.Pin()->Id : INDEX_NONE;
+	const int32 LastSelectedIndex = CurrentSelection.IsValid() ? CurrentSelection.Pin()->Id : INDEX_NONE;
 
 	uint32 Num;
 	FPropertyAccess::Result Result = DescriptorsHandle->AsMap()->GetNumElements(Num);
@@ -416,7 +458,6 @@ void FFactionTableCustomization::RefreshList()
 	}
 
 	// Filter available factions
-	FFactionListItemPtr LastSelectedItem;
 	VisibleFactions.Empty(Num);
 	for (const auto& Item : AvailableFactions)
 	{
@@ -426,23 +467,19 @@ void FFactionTableCustomization::RefreshList()
 			Item->GetDisplayName().Contains(Filter))
 		{
 			VisibleFactions.Add(Item);
-
-			if (LastSelection != INDEX_NONE && Item->Id == LastSelection)
-			{
-				LastSelectedItem = Item;
-			}
 		}
 	}
 
 	if (ListView.IsValid())
 	{
-		ListView->RequestListRefresh();
+		ListView->RebuildList();
 	}
 
 	// Keep selection if possible
-	if (LastSelectedItem)
+	if (LastSelectedIndex != INDEX_NONE && !VisibleFactions.IsEmpty())
 	{
-		SetSelection(LastSelectedItem);
+		const int32 Index = FMath::Min(LastSelectedIndex, VisibleFactions.Num() - 1);
+		SetSelection(VisibleFactions[Index]);
 	}
 }
 
@@ -473,7 +510,6 @@ FReply FFactionTableCustomization::OnDeleteFaction(FFactionListItemPtr Item)
 	GetOuter()->Modify();
 
 	DescriptorsHandle->AsMap()->DeleteItem(Item->Id);
-
 	return FReply::Handled();
 }
 
@@ -497,6 +533,15 @@ void FFactionTableCustomization::OnClearFactions()
 
 	//For some reason Empty is not deleting children, therefore, we will delete one by one
 	DescriptorsHandle->AsMap()->Empty();
+}
+
+void FFactionTableCustomization::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)
+{
+	if (CurrentSelection.IsValid())
+	{
+		CurrentSelection.Pin()->Property->NotifyPostChange(PropertyChangedEvent.ChangeType);
+		CurrentSelection.Pin()->Property->NotifyFinishedChangingProperties();
+	}
 }
 
 UObject* FFactionTableCustomization::GetOuter() const

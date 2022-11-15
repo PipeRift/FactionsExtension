@@ -8,7 +8,7 @@
 
 #include "Faction.h"
 #include "FactionsModule.h"
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 
 
 void SFactionPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
@@ -82,7 +82,7 @@ void SFactionPin::ApplyDefaultValue()
 
 void SFactionPin::GetEnumItems(TArray<FString>& Values)
 {
-	for (const auto& KeyValue : GetDefault<UFactionsSettings>()->GetFactions().Descriptors)
+	for (const auto& KeyValue : GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors)
 	{
 		Values.Add(KeyValue.Key.ToString());
 	}
@@ -93,7 +93,7 @@ void SFactionPin::GetEnumItems(TArray<FString>& Values)
 
 void SFactionPin::OnItemSelected(FString Value)
 {
-	const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
+	const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
 
 	FName NameValue = FName(*Value);
 
@@ -111,7 +111,7 @@ FText SFactionPin::GetSelectedItem() const
 	//Call parent but don't use it. This is for widget logic
 	SStringEnumPin::GetSelectedItem();
 
-	const auto& Factions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
+	const auto& Factions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
 
 	if (Factions.Contains(FactionDefaultNameValue))
 	{

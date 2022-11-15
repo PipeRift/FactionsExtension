@@ -3,7 +3,7 @@
 #include "Customizations/SStringEnum.h"
 #include <PropertyEditorModule.h>
 
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 
 
 void SStringEnum::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _FactionHandle)
@@ -63,7 +63,7 @@ void SStringEnum::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ES
 	if (SelectedNamePtr.IsValid())
 	{
 		FName SelectedName = *SelectedNamePtr;
-		const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
+		const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
 
 		if (SelectedName != NO_FACTION_NAME && AllFactions.Contains(SelectedName))
 		{
@@ -86,7 +86,7 @@ FText SStringEnum::GetSelectedItem() const
 
 	FName Name;
 	const FPropertyAccess::Result RowResult = NameHandle->GetValue(Name);
-	const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSettings>()->GetFactions().Descriptors;
+	const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
 
 	if (RowResult != FPropertyAccess::MultipleValues)
 	{
@@ -101,7 +101,7 @@ FText SStringEnum::GetSelectedItem() const
 
 void SStringEnum::GetFactionNames(TArray<FName>& Names) const
 {
-	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
+	const UFactionsSubsystem* Settings = GetDefault<UFactionsSubsystem>();
 	if (!Settings) {
 		return;
 	}

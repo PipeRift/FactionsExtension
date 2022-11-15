@@ -26,6 +26,14 @@ struct FFactionListItem {
 		return Property;
 	}
 
+	TSharedPtr<IPropertyHandle> GetSelfAttitudeProperty() const {
+		return Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, SelfAttitude));
+	}
+
+	TSharedPtr<IPropertyHandle> GetExternalAttitudeProperty() const {
+		return Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, ExternalAttitude));
+	}
+
 	TSharedPtr<IPropertyHandle> GetColorProperty() const {
 		return Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, Color));
 	}
@@ -95,6 +103,8 @@ private:
 
 	void OnClearFactions();
 
+	void OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent);
+
 	UObject* GetOuter() const;
 
 	FText GetHeaderValueText() const;
@@ -102,7 +112,6 @@ private:
 
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
-	TSharedPtr<IPropertyHandle> BehaviorsHandle;
 	TSharedPtr<IPropertyHandle> DescriptorsHandle;
 
 
@@ -127,6 +136,8 @@ public:
 
 	static const FName ColumnDelete;
 	static const FName ColumnId;
+	static const FName ColumnSelfAttitude;
+	static const FName ColumnExternalAttitude;
 	static const FName ColumnColor;
 };
 

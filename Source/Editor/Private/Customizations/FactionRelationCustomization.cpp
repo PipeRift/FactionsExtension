@@ -7,7 +7,7 @@
 #include "IDetailChildrenBuilder.h"
 #include "Widgets/Views/SListView.h"
 
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 #include "Customizations/SFaction.h"
 
 #define LOCTEXT_NAMESPACE "FFactionRelationCustomization"

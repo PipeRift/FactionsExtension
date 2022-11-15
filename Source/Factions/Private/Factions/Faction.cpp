@@ -1,7 +1,7 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "Faction.h"
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 #include "FactionDescriptor.h"
 #include "FactionBehavior.h"
 #include "FactionsModule.h"
@@ -13,7 +13,8 @@ FFaction::FFaction(const FGenericTeamId& InTeam)
 {
 	if (InTeam.GetId() != FGenericTeamId::NoTeam.GetId())
 	{
-		const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+		// TODO: Shouldn't access subsystem using GEngine
+		const UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 		if (Settings)
 		{
 			TArray<FName> Keys;
@@ -29,31 +30,10 @@ FFaction::FFaction(const FGenericTeamId& InTeam)
 	Name = NO_FACTION_NAME;
 }
 
-const FFactionBehavior* FFaction::GetBehavior() const
-{
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
-	check(Settings);
-
-	return Settings->GetFactions().GetBehavior(*this);
-}
-
-bool FFaction::SetBehavior(const FFactionBehavior& Behavior) const
-{
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
-	check(Settings);
-
-	if (auto* FoundBehavior = Settings->GetFactions().GetBehavior(*this))
-	{
-		*FoundBehavior = Behavior;
-		Settings->MarkPackageDirty();
-		return true;
-	}
-	return false;
-}
-
 const FFactionDescriptor* FFaction::GetDescriptor() const
 {
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Shouldn't access subsystem using GEngine
+	const UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
 	return Settings->GetFactions().GetDescriptor(*this);
@@ -61,7 +41,8 @@ const FFactionDescriptor* FFaction::GetDescriptor() const
 
 bool FFaction::SetDescriptor(const FFactionDescriptor& Descriptor) const
 {
-	UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Shouldn't access subsystem using GEngine
+	UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
 	if (auto* FoundDescriptor = Settings->GetFactions().GetDescriptor(*this))
@@ -78,22 +59,24 @@ bool FFaction::IsNone() const
 	if (Name == NO_FACTION_NAME)
 		return true;
 
-	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Shouldn't access subsystem using GEngine
+	const UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 	return !Settings->GetFactions().Descriptors.Contains(Name);
 }
 
 const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) const
 {
-	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Shouldn't access subsystem using GEngine
+	const UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 
 	const FFactionRelation* FoundRelationPtr = Settings->FindRelation(*this, Other);
 	if (FoundRelationPtr == nullptr)
 	{
 		//Relation not found, use default
-		if (const auto* Behavior = GetBehavior())
+		if (const auto* Behavior = GetDescriptor())
 		{
-			return *this == Other? Behavior->SelfAttitude : Behavior->DefaultAttitude;
+			return *this == Other? Behavior->SelfAttitude : Behavior->ExternalAttitude;
 		}
 		return ETeamAttitude::Neutral;
 	}
@@ -116,7 +99,8 @@ const FGenericTeamId FFaction::GetTeam() const
 		return FGenericTeamId::NoTeam;
 	}
 
-	const UFactionsSettings* Settings = FFactionsModule::GetFactionManager();
+	// TODO: Shouldn't access subsystem using GEngine
+	const UFactionsSubsystem* Settings = UFactionsSubsystem::Get(GEngine);
 	check(Settings);
 
 	TArray<FName> Keys;

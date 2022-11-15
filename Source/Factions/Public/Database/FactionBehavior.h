@@ -8,18 +8,20 @@
 
 
 /**
- * Struct defining the behavior of a faction
+ * Defined the behavior of a faction after it has been backed form a FactionTable
  */
-USTRUCT(BlueprintType)
+USTRUCT()
 struct FACTIONS_API FFactionBehavior
 {
 	GENERATED_BODY()
 
 	/** Attitude this faction will have against itself. Relations can override it. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	TEnumAsByte<ETeamAttitude::Type> SelfAttitude = ETeamAttitude::Friendly;
 
 	/** Attitude this faction will have against others. Relations can override it. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<ETeamAttitude::Type> DefaultAttitude = ETeamAttitude::Neutral;
+	UPROPERTY()
+	TEnumAsByte<ETeamAttitude::Type> ExternalAttitude = ETeamAttitude::Neutral;
+
+	// TODO: Point to relations here
 };

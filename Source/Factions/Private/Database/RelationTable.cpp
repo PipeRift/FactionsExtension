@@ -3,7 +3,7 @@
 #include "RelationTable.h"
 
 
-void FRelationTable::IndexRelations()
+void FRelationTable::RefreshIndexCache()
 {
 	// Avoid memory deallocation
 	IndexedList.Empty(ConfigList.Num());

@@ -14,7 +14,7 @@
 
 #include "Customizations/SFaction.h"
 
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 #include "Faction.h"
 
 #define LOCTEXT_NAMESPACE "FRelationTableCustomization"
