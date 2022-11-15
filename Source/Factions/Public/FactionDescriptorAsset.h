@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "Faction.h"
+
 #include <Engine/DataAsset.h>
 
-#include "Faction.h"
 #include "FactionDescriptorAsset.generated.h"
+
 
 #define LOCTEXT_NAMESPACE "FactionDescriptorAsset"
 

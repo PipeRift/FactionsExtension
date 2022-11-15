@@ -3,7 +3,6 @@
 #include "FactionAgentInterface.h"
 
 
-
 //----------------------------------------------------------------------//
 // UGenericTeamAgentInterface
 //----------------------------------------------------------------------//
@@ -41,7 +40,7 @@ FFaction IFactionAgentInterface::GetFaction() const
 	return FFaction::NoFaction;
 }
 
-void IFactionAgentInterface::SetFaction(const FFaction & Faction)
+void IFactionAgentInterface::SetFaction(const FFaction& Faction)
 {
 	// By default call BP event
 	IFactionAgentInterface::Execute_EventSetFaction(Cast<UObject>(this), Faction);

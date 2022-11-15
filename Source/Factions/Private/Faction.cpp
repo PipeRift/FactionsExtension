@@ -1,10 +1,11 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "Faction.h"
-#include "FactionsSubsystem.h"
-#include "FactionDescriptor.h"
+
 #include "FactionBehavior.h"
+#include "FactionDescriptor.h"
 #include "FactionsModule.h"
+#include "FactionsSubsystem.h"
 
 
 const FFaction FFaction::NoFaction(NO_FACTION_NAME);
@@ -73,10 +74,10 @@ const ETeamAttitude::Type FFaction::GetAttitudeTowards(const FFaction& Other) co
 	const FFactionRelation* FoundRelationPtr = Settings->FindRelation(*this, Other);
 	if (FoundRelationPtr == nullptr)
 	{
-		//Relation not found, use default
+		// Relation not found, use default
 		if (const auto* Behavior = GetDescriptor())
 		{
-			return *this == Other? Behavior->SelfAttitude : Behavior->ExternalAttitude;
+			return *this == Other ? Behavior->SelfAttitude : Behavior->ExternalAttitude;
 		}
 		return ETeamAttitude::Neutral;
 	}
@@ -95,7 +96,8 @@ FString FFaction::GetDisplayName() const
 
 const FGenericTeamId FFaction::GetTeam() const
 {
-	if (IsNone()) {
+	if (IsNone())
+	{
 		return FGenericTeamId::NoTeam;
 	}
 
@@ -106,7 +108,7 @@ const FGenericTeamId FFaction::GetTeam() const
 	TArray<FName> Keys;
 	Settings->GetFactions().Descriptors.GetKeys(Keys);
 
-	//Find Id
+	// Find Id
 	const int32 Id = Keys.IndexOfByKey(Name);
 	if (Id == INDEX_NONE || Id >= FGenericTeamId::NoTeam.GetId())
 	{
@@ -114,5 +116,5 @@ const FGenericTeamId FFaction::GetTeam() const
 		return FGenericTeamId::NoTeam;
 	}
 
-	return { static_cast<uint8>(Id) };
+	return {static_cast<uint8>(Id)};
 }

@@ -2,17 +2,18 @@
 
 #pragma once
 
+#include "Faction.h"
 #include "GenericTeamAgentInterface.h"
 
-#include "Faction.h"
 #include "FactionRelation.generated.h"
+
 
 #define LOCTEXT_NAMESPACE "FactionRelation"
 
 
 /**
  * Defines a relation between factions
-*/
+ */
 USTRUCT(BlueprintType)
 struct FACTIONS_API FFactionRelation
 {
@@ -25,7 +26,9 @@ struct FACTIONS_API FFactionRelation
 	{}
 
 	FFactionRelation(FFaction A, FFaction B, ETeamAttitude::Type InAttitude = ETeamAttitude::Neutral)
-		: FactionA(A), FactionB(B), Attitude(InAttitude)
+		: FactionA(A)
+		, FactionB(B)
+		, Attitude(InAttitude)
 	{}
 
 	/** First Faction of the relation */
@@ -47,11 +50,15 @@ struct FACTIONS_API FFactionRelation
 		return FactionA == FactionB || (!FactionA.IsNone() && !FactionB.IsNone());
 	}
 
-	FORCEINLINE bool operator==(const FFactionRelation& Other) const {
+	FORCEINLINE bool operator==(const FFactionRelation& Other) const
+	{
 		return (FactionA == Other.FactionA && FactionB == Other.FactionB) ||
 			   (FactionA == Other.FactionB && FactionB == Other.FactionA);
 	}
-	FORCEINLINE bool operator!=(const FFactionRelation& Other) const { return !(*this == Other); }
+	FORCEINLINE bool operator!=(const FFactionRelation& Other) const
+	{
+		return !(*this == Other);
+	}
 
 	friend uint32 GetTypeHash(const FFactionRelation& InRelation)
 	{

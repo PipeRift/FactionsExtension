@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include <GenericTeamAgentInterface.h>
-#include <Engine/Texture.h>
-
 #include "Faction.h"
 #include "FactionDescriptorAsset.h"
+
+#include <Engine/Texture.h>
+#include <GenericTeamAgentInterface.h>
+
 #include "FactionDescriptor.generated.h"
 
 
@@ -19,7 +20,6 @@ struct FACTIONS_API FFactionDescriptor
 	GENERATED_BODY()
 
 public:
-
 	/** Attitude this faction will have against itself. Relations can override it. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behavior)
 	TEnumAsByte<ETeamAttitude::Type> SelfAttitude = ETeamAttitude::Friendly;
@@ -45,9 +45,7 @@ public:
 	TSoftObjectPtr<UFactionDescriptorAsset> Descriptor;
 
 
-	FFactionDescriptor(FLinearColor InColor = FColor::Cyan)
-		: Color(InColor)
-	{}
+	FFactionDescriptor(FLinearColor InColor = FColor::Cyan) : Color(InColor) {}
 
 	FFactionDescriptor(FText DisplayName, FLinearColor InColor = FColor::Cyan)
 		: Color(InColor)

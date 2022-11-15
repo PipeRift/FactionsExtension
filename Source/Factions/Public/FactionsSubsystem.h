@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FactionTable.h"
+#include "RelationTable.h"
 
 #include <Engine/World.h>
 #include <Subsystems/GameInstanceSubsystem.h>
 
-#include "FactionTable.h"
-#include "RelationTable.h"
-#include "Reputation/ReputationStep.h"
 #include "FactionsSubsystem.generated.h"
 
 
@@ -22,22 +21,20 @@ class FACTIONS_API UFactionsSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 protected:
-
 	UPROPERTY(config, EditAnywhere, SaveGame)
 	FFactionTable Factions;
 
 	UPROPERTY(config, EditAnywhere, SaveGame)
 	FRelationTable Relations;
 
-	//UPROPERTY(Transient)
-	//TMap<FName, FFactionBehavior> BakedFactions;
+	// UPROPERTY(Transient)
+	// TMap<FName, FFactionBehavior> BakedFactions;
 
-	//UPROPERTY(Transient)
-	//TArray<FFactionRelation> BakedRelations;
+	// UPROPERTY(Transient)
+	// TArray<FFactionRelation> BakedRelations;
 
 
 public:
-
 	UFactionsSubsystem();
 
 	bool Internal_AddRelation(const FFactionRelation& Relation);
@@ -45,20 +42,24 @@ public:
 
 	const FFactionRelation* FindRelation(const FFaction& A, const FFaction& B) const
 	{
-		return Relations.GetRelations().Find({ A, B });
+		return Relations.GetRelations().Find({A, B});
 	}
 
-	FFactionTable& GetFactions() { return Factions; }
-	const FFactionTable& GetFactions() const { return Factions; }
+	FFactionTable& GetFactions()
+	{
+		return Factions;
+	}
+	const FFactionTable& GetFactions() const
+	{
+		return Factions;
+	}
 
 	static UFactionsSubsystem* Get(const UObject* ContextObject);
 
 
-	/** BLUEPRINT ONLY API */
-
-
-
 	/** BLUEPRINTS & C++ API */
+
+	/** BLUEPRINT ONLY API */
 
 	/**
 	 * Find the information of a faction
@@ -66,8 +67,8 @@ public:
 	 * @param Descriptor of the faction, if found
 	 * @return true if the faction was valid and information was found
 	 */
-	UFUNCTION(BlueprintPure, Category = Factions)
-	bool GetFactionDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor)
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DisplayName = "Get Faction Descriptor"))
+	bool BPGetFactionDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor)
 	{
 		if (auto* Found = GetFactions().GetDescriptor(Faction))
 		{
@@ -83,8 +84,8 @@ public:
 	 * @param Descriptor to assign
 	 * @return true if the faction was found and modified
 	 */
-	UFUNCTION(BlueprintCallable, Category = Factions)
-	bool SetFactionDescriptor(const FFaction Faction, const FFactionDescriptor& Descriptor)
+	UFUNCTION(BlueprintCallable, Category = Factions, meta = (DisplayName = "Set Faction Descriptor"))
+	bool BPSetFactionDescriptor(const FFaction Faction, const FFactionDescriptor& Descriptor)
 	{
 		if (auto* Found = GetFactions().GetDescriptor(Faction))
 		{
@@ -95,7 +96,6 @@ public:
 	}
 
 protected:
-
 	virtual void BeginDestroy() override;
 
 	void OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS);
@@ -108,7 +108,8 @@ protected:
 
 inline UFactionsSubsystem* UFactionsSubsystem::Get(const UObject* ContextObject)
 {
-	const UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	const UWorld* World =
+		GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (World)
 	{
 		return UGameInstance::GetSubsystem<UFactionsSubsystem>(World->GetGameInstance());

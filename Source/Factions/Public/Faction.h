@@ -6,7 +6,8 @@
 
 #include "Faction.generated.h"
 
-#define NO_FACTION_NAME FName{}
+#define NO_FACTION_NAME \
+	FName {}
 
 struct FFactionDescriptor;
 
@@ -23,35 +24,30 @@ struct FACTIONS_API FFaction
 
 
 public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	FName Name;
 
 public:
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
+	// int32 Id;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
-	//int32 Id;
 
+	FFaction() : Name(NO_FACTION_NAME) {}
 
-	FFaction() : Name(NO_FACTION_NAME) {
-	}
-
-	FFaction(FName Name)
-		: Name(Name)
-	{}
+	FFaction(FName Name) : Name(Name) {}
 
 	FFaction(const FGenericTeamId& InTeam);
 
 	/**
-	* Retrieve the descriptor this faction
-	* @return pointer to the descriptor. Null if descriptor was not found
-	*/
+	 * Retrieve the descriptor this faction
+	 * @return pointer to the descriptor. Null if descriptor was not found
+	 */
 	const FFactionDescriptor* GetDescriptor() const;
 	/**
-	* Assign new descriptor to this faction
-	* @param Descriptor to be assigned
-	* @return true if descriptor was assigned
-	*/
+	 * Assign new descriptor to this faction
+	 * @param Descriptor to be assigned
+	 * @return true if descriptor was assigned
+	 */
 	bool SetDescriptor(const FFactionDescriptor& Descriptor) const;
 
 	bool IsNone() const;
@@ -59,13 +55,16 @@ public:
 	/**
 	 * Attitude evaluation
 	 */
-	FORCEINLINE bool IsFriendlyTowards(const FFaction& Other) const {
+	FORCEINLINE bool IsFriendlyTowards(const FFaction& Other) const
+	{
 		return GetAttitudeTowards(Other) == ETeamAttitude::Friendly;
 	}
-	FORCEINLINE bool IsNeutralTowards(const FFaction& Other) const {
+	FORCEINLINE bool IsNeutralTowards(const FFaction& Other) const
+	{
 		return GetAttitudeTowards(Other) == ETeamAttitude::Neutral;
 	}
-	FORCEINLINE bool IsHostileTowards(const FFaction& Other) const {
+	FORCEINLINE bool IsHostileTowards(const FFaction& Other) const
+	{
 		return GetAttitudeTowards(Other) == ETeamAttitude::Hostile;
 	}
 
@@ -74,8 +73,14 @@ public:
 	/**
 	 * Operator overloading & Hashes
 	 */
-	FORCEINLINE bool operator==(const FFaction& Other) const { return Name == Other.Name; }
-	FORCEINLINE bool operator!=(const FFaction& Other) const { return !(*this == Other); }
+	FORCEINLINE bool operator==(const FFaction& Other) const
+	{
+		return Name == Other.Name;
+	}
+	FORCEINLINE bool operator!=(const FFaction& Other) const
+	{
+		return !(*this == Other);
+	}
 
 	// Implicit conversion to GenericTeamId
 	operator FGenericTeamId() const
@@ -88,11 +93,13 @@ public:
 		return GetTypeHash(InRelation.Name);
 	}
 
-	FName GetIdName() const {
+	FName GetIdName() const
+	{
 		return Name;
 	}
 
-	FString ToString() const {
+	FString ToString() const
+	{
 		return GetIdName().ToString();
 	}
 

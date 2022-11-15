@@ -1,10 +1,11 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "FactionsModule.h"
-#include "GameplayTagsManager.h"
 
 #include "FactionsSubsystem.h"
 #include "GameDelegates.h"
+#include "GameplayTagsManager.h"
+
 
 DEFINE_LOG_CATEGORY(LogFactions)
 
@@ -74,7 +75,8 @@ bool FFactionsModule::HandleSettingsSaved()
 	UFactionsSubsystem* Settings = GetMutableDefault<UFactionsSubsystem>();
 	bool ResaveSettings = false;
 
-	if (ModifiedSettingsDelegate.IsBound()) {
+	if (ModifiedSettingsDelegate.IsBound())
+	{
 		ModifiedSettingsDelegate.Execute();
 	}
 

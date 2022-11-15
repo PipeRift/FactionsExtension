@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include "FactionDescriptor.h"
+
 #include <CoreMinimal.h>
 #include <UObject/ObjectMacros.h>
 
-#include "FactionDescriptor.h"
 #include "FactionTable.generated.h"
 
 
@@ -26,5 +27,3 @@ struct FACTIONS_API FFactionTable
 	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
 	FFactionDescriptor* GetDescriptor(FFaction Faction);
 };
-
-

@@ -2,10 +2,10 @@
 
 #include "FactionsLibrary.h"
 
-#include <EngineUtils.h>
-#include <Engine/Engine.h>
-
 #include "FactionsSubsystem.h"
+
+#include <Engine/Engine.h>
+#include <EngineUtils.h>
 
 
 FFaction UFactionsLibrary::AddFaction(const FName& Name, const FFactionDescriptor& Descriptor)
@@ -59,7 +59,8 @@ bool UFactionsLibrary::RemoveRelation(const FFactionRelation& Relation)
 	return Settings->Internal_RemoveRelation(Relation);
 }
 
-bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, const FFaction Faction, EFactionTestMode Comparison, TSubclassOf<AActor> ActorClass, TArray<AActor*>& OutActors)
+bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, const FFaction Faction,
+	EFactionTestMode Comparison, TSubclassOf<AActor> ActorClass, TArray<AActor*>& OutActors)
 {
 	QUICK_SCOPE_CYCLE_COUNTER(UGameplayStatics_GetAllActorsOfClass);
 	OutActors.Reset();
@@ -70,39 +71,40 @@ bool UFactionsLibrary::GetAllActorsWithFaction(const UObject* ContextObject, con
 	UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::ReturnNull);
 	if (World)
 	{
-		switch (Comparison) {
-		case EFactionTestMode::IsTheSame:
-			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
-			{
-				AActor* Actor = *It;
-				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor) == Faction)
-					OutActors.Add(Actor);
-			}
-			break;
-		case EFactionTestMode::IsFriendly:
-			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
-			{
-				AActor* Actor = *It;
-				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsFriendlyTowards(Faction))
-					OutActors.Add(Actor);
-			}
-			break;
-		case EFactionTestMode::IsNeutral:
-			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
-			{
-				AActor* Actor = *It;
-				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsNeutralTowards(Faction))
-					OutActors.Add(Actor);
-			}
-			break;
-		case EFactionTestMode::IsHostile:
-			for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
-			{
-				AActor* Actor = *It;
-				if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsHostileTowards(Faction))
-					OutActors.Add(Actor);
-			}
-			break;
+		switch (Comparison)
+		{
+			case EFactionTestMode::IsTheSame:
+				for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
+				{
+					AActor* Actor = *It;
+					if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor) == Faction)
+						OutActors.Add(Actor);
+				}
+				break;
+			case EFactionTestMode::IsFriendly:
+				for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
+				{
+					AActor* Actor = *It;
+					if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsFriendlyTowards(Faction))
+						OutActors.Add(Actor);
+				}
+				break;
+			case EFactionTestMode::IsNeutral:
+				for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
+				{
+					AActor* Actor = *It;
+					if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsNeutralTowards(Faction))
+						OutActors.Add(Actor);
+				}
+				break;
+			case EFactionTestMode::IsHostile:
+				for (TActorIterator<AActor> It(World, ActorClass); It; ++It)
+				{
+					AActor* Actor = *It;
+					if (IsValid(Actor) && UFactionsLibrary::GetFaction(Actor).IsHostileTowards(Faction))
+						OutActors.Add(Actor);
+				}
+				break;
 		}
 
 		return OutActors.Num() > 0;

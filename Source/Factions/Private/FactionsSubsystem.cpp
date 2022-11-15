@@ -1,13 +1,13 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "FactionsSubsystem.h"
+
 #include "FactionsModule.h"
 
 
-UFactionsSubsystem::UFactionsSubsystem()
-	: Super()
+UFactionsSubsystem::UFactionsSubsystem() : Super()
 {
-	Factions.AddFaction(TEXT("Default"), { FColor::Blue });
+	Factions.AddFaction(TEXT("Default"), {FColor::Blue});
 
 	FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UFactionsSubsystem::OnWorldInitialization);
 }
@@ -58,11 +58,11 @@ bool UFactionsSubsystem::CanEditChange(const FProperty* InProperty) const
 
 	if (GET_MEMBER_NAME_CHECKED(FFactionRelation, Attitude) == PropertyName)
 	{
-		//TODO: Limit attitude depending on Faction
+		// TODO: Limit attitude depending on Faction
 		bCanEdit &= true;
 	}
 
 	return bCanEdit;
 }
 
-#endif //WITH_EDITOR
+#endif	  // WITH_EDITOR
