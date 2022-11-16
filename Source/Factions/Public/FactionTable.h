@@ -12,6 +12,9 @@
 
 struct FFaction;
 
+/**
+ * Contains a list of in-editor editable factions
+ */
 USTRUCT()
 struct FACTIONS_API FFactionTable
 {
@@ -20,9 +23,6 @@ struct FACTIONS_API FFactionTable
 	UPROPERTY(config, EditAnywhere, Category = "Factions", SaveGame)
 	TMap<FName, FFactionDescriptor> Descriptors;
 
-
-	FFaction AddFaction(FName Id, const FFactionDescriptor& Descriptor);
-	void RemoveFaction(FFaction Faction);
 
 	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
 	FFactionDescriptor* GetDescriptor(FFaction Faction);

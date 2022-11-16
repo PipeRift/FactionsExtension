@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "EnvironmentQuery/EnvQueryTest.h"
 #include "Faction.h"
-#include "FactionsLibrary.h"
+#include "FactionsSubsystem.h"
+
+#include <CoreMinimal.h>
+#include <EnvironmentQuery/EnvQueryTest.h>
 
 #include "EnvQueryTest_Faction.generated.h"
 

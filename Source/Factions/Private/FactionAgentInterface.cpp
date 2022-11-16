@@ -10,28 +10,28 @@ UFactionAgentInterface::UFactionAgentInterface(const FObjectInitializer& ObjectI
 	: Super(ObjectInitializer)
 {}
 
-const ETeamAttitude::Type IFactionAgentInterface::GetAttitudeTowards(const AActor& Other) const
+const ETeamAttitude::Type IFactionAgentInterface::GetAttitude(const UObject& Target) const
 {
-	const FFaction OtherFaction = IFactionAgentInterface::GetFaction(&Other);
-	return GetFaction().GetAttitudeTowards(OtherFaction);
+	const auto* Factions = UFactionsSubsystem::Get(&Target);
+	return Factions->GetAttitude(GetFaction(), GetFaction(&Target));
 }
 
-FFaction IFactionAgentInterface::GetFaction(const AActor* Other)
+FFaction IFactionAgentInterface::GetFaction(const UObject* Source)
 {
-	if (Other && Other->Implements<UFactionAgentInterface>())
+	if (Source && Source->Implements<UFactionAgentInterface>())
 	{
-		FFaction OtherFaction;
-		IFactionAgentInterface::Execute_EventGetFaction(Other, OtherFaction);
-		return OtherFaction;
+		FFaction Faction;
+		IFactionAgentInterface::Execute_EventGetFaction(Source, Faction);
+		return Faction;
 	}
 	return FFaction::NoFaction;
 }
 
-void IFactionAgentInterface::SetFaction(AActor* Other, const FFaction& NewFaction)
+void IFactionAgentInterface::SetFaction(UObject* Source, const FFaction& Faction)
 {
-	if (Other && Other->Implements<UFactionAgentInterface>())
+	if (Source && Source->Implements<UFactionAgentInterface>())
 	{
-		IFactionAgentInterface::Execute_EventSetFaction(Other, NewFaction);
+		IFactionAgentInterface::Execute_EventSetFaction(Source, Faction);
 	}
 }
 

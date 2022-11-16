@@ -2,12 +2,10 @@
 
 #include "EnvQueryTest_Faction.h"
 
-#include "EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h"
-#include "FactionsLibrary.h"
+#include <EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h>
 
 
 #define LOCTEXT_NAMESPACE "UEnvQueryTest_Faction"
-
 
 UEnvQueryTest_Faction::UEnvQueryTest_Faction() : Super(), bCompareTowardsContextActor(false)
 {
@@ -23,7 +21,8 @@ UEnvQueryTest_Faction::UEnvQueryTest_Faction() : Super(), bCompareTowardsContext
 void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const
 {
 	UObject* Owner = QueryInstance.Owner.Get();
-	if (!Owner)
+	const auto* Factions = UFactionsSubsystem::Get(Owner);
+	if (!Owner || !Factions)
 		return;
 
 	BoolValue.BindData(Owner, QueryInstance.QueryID);
@@ -40,52 +39,42 @@ void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const
 		if (ContextItems.Num() <= 0)
 			TargetFaction = FFaction::NoFaction;
 		else
-			TargetFaction = UFactionsLibrary::GetFaction(ContextItems[0]);
+			TargetFaction = Factions->GetActorFaction(ContextItems[0]);
 	}
 
+	auto IteratePoints = [this, &QueryInstance, Factions, bNegate](auto Callback) {
+		for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
+		{
+			AActor* PointActor = GetItemActor(QueryInstance, It.GetIndex());
+			FFaction PointFaction = Factions->GetActorFaction(PointActor);
+
+			It.SetScore(TestPurpose, FilterType, Callback(PointFaction), bNegate);
+		}
+	};
 	switch (Mode)
 	{
-		case EFactionTestMode::IsTheSame:
-			for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
-			{
-				AActor* PointActor = GetItemActor(QueryInstance, It.GetIndex());
-
-				const bool bIsTheSame = UFactionsLibrary::GetFaction(PointActor) == TargetFaction;
-				It.SetScore(TestPurpose, FilterType, bIsTheSame, bNegate);
-			}
+		case EFactionTestMode::IsSame:
+			IteratePoints([TargetFaction](auto PointFaction) {
+				return PointFaction == TargetFaction;
+			});
 			break;
 
 		case EFactionTestMode::IsFriendly:
-			for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
-			{
-				AActor* PointActor = GetItemActor(QueryInstance, It.GetIndex());
-
-				const bool bIsFriendly =
-					UFactionsLibrary::GetFaction(PointActor).IsFriendlyTowards(TargetFaction);
-				It.SetScore(TestPurpose, FilterType, bIsFriendly, bNegate);
-			}
+			IteratePoints([TargetFaction, Factions](auto PointFaction) {
+				return Factions->IsFriendly(PointFaction, TargetFaction);
+			});
 			break;
 
 		case EFactionTestMode::IsNeutral:
-			for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
-			{
-				AActor* PointActor = GetItemActor(QueryInstance, It.GetIndex());
-
-				const bool bIsNeutral =
-					UFactionsLibrary::GetFaction(PointActor).IsNeutralTowards(TargetFaction);
-				It.SetScore(TestPurpose, FilterType, bIsNeutral, bNegate);
-			}
+			IteratePoints([TargetFaction, Factions](auto PointFaction) {
+				return Factions->IsNeutral(PointFaction, TargetFaction);
+			});
 			break;
 
 		case EFactionTestMode::IsHostile:
-			for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
-			{
-				AActor* PointActor = GetItemActor(QueryInstance, It.GetIndex());
-
-				const bool bIsHostile =
-					UFactionsLibrary::GetFaction(PointActor).IsHostileTowards(TargetFaction);
-				It.SetScore(TestPurpose, FilterType, bIsHostile, bNegate);
-			}
+			IteratePoints([TargetFaction, Factions](auto PointFaction) {
+				return Factions->IsHostile(PointFaction, TargetFaction);
+			});
 			break;
 	}
 }
@@ -95,7 +84,7 @@ FText UEnvQueryTest_Faction::GetDescriptionTitle() const
 	const bool bNegate = BoolValue.GetValue();
 	FString ModeDesc;
 
-	if (Mode == EFactionTestMode::IsTheSame)
+	if (Mode == EFactionTestMode::IsSame)
 	{
 		ModeDesc = bNegate ? TEXT("Doesn't equal ") : TEXT("Equals ");
 	}
@@ -128,7 +117,7 @@ FText UEnvQueryTest_Faction::GetDescriptionTitle() const
 	}
 	else
 	{
-		ModeDesc += Faction.GetDisplayName();
+		ModeDesc += GetDefault<UFactionsSubsystem>()->GetDisplayName(Faction);
 	}
 
 	return FText::FromString(*ModeDesc);

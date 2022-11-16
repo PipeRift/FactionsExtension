@@ -6,10 +6,9 @@
 
 #include "Faction.generated.h"
 
+
 #define NO_FACTION_NAME \
 	FName {}
-
-struct FFactionDescriptor;
 
 
 /**
@@ -28,47 +27,13 @@ public:
 	FName Name;
 
 public:
-	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Faction)
-	// int32 Id;
-
-
 	FFaction() : Name(NO_FACTION_NAME) {}
 
 	FFaction(FName Name) : Name(Name) {}
 
 	FFaction(const FGenericTeamId& InTeam);
 
-	/**
-	 * Retrieve the descriptor this faction
-	 * @return pointer to the descriptor. Null if descriptor was not found
-	 */
-	const FFactionDescriptor* GetDescriptor() const;
-	/**
-	 * Assign new descriptor to this faction
-	 * @param Descriptor to be assigned
-	 * @return true if descriptor was assigned
-	 */
-	bool SetDescriptor(const FFactionDescriptor& Descriptor) const;
-
 	bool IsNone() const;
-
-	/**
-	 * Attitude evaluation
-	 */
-	FORCEINLINE bool IsFriendlyTowards(const FFaction& Other) const
-	{
-		return GetAttitudeTowards(Other) == ETeamAttitude::Friendly;
-	}
-	FORCEINLINE bool IsNeutralTowards(const FFaction& Other) const
-	{
-		return GetAttitudeTowards(Other) == ETeamAttitude::Neutral;
-	}
-	FORCEINLINE bool IsHostileTowards(const FFaction& Other) const
-	{
-		return GetAttitudeTowards(Other) == ETeamAttitude::Hostile;
-	}
-
-	const ETeamAttitude::Type GetAttitudeTowards(const FFaction& Other) const;
 
 	/**
 	 * Operator overloading & Hashes
@@ -102,8 +67,6 @@ public:
 	{
 		return GetIdName().ToString();
 	}
-
-	FString GetDisplayName() const;
 
 	const FGenericTeamId GetTeam() const;
 };

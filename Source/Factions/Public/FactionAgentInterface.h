@@ -26,19 +26,27 @@ class FACTIONS_API IFactionAgentInterface : public IGenericTeamAgentInterface
 
 public:
 	/** @return the current faction */
-	static FFaction GetFaction(const AActor* Other);
+	static FFaction GetFaction(const UObject* Source);
 
 	/** @param Faction that will be assigned */
-	static void SetFaction(AActor* Other, const FFaction& NewFaction);
+	static void SetFaction(UObject* Source, const FFaction& Faction);
 
 
-	/** Retrieve owner attitude towards given Other object */
-	virtual const ETeamAttitude::Type GetAttitudeTowards(const AActor& Other) const;
+	/** Retrieve owner attitude towards given Target object */
+	const ETeamAttitude::Type GetAttitude(const UObject& Target) const;
 
 	/** Return if owner is hostile towards given Other object */
-	FORCEINLINE const bool IsHostileTowards(const AActor& Other) const
+	bool IsFriendly(const AActor& Target) const
 	{
-		return GetAttitudeTowards(Other) == ETeamAttitude::Hostile;
+		return GetAttitude(Target) == ETeamAttitude::Friendly;
+	}
+	bool IsNeutral(const AActor& Target) const
+	{
+		return GetAttitude(Target) == ETeamAttitude::Neutral;
+	}
+	bool IsHostile(const AActor& Target) const
+	{
+		return GetAttitude(Target) == ETeamAttitude::Hostile;
 	}
 
 protected:
@@ -93,23 +101,8 @@ private:
 	/** Retrieved owner attitude toward given Other object */
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override
 	{
-		return GetAttitudeTowards(Other);
+		return GetAttitude(Other);
 	}
 
 	/** End GenericTeamAgent interface */
-
-
-	/** DEPRECATIONS */
-public:
-	UE_DEPRECATED(1.7, "Use 'GetFaction' instead.")
-	static FFaction Execute_GetFaction(const AActor* Other)
-	{
-		return GetFaction(Other);
-	}
-
-	UE_DEPRECATED(1.7, "Use 'SetFaction' instead.")
-	static void Execute_SetFaction(AActor* Other, const FFaction& NewFaction)
-	{
-		SetFaction(Other, NewFaction);
-	}
 };
