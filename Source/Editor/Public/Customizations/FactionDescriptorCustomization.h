@@ -5,7 +5,7 @@
 #include "PropertyHandle.h"
 
 
-class FFactionInfoCustomization : public IPropertyTypeCustomization
+class FFactionDescriptorCustomization : public IPropertyTypeCustomization
 {
 
 public:

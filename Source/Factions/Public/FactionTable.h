@@ -2,29 +2,28 @@
 
 #pragma once
 
+#include "FactionDescriptor.h"
+
 #include <CoreMinimal.h>
 #include <UObject/ObjectMacros.h>
 
-#include "FactionInfo.h"
 #include "FactionTable.generated.h"
 
 
 struct FFaction;
 
+/**
+ * Contains a list of in-editor editable factions
+ */
 USTRUCT()
 struct FACTIONS_API FFactionTable
 {
 	GENERATED_BODY()
 
-
 	UPROPERTY(config, EditAnywhere, Category = "Factions", SaveGame)
-	TMap<FName, FFactionInfo> Items;
+	TMap<FName, FFactionDescriptor> Descriptors;
 
 
-	FFaction RegistryFaction(FName Name, FFactionInfo Info);
-	bool UnregistryFaction(FFaction Faction);
-
-	bool SetInfo(FFaction Faction, const FFactionInfo& NewInfo);
+	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
+	FFactionDescriptor* GetDescriptor(FFaction Faction);
 };
-
-

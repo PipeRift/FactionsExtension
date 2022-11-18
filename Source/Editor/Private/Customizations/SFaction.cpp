@@ -2,27 +2,46 @@
 
 #include "Customizations/SFaction.h"
 
-#include "FactionsSettings.h"
-#include "PropertyEditorModule.h"
+#include <FactionsSubsystem.h>
+#include <PropertyEditorModule.h>
 
 
-void SFaction::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _FactionHandle)
+SFaction::~SFaction()
 {
-	OnChange = InArgs._OnChange;
-	FactionHandle = _FactionHandle;
-	if(FactionHandle.IsValid())
-		NameHandle = FactionHandle->GetChildHandle("Name");
+	FFactionsModule& Module = FFactionsModule::Get();
+	Module.OnModifiedSettings().Remove(OnModifiedSettingsHandle);
+}
+
+void SFaction::Construct(const FArguments& InArgs)
+{
+	Faction = InArgs._Faction;
+
+	OnFactionSelected = InArgs._OnFactionSelected;
+
+	UpdateItems();
+
+	// Bind On Settings changed event
+	FFactionsModule& Module = FFactionsModule::Get();
+	OnModifiedSettingsHandle = Module.OnModifiedSettings().Add(
+		FSimpleDelegate::CreateRaw(this, &SFaction::UpdateItems, true)
+	);
 
 	ChildSlot
 	[
-		SAssignNew(ComboBox, SComboBox<TSharedPtr<FName>>)
+		SAssignNew(ComboBox, SSearchableComboBox)
 		.OptionsSource(&CachedItems)
-		.OnGenerateWidget(this, &SFaction::HandleStringEnumComboBoxGenerateWidget)
+		.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item){
+			return SNew(STextBlock)
+				.Text(FText::FromString(*Item));
+		})
 		.OnComboBoxOpening(this, &SFaction::UpdateItems, false)
 		.OnSelectionChanged(this, &SFaction::OnSelectionChanged)
-		.ButtonStyle(FEditorStyle::Get(), "FlatButton")
 		.ForegroundColor(this, &SFaction::GetForegroundColor)
-		//.InitiallySelectedItem(GetVariableFactionValue())
+		.HasDownArrow(InArgs._HasDownArrow)
+		.ContentPadding(InArgs._ContentPadding)
+		.ComboBoxStyle(InArgs._ComboBoxStyle)
+		.ButtonStyle(InArgs._ButtonStyle)
+		.ItemStyle(InArgs._ItemStyle)
 		[
 			SNew(STextBlock)
 			.Text(this, &SFaction::GetSelectedItem)
@@ -30,52 +49,34 @@ void SFaction::Construct(const FArguments& InArgs, TSharedRef<IPropertyHandle> _
 	];
 }
 
-TSharedRef<SWidget> SFaction::HandleStringEnumComboBoxGenerateWidget(const TSharedPtr<FName> Item)
-{
-	return SNew(STextBlock)
-		.Text(FText::FromName(*Item));
-}
-
 void SFaction::UpdateItems(bool bRefreshComboBox /*= false*/)
 {
-	TArray<FName> Names;
+	TArray<FString> Names;
 	GetFactionNames(Names);
 
 	CachedItems.Empty();
 
-	//Convert FString to Shared Ptrs and Populate the array
-	for (auto It = Names.CreateConstIterator(); It; ++It)
+	// Convert FString to Shared Ptrs and Populate the array
+	for (auto It = Names.CreateIterator(); It; ++It)
 	{
 		if (It)
 		{
-			CachedItems.Add(MakeShared<FName>(*It));
+			CachedItems.Add(MakeShared<FString>(MoveTemp(*It)));
 		}
 	}
 
-	if (bRefreshComboBox && ComboBox.IsValid()) {
+	if (bRefreshComboBox && ComboBox.IsValid())
+	{
 		ComboBox->RefreshOptions();
 	}
 }
 
-void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESelectInfo::Type SelectInfo)
+void SFaction::OnSelectionChanged(const TSharedPtr<FString> Selected, ESelectInfo::Type SelectInfo)
 {
-	if (!NameHandle.IsValid())
-		return;
-
-	if (SelectedNamePtr.IsValid())
+	if (Selected.IsValid())
 	{
-		FName SelectedName = *SelectedNamePtr;
-		const auto& AllFactions = GetDefault<UFactionsSettings>()->GetFactionInfos();
-
-		if (SelectedName != NO_FACTION_NAME && AllFactions.Contains(SelectedName))
-		{
-			NameHandle->SetValue(SelectedName);
-		}
-		else
-		{
-			//Priority not found. Set default value
-			NameHandle->SetValue(NO_FACTION_NAME);
-		}
+		FFaction NewFaction{FName{*Selected}};
+		OnFactionSelected.ExecuteIfBound(NewFaction, SelectInfo);
 	}
 
 	UpdateItems(true);
@@ -83,33 +84,35 @@ void SFaction::OnSelectionChanged(const TSharedPtr<FName> SelectedNamePtr, ESele
 
 FText SFaction::GetSelectedItem() const
 {
-	FName Id = GetIdValue();
+	FFaction Id = GetFaction();
 	if (!Id.IsNone())
 	{
-		return FText::FromName(Id);
+		return FText::FromName(Id.GetId());
 	}
 	return FText::FromName(NO_FACTION_NAME);
 }
 
-void SFaction::GetFactionNames(TArray<FName>& Names) const
+void SFaction::GetFactionNames(TArray<FString>& Names) const
 {
-	const UFactionsSettings* Settings = GetDefault<UFactionsSettings>();
+	const UFactionsSubsystem* Settings = GetDefault<UFactionsSubsystem>();
 	check(Settings);
 
-	for (const auto& KeyValue : Settings->GetFactionInfos())
+	for (const auto& KeyValue : Settings->GetFactions().Descriptors)
 	{
-		Names.Add(KeyValue.Key);
+		if (KeyValue.Key != NO_FACTION_NAME)
+		{
+			Names.Add(KeyValue.Key.ToString());
+		}
 	}
+
 	// Make sure None is at the start
-	Names.Remove(NO_FACTION_NAME);
-	Names.Insert(NO_FACTION_NAME, 0);
+	Names.Insert(NO_FACTION_NAME.ToString(), 0);
 }
 
 FSlateColor SFaction::GetForegroundColor() const
 {
-	FName Id = GetIdValue();
-
-	if (Id.IsNone() || GetDefault<UFactionsSettings>()->GetFactionInfos().Contains(Id))
+	FFaction Id = GetFaction();
+	if (Id.IsNone() || GetDefault<UFactionsSubsystem>()->IsValid(Id))
 	{
 		return FSlateColor::UseForeground();
 	}
@@ -117,10 +120,7 @@ FSlateColor SFaction::GetForegroundColor() const
 	return FLinearColor::Red;
 }
 
-FName SFaction::GetIdValue() const
+FFaction SFaction::GetFaction() const
 {
-	FName Id;
-	if (NameHandle.IsValid() && NameHandle->GetValue(Id) == FPropertyAccess::Success)
-		return Id;
-	return FName{};
+	return Faction.Get();
 }

@@ -13,12 +13,17 @@ public:
 	/** Construct function for this widget */
 	void Construct(const FArguments& InArgs, TSharedPtr<IPropertyHandle> _Handle);
 
-	~SFactionColor();
+protected:
 
-private:
+	/** Creates the color widget that when clicked spawns the color picker window. */
+	TSharedRef<SWidget> CreateColorWidget(TWeakPtr<IPropertyHandle>);
 
-	TSharedPtr<IPropertyHandle> ColorProperty;
-
+	/**
+	 * Get the color used by this struct as a linear color value
+	 * @param InColor To be filled with the color value used by this struct, or white if this struct is being used to edit multiple values
+	 * @return The result of trying to get the color value
+	 */
+	FPropertyAccess::Result GetColorAsLinear(FLinearColor& InColor) const;
 
 	/**
 	* Creates a new color picker for interactively selecting the color
@@ -35,12 +40,22 @@ private:
 	void OnSetColorFromColorPicker(FLinearColor NewColor);
 
 	/**
+	 * Called to reset all colors to before the color picker spawned
+	 */
+	void ResetColors();
+
+	/**
 	* Called when the user clicks cancel in the color picker
 	* The values are reset to their original state when this happens
 	*
 	* @param OriginalColor Original color of the property
 	*/
 	void OnColorPickerCancelled(FLinearColor OriginalColor);
+
+	/**
+	 * Called when the color picker window is clsoed
+	 */
+	void OnColorPickerWindowClosed(const TSharedRef<SWindow>& Window);
 
 	/**
 	* Called when the user enters an interactive color change (dragging something in the picker)
@@ -53,19 +68,36 @@ private:
 	void OnColorPickerInteractiveEnd();
 
 	/**
-	* Get the color used by this struct as a linear color value
-	* @param InColor To be filled with the color value used by this struct, or white if this struct is being used to edit multiple values
-	* @return The result of trying to get the color value
-	*/
-	FPropertyAccess::Result GetColorAsLinear(FLinearColor& OutColor) const;
-
-	/**  @return The color that should be displayed in the color block */
+	 * @return The color that should be displayed in the color block
+	 */
 	FLinearColor OnGetColorForColorBlock() const;
 
-	/** Called when the user clicks in the color block (opens inline color picker) */
+	/**
+	 * @return The color that should be displayed in the color block in slate color format
+	 */
+	FSlateColor  OnGetSlateColorForBlock() const;
+
+	/**
+	 * @return The border color encompassing the entire color block
+	 */
+	FSlateColor GetColorWidgetBorderColor() const;
+	/**
+	 * Called when the user clicks in the color block (opens inline color picker)
+	 */
 	FReply OnMouseButtonDownColorBlock(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent);
 
+	/** Called when the user clicks on the the button to get the full color picker */
+	FReply OnOpenFullColorPickerClicked();
 
+	/**
+	* Called to see if the value is enabled for editing
+	*
+	* @param WeakHandlePtr	Handle to the property that the new value is for
+	*/
+	bool IsValueEnabled(TWeakPtr<IPropertyHandle> WeakHandlePtr) const;
+
+
+protected:
 	/** Stores a linear or srgb color without converting between the two. Only one is valid at a time */
 	struct FLinearOrSrgbColor
 	{
@@ -84,22 +116,36 @@ private:
 		FColor SrgbColor;
 	};
 
-	bool IsValueEnabled() const;
-
 	/** Saved per struct colors in case the user clicks cancel in the color picker */
 	TArray<FLinearOrSrgbColor> SavedPreColorPickerColors;
 
-	bool bDontUpdateWhileEditingColor;
-
-	/** True if the property is a linear color property */
-	bool bColorIsLinear;
-
-	/** True if the property wants to ignore the alpha component */
-	bool bColorIgnoreAlpha;
-
-	/** True if the user is performing an interactive color change */
-	bool bColorIsInteractive;
+	/** Color struct handle */
+	TSharedPtr<IPropertyHandle> StructPropertyHandle;
 
 	/** Cached widget for the color picker to use as a parent */
 	TSharedPtr<SWidget> ColorPickerParentWidget;
+
+	TSharedPtr<SWidget > ColorWidgetBackgroundBorder;
+
+	/** Overrides the default state of the sRGB check box */
+	TOptional<bool> sRGBOverride;
+
+	/** True if the property is a linear color property */
+	bool bIsLinearColor = false;
+
+	/** True if the property wants to ignore the alpha component */
+	bool bIgnoreAlpha = false;
+
+	/** True if the inline color picker is visible */
+	bool bIsInlineColorPickerVisible = false;
+
+	/** True if the user is performing an interactive color change */
+	bool bIsInteractive = false;
+
+	/** Last color set from color picker as string*/
+	FString LastPickerColorString;
+
+
+	/** The value won;t be updated while editing */
+	bool bDontUpdateWhileEditing = false;
 };

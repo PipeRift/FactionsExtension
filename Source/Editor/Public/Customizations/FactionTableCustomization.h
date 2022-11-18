@@ -1,70 +1,90 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 #pragma once
 
-#include <IPropertyTypeCustomization.h>
-#include <PropertyHandle.h>
 #include <EditorUndoClient.h>
+#include <IPropertyTypeCustomization.h>
+#include <IStructureDetailsView.h>
+#include <PropertyHandle.h>
 #include <Widgets/Views/SListView.h>
 
 
-struct FFactionViewItem {
-	FFactionViewItem() : Id{ INDEX_NONE }, ItemProperty{} {}
-	FFactionViewItem(int32 Id, const TSharedPtr<IPropertyHandle>& Property)
-		: Id{ Id }, ItemProperty{ Property }
-	{}
+struct FFactionListItem
+{
+	FFactionListItem() : Id{INDEX_NONE} {}
+	FFactionListItem(int32 Id, const TSharedPtr<IPropertyHandle>& Property) : Id{Id}, Property{Property} {}
 
 	int32 Id;
-	TSharedPtr<IPropertyHandle> ItemProperty;
+	TSharedPtr<IPropertyHandle> Property;
 
 
-	TSharedPtr<IPropertyHandle> GetKeyProperty() const {
-		return ItemProperty->GetKeyHandle();
+	TSharedPtr<IPropertyHandle> GetKeyProperty() const
+	{
+		return Property->GetKeyHandle();
 	}
 
-	TSharedPtr<IPropertyHandle> GetValueProperty() const {
-		return ItemProperty;
+	TSharedPtr<IPropertyHandle> GetValueProperty() const
+	{
+		return Property;
 	}
 
-	TSharedPtr<IPropertyHandle> GetColorProperty() const {
-		return ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, Color));
+	TSharedPtr<IPropertyHandle> GetSelfAttitudeProperty() const
+	{
+		return Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, SelfAttitude));
 	}
 
-	FName GetName() const {
+	TSharedPtr<IPropertyHandle> GetExternalAttitudeProperty() const
+	{
+		return Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, ExternalAttitude));
+	}
+
+	TSharedPtr<IPropertyHandle> GetColorProperty() const
+	{
+		return Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, Color));
+	}
+
+	FName GetName() const
+	{
 		FName Name;
 		GetKeyProperty()->GetValue(Name);
 		return Name;
 	}
 
-	FString GetDisplayName() const {
+	FString GetDisplayName() const
+	{
 		FString DisplayName;
-		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionInfo, DisplayName))->GetValue(DisplayName);
+		Property->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionDescriptor, DisplayName))
+			->GetValue(DisplayName);
 		return DisplayName;
 	}
 
-	bool IsValid() const { return Id != INDEX_NONE && ItemProperty.IsValid(); }
+	bool IsValid() const
+	{
+		return Id != INDEX_NONE && Property.IsValid();
+	}
 };
 
-using FFactionViewItemPtr = TSharedPtr<FFactionViewItem>;
+using FFactionListItemPtr = TSharedPtr<FFactionListItem>;
 
 
 class FFactionTableCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
 {
 public:
-
-	FFactionTableCustomization()
-		: Filter{ "" }
-	{};
+	FFactionTableCustomization() : Filter{""} {};
 
 	/**
-	* Creates a new instance.
-	*
-	* @return A new struct customization for Anchor Type.
-	*/
+	 * Creates a new instance.
+	 *
+	 * @return A new struct customization for Anchor Type.
+	 */
 	static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
 	/** IPropertyTypeCustomization interface */
-	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
-	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle,
+		class FDetailWidgetRow& HeaderRow,
+		IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle,
+		class IDetailChildrenBuilder& StructBuilder,
+		IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 
 	~FFactionTableCustomization();
 
@@ -74,65 +94,64 @@ public:
 	//~ End FEditorUndoClient Interface
 
 private:
+	void SetSelection(
+		FFactionListItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
 
-	TSharedRef<SWidget> CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle);
-
-	/** Make the widget for a row entry in the data table row list view */
-	TSharedRef<ITableRow> MakeFactionWidget(FFactionViewItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
-
-	void OnSelected(FFactionViewItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
-
-	void SetSelection(FFactionViewItemPtr InNewSelection, ESelectInfo::Type InSelectInfo = ESelectInfo::Direct);
-
-
-	void RefreshView();
+	void RefreshList();
+	TSharedRef<ITableRow> MakeListRow(FFactionListItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
 
 	void OnFilterChanged(const FText& Text);
 
 
-	FReply OnNewFaction();
+	void OnNewFaction();
 
 public:
-
-	FReply OnDeleteFaction(FFactionViewItemPtr Faction);
-	void OnFactionIdChange(const FText& NewIdText, ETextCommit::Type CommitInfo, const FFactionViewItemPtr& Item);
+	FReply OnDeleteFaction(FFactionListItemPtr Faction);
+	void OnFactionIdChange(
+		const FText& NewIdText, ETextCommit::Type CommitInfo, const FFactionListItemPtr& Item);
 
 private:
+	void OnClearFactions();
 
-	FReply OnClearFactions();
+	void OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent);
 
 	UObject* GetOuter() const;
 
 	FText GetHeaderValueText() const;
 
+	bool UpdateSelectedCopy();
+
 
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
-	TSharedPtr<IPropertyHandle> ItemsHandle;
-	TSharedPtr<IPropertyHandleMap> ItemsHandleMap;
+	TSharedPtr<IPropertyHandle> DescriptorsHandle;
 
 
 	/** Array of the factions that are available for editing */
-	TArray<FFactionViewItemPtr> AvailableFactions;
+	TArray<FFactionListItemPtr> AvailableFactions;
 
 	/** Array of the factions that are available for editing */
-	TArray<FFactionViewItemPtr> VisibleFactions;
+	TArray<FFactionListItemPtr> VisibleFactions;
 
 	/** List view responsible for showing the rows in VisibleRows for each entry in Factions */
-	TSharedPtr<SListView<FFactionViewItemPtr>> ListView;
+	TSharedPtr<SListView<FFactionListItemPtr>> ListView;
 
-	TWeakPtr<FFactionViewItem> CurrentSelection;
+	TWeakPtr<FFactionListItem> CurrentSelection;
 
 	FString Filter;
 
-	TSharedPtr<SVerticalBox> FactionInfoContainer;
+	TSharedPtr<IStructureDetailsView> DescriptorDetailsView;
+	// We hold a copied struct for editing, then assign it after changes
+	// This is due to StructureDetailsView not notifying the owner object of changes
+	TSharedPtr<FStructOnScope> SelectedDescriptorCopy;
+	FSimpleDelegate OnSelectedDescriptorChanged;
 
 	FSimpleDelegate OnItemsNumChanged;
 
 public:
-
 	static const FName ColumnDelete;
 	static const FName ColumnId;
+	static const FName ColumnSelfAttitude;
+	static const FName ColumnExternalAttitude;
 	static const FName ColumnColor;
 };
-

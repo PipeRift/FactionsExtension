@@ -5,7 +5,7 @@
 #include "EdGraphSchema_K2.h"
 #include "EdGraphUtilities.h"
 
-#include "Factions/Faction.h"
+#include "Faction.h"
 #include "Customizations/FactionPin.h"
 
 

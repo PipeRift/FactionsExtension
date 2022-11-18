@@ -2,37 +2,39 @@
 
 #include "Customizations/FactionTableCustomization.h"
 
-#include <Editor.h>
-#include <ScopedTransaction.h>
-#include <DetailWidgetRow.h>
-#include <IDetailChildrenBuilder.h>
-#include <Widgets/Layout/SScrollBox.h>
-#include <Widgets/Input/SSearchBox.h>
-#include <Widgets/Input/SButton.h>
-#include <Widgets/Layout/SWidgetSwitcher.h>
-
 #include "Customizations/SFaction.h"
-
-#include "FactionsSettings.h"
 #include "FactionTable.h"
+#include "FactionsSubsystem.h"
 #include "Widgets/SFactionColor.h"
+
+#include <DetailLayoutBuilder.h>
+#include <DetailWidgetRow.h>
+#include <Editor.h>
+#include <IDetailChildrenBuilder.h>
+#include <PropertyCustomizationHelpers.h>
+#include <ScopedTransaction.h>
+#include <Widgets/Input/SButton.h>
+#include <Widgets/Input/SSearchBox.h>
+#include <Widgets/Layout/SScrollBox.h>
+#include <Widgets/Layout/SWidgetSwitcher.h>
 
 
 #define LOCTEXT_NAMESPACE "FFactionTableCustomization"
 
-const FName FFactionTableCustomization::ColumnId("Id");
-const FName FFactionTableCustomization::ColumnColor("Color");
-const FName FFactionTableCustomization::ColumnDelete("Delete");
+const FName FFactionTableCustomization::ColumnId(TEXT("Id"));
+const FName FFactionTableCustomization::ColumnSelfAttitude(TEXT("SelfAttitude"));
+const FName FFactionTableCustomization::ColumnExternalAttitude(TEXT("ExternalAttitude"));
+const FName FFactionTableCustomization::ColumnColor(TEXT("Color"));
+const FName FFactionTableCustomization::ColumnDelete(TEXT("Delete"));
 
 
-class SFactionViewItem : public SMultiColumnTableRow<FFactionViewItemPtr>
+class SFactionViewItem : public SMultiColumnTableRow<FFactionListItemPtr>
 {
 public:
-
 	SLATE_BEGIN_ARGS(SFactionViewItem) {}
-		/** The widget that owns the tree. We'll only keep a weak reference to it. */
-		SLATE_ARGUMENT(TSharedPtr<FFactionTableCustomization>, Customization)
-		SLATE_ARGUMENT(FFactionViewItemPtr, Item)
+	/** The widget that owns the tree. We'll only keep a weak reference to it. */
+	SLATE_ARGUMENT(TSharedPtr<FFactionTableCustomization>, Customization)
+	SLATE_ARGUMENT(FFactionListItemPtr, Item)
 	SLATE_END_ARGS()
 
 
@@ -42,11 +44,9 @@ public:
 		Customization = InArgs._Customization;
 		Item = InArgs._Item;
 
-		SMultiColumnTableRow<FFactionViewItemPtr>::Construct(
-			FSuperRowType::FArguments()
-			.Style(FEditorStyle::Get(), "DataTableEditor.CellListViewRow"),
-			InOwnerTableView
-		);
+		SMultiColumnTableRow<FFactionListItemPtr>::Construct(
+			FSuperRowType::FArguments().Style(FAppStyle::Get(), "DataTableEditor.CellListViewRow"),
+			InOwnerTableView);
 	}
 
 	/** Overridden from SMultiColumnTableRow.  Generates a widget for this column of the list view. */
@@ -55,29 +55,37 @@ public:
 		if (Column == FFactionTableCustomization::ColumnDelete)
 		{
 			return SNew(SButton)
-			.VAlign(VAlign_Center)
-			.HAlign(HAlign_Center)
-			.ContentPadding(FMargin{0, 1, 0, 0})
-			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-			.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
-			.OnClicked(Customization.Pin().Get(), &FFactionTableCustomization::OnDeleteFaction, Item)
-			[
-				SNew(STextBlock)
-				.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
-				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
-			];
+				.VAlign(VAlign_Center)
+				.HAlign(HAlign_Center)
+				.ContentPadding(FMargin{0, 1, 0, 0})
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+				.ForegroundColor(FAppStyle::GetSlateColor("DefaultForeground"))
+				.OnClicked(Customization.Pin().Get(), &FFactionTableCustomization::OnDeleteFaction,
+					Item)[SNew(STextBlock)
+							  .Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
+							  .Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)];
+		}
+		else if (Column == FFactionTableCustomization::ColumnSelfAttitude)
+		{
+			return SNew(SBox).Padding(
+				FMargin{5, 0})[Item->GetSelfAttitudeProperty()->CreatePropertyValueWidget()];
+		}
+		else if (Column == FFactionTableCustomization::ColumnExternalAttitude)
+		{
+			return SNew(SBox).Padding(
+				FMargin{5, 0})[Item->GetExternalAttitudeProperty()->CreatePropertyValueWidget()];
 		}
 		else if (Column == FFactionTableCustomization::ColumnColor)
 		{
 			return SNew(SBox)
-			.Padding(FMargin{ 5, 3 })
+			.Padding(FMargin{5, 0})
 			[
 				SNew(SFactionColor, Item->GetColorProperty())
 			];
 		}
 
 		return SNew(SBox)
-		.Padding(FMargin{ 5, 0 })
+		.Padding(FMargin{5, 0})
 		[
 			SAssignNew(IdNameSwitcher, SWidgetSwitcher)
 			+ SWidgetSwitcher::Slot()
@@ -110,8 +118,10 @@ public:
 	}
 
 private:
-
-	FText GetIdAsText() const { return FText::FromName(Item->GetName()); }
+	FText GetIdAsText() const
+	{
+		return FText::FromName(Item->GetName());
+	}
 
 	FReply OnIdNameDoubleClicked(const FGeometry&, const FPointerEvent&);
 
@@ -119,7 +129,7 @@ private:
 
 
 	TWeakPtr<FFactionTableCustomization> Customization;
-	FFactionViewItemPtr Item;
+	FFactionListItemPtr Item;
 
 	TSharedPtr<SWidgetSwitcher> IdNameSwitcher;
 	TSharedPtr<SEditableTextBox> IdNameTextBox;
@@ -136,7 +146,8 @@ FReply SFactionViewItem::OnIdNameDoubleClicked(const FGeometry&, const FPointerE
 
 		// Get path to editable widget
 		FWidgetPath EditableWidgetPath;
-		FSlateApplication::Get().GeneratePathToWidgetUnchecked(IdNameTextBox.ToSharedRef(), EditableWidgetPath);
+		FSlateApplication::Get().GeneratePathToWidgetUnchecked(
+			IdNameTextBox.ToSharedRef(), EditableWidgetPath);
 
 		// Set keyboard focus directly
 		FSlateApplication::Get().SetKeyboardFocus(EditableWidgetPath, EFocusCause::SetDirectly);
@@ -165,109 +176,39 @@ TSharedRef<IPropertyTypeCustomization> FFactionTableCustomization::MakeInstance(
 	return MakeShareable(new FFactionTableCustomization);
 }
 
-void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
+	FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-	ItemsHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionTable, Items));
-
-	if (!ItemsHandle.IsValid() || !ItemsHandle->IsValidHandle())
-		return;
-
-	ItemsHandleMap = ItemsHandle->AsMap();
+	DescriptorsHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionTable, Descriptors));
 
 	// Refresh when Num changes
-	OnItemsNumChanged = FSimpleDelegate::CreateRaw(this, &FFactionTableCustomization::RefreshView);
-	ItemsHandleMap->SetOnNumElementsChanged(OnItemsNumChanged);
+	OnItemsNumChanged = FSimpleDelegate::CreateRaw(this, &FFactionTableCustomization::RefreshList);
+	DescriptorsHandle->AsMap()->SetOnNumElementsChanged(OnItemsNumChanged);
 
-	RefreshView();
+	RefreshList();
 
-	HeaderRow
-	.NameContent()
-	.VAlign(VAlign_Top)
-	[
-		SNew(SBox)
-		.Padding(FMargin{ 0, 10 })
-		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			[
-				SNew(STextBlock)
-				.TextStyle(FEditorStyle::Get(), "LargeText")
-				.Text(LOCTEXT("FactionsTitle", "Factions"))
-			]
-			+ SHorizontalBox::Slot()
-			.Padding(2.f, 0.f)
-			.HAlign(HAlign_Right)
-			.FillWidth(1.f)
-			[
-				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
-				.Text(LOCTEXT("Relations_New", "New"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-				.OnClicked(this, &FFactionTableCustomization::OnNewFaction)
-			]
-			+ SHorizontalBox::Slot()
-			.Padding(2.f, 0.f)
-			.HAlign(HAlign_Right)
-			.AutoWidth()
-			[
-				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
-				.Text(LOCTEXT("Relations_Clear", "Clear"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-				.OnClicked(this, &FFactionTableCustomization::OnClearFactions)
-			]
-		]
-	]
-	.ValueContent()
-	.HAlign(HAlign_Left)
-	.VAlign(VAlign_Center)
-	[
-		SNew(SBox)
-		.Padding(FMargin{ 10, 0 })
-		[
-			SNew(STextBlock)
-			.Text(this, &FFactionTableCustomization::GetHeaderValueText)
-		]
-	];
+	auto AddButton = PropertyCustomizationHelpers::MakeAddButton(
+		FSimpleDelegate::CreateSP(this, &FFactionTableCustomization::OnNewFaction),
+		LOCTEXT("AddFactionToolTip", "Adds Faction"));
 
-	GEditor->RegisterForUndo(this);
-}
+	auto ClearButton = PropertyCustomizationHelpers::MakeEmptyButton(
+		FSimpleDelegate::CreateSP(this, &FFactionTableCustomization::OnClearFactions),
+		LOCTEXT("ClearFactionToolTip", "Removes all factions"));
 
-void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
-{
-	TSharedRef<SScrollBar> VerticalScrollBar = SNew(SScrollBar)
-		.Orientation(Orient_Vertical)
-		.Thickness(FVector2D(8.0f, 8.0f));
-
-	TSharedRef<SHeaderRow> ListHeaderRow = SNew(SHeaderRow)
-	+ SHeaderRow::Column(ColumnDelete)
-	.HAlignCell(HAlign_Fill)
-	.VAlignCell(VAlign_Fill)
-	.VAlignHeader(VAlign_Center)
-	.FixedWidth(22.f)
-	[
-		SNew(STextBlock).Text(LOCTEXT("FactionColumnDelete", ""))
-	]
-	+ SHeaderRow::Column(ColumnId)
-	.HAlignCell(HAlign_Fill)
-	.VAlignCell(VAlign_Center)
-	.VAlignHeader(VAlign_Center)
-	.FillWidth(1.f)
-	.HeaderContentPadding(FMargin(0, 3))
+	HeaderRow.NameContent()
+	.HAlign(HAlign_Fill)
 	[
 		SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
-		.Padding(5, 0)
 		.HAlign(HAlign_Left)
 		[
-			SNew(STextBlock)
-			.Text(LOCTEXT("FactionColumnId", "Faction Id"))
-			.ToolTipText(LOCTEXT("FactionColumnIdTooltip", "A faction's Id serves as its unique identifier. For setting a name use the Display Name"))
+			StructHandle->CreatePropertyNameWidget()
 		]
 		+ SHorizontalBox::Slot()
 		.HAlign(HAlign_Right)
-		.Padding(5, 0)
+		.AutoWidth()
+		.Padding(4, 0)
 		[
 			SNew(SBox)
 			.MaxDesiredHeight(20.f)
@@ -279,20 +220,114 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 			]
 		]
 	]
+	.ValueContent()
+	[
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.VAlign(VAlign_Center)
+		.AutoWidth()[
+			SNew(STextBlock)
+			.Text(this, &FFactionTableCustomization::GetHeaderValueText)
+		]
+		+ SHorizontalBox::Slot()
+		.Padding(2.0f)
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Center)
+		.AutoWidth()
+		[
+			AddButton
+		]
+		+ SHorizontalBox::Slot()
+		.Padding(2.0f)
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Center)
+		.AutoWidth()
+		[
+			ClearButton
+		]
+	];
+
+	GEditor->RegisterForUndo(this);
+}
+
+void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
+	IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+{
+	// Create descriptor details
+	auto& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FDetailsViewArgs DetailsViewArgs;
+	DetailsViewArgs.bUpdatesFromSelection = false;
+	DetailsViewArgs.bLockable = false;
+	DetailsViewArgs.bAllowSearch = false;
+	DetailsViewArgs.bAllowFavoriteSystem = false;
+	DetailsViewArgs.bShowOptions = false;
+	DetailsViewArgs.bShowPropertyMatrixButton = false;
+	DetailsViewArgs.bShowKeyablePropertiesOption = false;
+	DetailsViewArgs.bShowAnimatedPropertiesOption = false;
+	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+	FStructureDetailsViewArgs StructDetailView;
+	DescriptorDetailsView = PropertyEditorModule.CreateStructureDetailView(
+		DetailsViewArgs, StructDetailView, {}, LOCTEXT("FactionDetailsName", "Descriptor"));
+	DescriptorDetailsView->GetOnFinishedChangingPropertiesDelegate().AddSP(
+		this, &FFactionTableCustomization::OnFinishedChangingProperties);
+
+	TSharedRef<SScrollBar> VerticalScrollBar =
+		SNew(SScrollBar).Orientation(Orient_Vertical).Thickness(FVector2D(8.0f, 8.0f));
+
+	TSharedRef<SHeaderRow> ListHeaderRow =
+	SNew(SHeaderRow)
+	+ SHeaderRow::Column(ColumnDelete)
+	.HAlignCell(HAlign_Fill)
+	.VAlignCell(VAlign_Fill)
+	.VAlignHeader(VAlign_Center)
+	.FixedWidth(22.f)
+	[
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnDelete", ""))
+	]
+	+ SHeaderRow::Column(ColumnId)
+	.HAlignCell(HAlign_Fill)
+	.VAlignCell(VAlign_Center)
+	.VAlignHeader(VAlign_Center)
+	.FillWidth(1.f)
+	[
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnId", "Id"))
+		.ToolTipText(LOCTEXT("FactionColumnIdTooltip",
+			"A faction's Id serves as its unique identifier. For setting a name use "
+			"the Display Name"))
+	]
+	+ SHeaderRow::Column(ColumnSelfAttitude)
+	.HAlignCell(HAlign_Center)
+	.VAlignCell(VAlign_Center)
+	.VAlignHeader(VAlign_Center)
+	.FixedWidth(90.f)
+	[
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnSelfAttitude", "To Self"))
+	]
+	+ SHeaderRow::Column(ColumnExternalAttitude)
+	.HAlignCell(HAlign_Center)
+	.VAlignCell(VAlign_Center)
+	.VAlignHeader(VAlign_Center)
+	.FixedWidth(90.f)
+	[
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnExternalAttitude", "To Others"))
+	]
 	+ SHeaderRow::Column(ColumnColor)
 	.HAlignCell(HAlign_Center)
 	.VAlignCell(VAlign_Center)
 	.VAlignHeader(VAlign_Center)
-	.FixedWidth(70.f)
-	.HeaderContentPadding(FMargin(5, 3))
-	[
-		SNew(STextBlock).Text(LOCTEXT("FactionColumnColor", "Color"))
+	.FixedWidth(70.f)[
+		SNew(STextBlock)
+		.Text(LOCTEXT("FactionColumnColor", "Color"))
 	];
 
-	ListView = SNew(SListView<FFactionViewItemPtr>)
+	ListView = SNew(SListView<FFactionListItemPtr>)
 		.ListItemsSource(&VisibleFactions)
 		.HeaderRow(ListHeaderRow)
-		.OnGenerateRow(this, &FFactionTableCustomization::MakeFactionWidget)
+		.OnGenerateRow(this, &FFactionTableCustomization::MakeListRow)
 		//.OnListViewScrolled(this, &FFactionTableCustomization::OnScrolled)
 		.OnSelectionChanged(this, &FFactionTableCustomization::SetSelection)
 		.ExternalScrollbar(VerticalScrollBar)
@@ -301,12 +336,9 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 		.AllowOverscroll(EAllowOverscroll::No);
 
 	StructBuilder.AddCustomRow(LOCTEXT("FactionsPropertySearch", "Factions"))
-	.NameContent()
-	.VAlign(VAlign_Top)
-	[
-		SNew(SBox)
-		.Padding(FMargin{ 0,10,0,20 })
-		.VAlign(VAlign_Fill)
+		.NameContent()
+		.VAlign(VAlign_Top)
+		.HAlign(HAlign_Fill)[SNew(SBox).Padding(FMargin{0, 0, 0, 8})
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
@@ -333,10 +365,9 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	.HAlign(HAlign_Fill)
 	[
 		SNew(SBox)
-		.Padding(10)
-		.MinDesiredHeight(180.f)
+		.Padding(FMargin{0, 0, 0, 8})
 		[
-			SAssignNew(FactionInfoContainer, SVerticalBox)
+			DescriptorDetailsView->GetWidget().ToSharedRef()
 		]
 	];
 
@@ -351,29 +382,12 @@ FFactionTableCustomization::~FFactionTableCustomization()
 	GEditor->UnregisterForUndo(this);
 }
 
-TSharedRef<SWidget> FFactionTableCustomization::CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle)
-{
-	return SNew(SBox)
-	.Padding(1)
-	.HAlign(HAlign_Fill)
-	.MinDesiredWidth(1000.f)
-	[
-		SNew(SFaction, PropertyHandle)
-	];
-}
-
-TSharedRef<ITableRow> FFactionTableCustomization:: MakeFactionWidget(FFactionViewItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
-{
-	return SNew(SFactionViewItem, OwnerTable)
-		.Customization(SharedThis(this))
-		.Item(Item);
-}
-
 void FFactionTableCustomization::PostUndo(bool bSuccess)
 {
 	if (bSuccess && StructHandle.IsValid())
 	{
-		RefreshView();
+		RefreshList();
+		UpdateSelectedCopy();
 	}
 }
 
@@ -381,169 +395,170 @@ void FFactionTableCustomization::PostRedo(bool bSuccess)
 {
 	if (bSuccess && StructHandle.IsValid())
 	{
-		RefreshView();
+		RefreshList();
+		UpdateSelectedCopy();
 	}
 }
 
-void FFactionTableCustomization::SetSelection(FFactionViewItemPtr InNewSelection, ESelectInfo::Type InSelectInfo /*= ESelectInfo::Direct*/)
+void FFactionTableCustomization::SetSelection(
+	FFactionListItemPtr InNewSelection, ESelectInfo::Type InSelectInfo /*= ESelectInfo::Direct*/)
 {
 	// Clear previous details
-	FactionInfoContainer->ClearChildren();
+	DescriptorDetailsView->SetStructureData({});
+	SelectedDescriptorCopy = {};
+	OnSelectedDescriptorChanged = {};
 
 	CurrentSelection = InNewSelection;
 	if (CurrentSelection.IsValid())
 	{
-		TSharedPtr<IPropertyHandle> Property = CurrentSelection.Pin()->GetValueProperty();
-		if (Property.IsValid())
+		SelectedDescriptorCopy = MakeShared<FStructOnScope>(FFactionDescriptor::StaticStruct());
+		if (UObject* Outer = GetOuter())
 		{
-			uint32 Num = 0;
-			Property->GetNumChildren(Num);
-
-			/** Populate properties */
-			for (uint32 I = 0; I < Num; ++I)
-			{
-				TSharedPtr<IPropertyHandle> ChildProperty = Property->GetChildHandle(I);
-
-				if (ChildProperty->GetProperty()->GetFName() != GET_MEMBER_NAME_CHECKED(FFactionInfo, Color))
-				{
-					TSharedRef<SHorizontalBox> PropertyBox = SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					.HAlign(HAlign_Fill)
-					.FillWidth(0.35f)
-					[
-						ChildProperty->CreatePropertyNameWidget()
-					]
-					+ SHorizontalBox::Slot()
-					.HAlign(HAlign_Left)
-					.FillWidth(0.65f)
-					[
-						SNew(SBox)
-						.MinDesiredWidth(150.f)
-						.MaxDesiredWidth(250.f)
-						[
-							ChildProperty->CreatePropertyValueWidget()
-						]
-					];
-
-					FactionInfoContainer->AddSlot()
-					.VAlign(VAlign_Top)
-					.AutoHeight()
-					[
-						PropertyBox
-					];
-				}
-			}
+			SelectedDescriptorCopy->SetPackage(Outer->GetOutermost());
 		}
 
-		if (ListView.IsValid() && InSelectInfo == ESelectInfo::Direct)
+		if (UpdateSelectedCopy())
 		{
-			ListView->SetSelection(InNewSelection, ESelectInfo::OnMouseClick);
+			DescriptorDetailsView->SetStructureData(SelectedDescriptorCopy);
 		}
+
+		// Listen for external changes to the descriptor
+		OnSelectedDescriptorChanged = FSimpleDelegate::CreateLambda([this]() {
+			UpdateSelectedCopy();
+		});
+		CurrentSelection.Pin()->GetSelfAttitudeProperty()->SetOnPropertyValueChanged(
+			OnSelectedDescriptorChanged);
+		CurrentSelection.Pin()->GetExternalAttitudeProperty()->SetOnPropertyValueChanged(
+			OnSelectedDescriptorChanged);
+		CurrentSelection.Pin()->GetColorProperty()->SetOnPropertyValueChanged(OnSelectedDescriptorChanged);
 	}
 }
 
-void FFactionTableCustomization::RefreshView()
+void FFactionTableCustomization::RefreshList()
 {
-	if (!ItemsHandle.IsValid() || !ItemsHandle->IsValidHandle())
+	if (!DescriptorsHandle.IsValid() || !DescriptorsHandle->IsValidHandle())
 	{
 		AvailableFactions.Empty();
 		VisibleFactions.Empty();
 		return;
 	}
 
-	int32 LastSelection = CurrentSelection.IsValid() ? CurrentSelection.Pin()->Id : INDEX_NONE;
+	const int32 LastSelectedIndex = CurrentSelection.IsValid() ? CurrentSelection.Pin()->Id : INDEX_NONE;
 
 	uint32 Num;
-	FPropertyAccess::Result Result = ItemsHandleMap->GetNumElements(Num);
+	FPropertyAccess::Result Result = DescriptorsHandle->AsMap()->GetNumElements(Num);
 	if (Result != FPropertyAccess::Success)
 		return;
 
-	AvailableFactions.Empty(Num);
-	VisibleFactions.Empty(Num);
+	AvailableFactions.SetNum(Num);
 	for (uint32 I = 0; I < Num; ++I)
 	{
-		TSharedRef<IPropertyHandle> ItemProperty = ItemsHandle->GetChildHandle(I).ToSharedRef();
-		if (ItemProperty->IsValidHandle())
+		auto& Faction = AvailableFactions[I];
+		if (!Faction)
 		{
-			ItemProperty->GetKeyHandle();
+			Faction = MakeShared<FFactionListItem>();
+		}
 
-			FName FactionName;
-			ItemProperty->GetKeyHandle()->GetValue(FactionName);
+		TSharedPtr<IPropertyHandle> Property = DescriptorsHandle->GetChildHandle(I);
 
-			FFactionViewItemPtr Item = MakeShared<FFactionViewItem>(I, ItemProperty);
-			AvailableFactions.Add(Item);
+		Faction->Id = I;
+		Faction->Property = Property->IsValidHandle() ? Property : TSharedPtr<IPropertyHandle>{};
+	}
 
-			const FName ItemName = Item->GetName();
-
-			// Apply search Filter
-			if (Filter.IsEmpty() ||
-				ItemName.ToString().Contains(Filter) ||
-				Item->GetDisplayName().Contains(Filter))
-			{
-				VisibleFactions.Add(Item);
-
-				// Keep selection if possible
-				if (LastSelection != INDEX_NONE && Item->Id == LastSelection) {
-					SetSelection(Item);
-				}
-			}
+	// Filter available factions
+	VisibleFactions.Empty(Num);
+	for (const auto& Item : AvailableFactions)
+	{
+		const FName ItemName = Item->GetName();
+		if (Filter.IsEmpty() || ItemName.ToString().Contains(Filter) ||
+			Item->GetDisplayName().Contains(Filter))
+		{
+			VisibleFactions.Add(Item);
 		}
 	}
 
 	if (ListView.IsValid())
 	{
-		ListView->RequestListRefresh();
+		ListView->RebuildList();
 	}
+
+	// Keep selection if possible
+	if (LastSelectedIndex != INDEX_NONE && !VisibleFactions.IsEmpty())
+	{
+		const int32 Index = FMath::Min(LastSelectedIndex, VisibleFactions.Num() - 1);
+		SetSelection(VisibleFactions[Index]);
+	}
+}
+
+TSharedRef<ITableRow> FFactionTableCustomization::MakeListRow(
+	FFactionListItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
+{
+	return SNew(SFactionViewItem, OwnerTable)
+		.Customization(SharedThis(this)).Item(Item);
 }
 
 void FFactionTableCustomization::OnFilterChanged(const FText& Text)
 {
 	Filter = Text.ToString();
-	RefreshView();
+	RefreshList();
 }
 
-FReply FFactionTableCustomization::OnNewFaction()
+void FFactionTableCustomization::OnNewFaction()
 {
-	const FScopedTransaction Transaction(LOCTEXT("Relation_New", "Added new relation"));
+	const FScopedTransaction Transaction(LOCTEXT("Relation_New", "Add relation"));
 	GetOuter()->Modify();
 
-	ItemsHandleMap->AddItem();
+	DescriptorsHandle->AsMap()->AddItem();
+}
 
+FReply FFactionTableCustomization::OnDeleteFaction(FFactionListItemPtr Item)
+{
+	const FScopedTransaction Transaction(LOCTEXT("Relation_DeleteFaction", "Delete faction"));
+	GetOuter()->Modify();
+
+	DescriptorsHandle->AsMap()->DeleteItem(Item->Id);
 	return FReply::Handled();
 }
 
-FReply FFactionTableCustomization::OnDeleteFaction(FFactionViewItemPtr Item)
-{
-	const FScopedTransaction Transaction(LOCTEXT("Relation_DeleteFaction", "Deleted faction"));
-	GetOuter()->Modify();
-
-	ItemsHandleMap->DeleteItem(Item->Id);
-
-	return FReply::Handled();
-}
-
-void FFactionTableCustomization::OnFactionIdChange(const FText& NewIdText, ETextCommit::Type CommitInfo, const FFactionViewItemPtr& Item)
+void FFactionTableCustomization::OnFactionIdChange(
+	const FText& NewIdText, ETextCommit::Type CommitInfo, const FFactionListItemPtr& Item)
 {
 	check(Item.IsValid());
 
 	const FScopedTransaction Transaction(LOCTEXT("Faction_Rename", "Rename faction"));
 	GetOuter()->Modify();
 
-	FName NewId{ *NewIdText.ToString() };
+	FName NewId{*NewIdText.ToString()};
 	Item->GetKeyProperty()->SetValue(NewId);
 
-	RefreshView();
+	RefreshList();
 }
 
-FReply FFactionTableCustomization::OnClearFactions()
+void FFactionTableCustomization::OnClearFactions()
 {
-	const FScopedTransaction Transaction(LOCTEXT("Relation_ClearFactions", "Deleted all factions"));
+	const FScopedTransaction Transaction(LOCTEXT("Faction_ClearFactions", "Delete all factions"));
 	GetOuter()->Modify();
 
-	//For some reason Empty is not deleting children, therefore, we will delete one by one
-	ItemsHandleMap->Empty();
+	// For some reason Empty is not deleting children, therefore, we will delete one by one
+	DescriptorsHandle->AsMap()->Empty();
+}
 
-	return FReply::Handled();
+void FFactionTableCustomization::OnFinishedChangingProperties(
+	const FPropertyChangedEvent& PropertyChangedEvent)
+{
+	if (CurrentSelection.IsValid())
+	{
+		const FScopedTransaction Transaction(LOCTEXT("Faction_EditDescriptor", "Edit Descriptor"));
+		GetOuter()->Modify();
+
+		TSharedPtr<IPropertyHandle> Property = CurrentSelection.Pin()->GetValueProperty();
+		void* Data = nullptr;
+		if (Property.IsValid() && Property->GetValueData(Data) == FPropertyAccess::Result::Success)
+		{
+			UScriptStruct* Type = FFactionDescriptor::StaticStruct();
+			Type->GetCppStructOps()->Copy((uint8*) Data, SelectedDescriptorCopy->GetStructMemory(), 1);
+		}
+	}
 }
 
 UObject* FFactionTableCustomization::GetOuter() const
@@ -561,10 +576,25 @@ UObject* FFactionTableCustomization::GetOuter() const
 FText FFactionTableCustomization::GetHeaderValueText() const
 {
 	uint32 Num;
-	if (ItemsHandleMap->GetNumElements(Num) != FPropertyAccess::Success)
+	if (DescriptorsHandle->AsMap()->GetNumElements(Num) != FPropertyAccess::Success)
 		return FText::GetEmpty();
 
 	return FText::Format(LOCTEXT("ValueDescription", "{0} factions"), FText::AsNumber(Num));
+}
+
+bool FFactionTableCustomization::UpdateSelectedCopy()
+{
+	if (SelectedDescriptorCopy)
+	{
+		TSharedPtr<IPropertyHandle> Property = CurrentSelection.Pin()->GetValueProperty();
+		void* Data = nullptr;
+		if (Property.IsValid() && Property->GetValueData(Data) == FPropertyAccess::Result::Success)
+		{
+			UScriptStruct* Type = FFactionDescriptor::StaticStruct();
+			return Type->GetCppStructOps()->Copy(SelectedDescriptorCopy->GetStructMemory(), (uint8*) Data, 1);
+		}
+	}
+	return false;
 }
 
 #undef LOCTEXT_NAMESPACE

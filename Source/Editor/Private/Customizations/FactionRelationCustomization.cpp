@@ -7,7 +7,7 @@
 #include "IDetailChildrenBuilder.h"
 #include "Widgets/Views/SListView.h"
 
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 #include "Customizations/SFaction.h"
 
 #define LOCTEXT_NAMESPACE "FFactionRelationCustomization"
@@ -50,7 +50,17 @@ void FFactionRelationCustomization::CustomizeChildren(TSharedRef<IPropertyHandle
 
 TSharedRef<SWidget> FFactionRelationCustomization::CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle)
 {
-	return SNew(SFaction, PropertyHandle);
+	auto IdHandle = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id));
+
+	return SNew(SFaction)
+	.Faction_Lambda([IdHandle]() {
+		FName Id;
+		IdHandle->GetValue(Id);
+		return FFaction{Id};
+	})
+	.OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
+		IdHandle->SetValue(Faction.GetId());
+	});
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -5,6 +5,7 @@
 #include <Editor.h>
 #include <ScopedTransaction.h>
 #include <DetailWidgetRow.h>
+#include <DetailLayoutBuilder.h>
 #include <IDetailPropertyRow.h>
 #include <IDetailChildrenBuilder.h>
 #include <Widgets/Layout/SScrollBox.h>
@@ -13,7 +14,7 @@
 
 #include "Customizations/SFaction.h"
 
-#include "FactionsSettings.h"
+#include "FactionsSubsystem.h"
 #include "Faction.h"
 
 #define LOCTEXT_NAMESPACE "FRelationTableCustomization"
@@ -21,10 +22,8 @@
 
 const FName FRelationTableCustomization::FactionAId("Faction A");
 const FName FRelationTableCustomization::FactionBId("Faction B");
-const FName FRelationTableCustomization::AttitudeId("Reaction");
+const FName FRelationTableCustomization::AttitudeId("Relation");
 const FName FRelationTableCustomization::DeleteId("Delete");
-
-const FName FRelationTableCustomization::NameMember("Name");
 
 
 class SRelationViewItem : public SMultiColumnTableRow<TSharedPtr<uint32>>
@@ -44,7 +43,7 @@ public:
 
 		SMultiColumnTableRow<TSharedPtr<uint32>>::Construct(
 			FSuperRowType::FArguments()
-			.Style(FEditorStyle::Get(), "DataTableEditor.CellListViewRow"),
+			.Style(FAppStyle::Get(), "DataTableEditor.CellListViewRow"),
 			InOwnerTableView
 		);
 	}
@@ -78,54 +77,63 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 
 	RefreshRelations();
 
+	auto AddButton = PropertyCustomizationHelpers::MakeAddButton( FSimpleDelegate::CreateSP(this, &FRelationTableCustomization::OnNewRelation),
+		LOCTEXT("AddRelationToolTip", "Adds Relation") );
+
+	auto ClearButton = PropertyCustomizationHelpers::MakeEmptyButton( FSimpleDelegate::CreateSP(this, &FRelationTableCustomization::OnClearRelations),
+		LOCTEXT("ClearRelationToolTip", "Removes all relations") );
 
 	HeaderRow
 	.NameContent()
-	.VAlign(VAlign_Top)
+	.HAlign(HAlign_Fill)
 	[
-		SNew(SBox)
-		.Padding(FMargin{ 0, 10 })
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.HAlign(HAlign_Left)
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
+			StructHandle->CreatePropertyNameWidget()
+		]
+		+ SHorizontalBox::Slot()
+		.HAlign(HAlign_Right)
+		.AutoWidth()
+		.Padding(4, 0)
+		[
+			SNew(SBox)
+			.MaxDesiredHeight(20.f)
+			.MinDesiredWidth(100.f)
 			[
-				SNew(STextBlock)
-				.TextStyle(FEditorStyle::Get(), "LargeText")
-				.Text(LOCTEXT("Relations_Title", "Relations"))
-			]
-			+ SHorizontalBox::Slot()
-			.Padding(2.f, 0.f)
-			.HAlign(HAlign_Right)
-			.FillWidth(1.f)
-			[
-				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
-				.Text(LOCTEXT("Relations_New", "New"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-				.OnClicked(this, &FRelationTableCustomization::OnNewRelation)
-			]
-			+ SHorizontalBox::Slot()
-			.Padding(2.f, 0.f)
-			.HAlign(HAlign_Right)
-			.AutoWidth()
-			[
-				SNew(SButton)
-				.ContentPadding(FEditorStyle::GetMargin("StandardDialog.ContentPadding"))
-				.Text(LOCTEXT("Relations_Clear", "Clear"))
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Light")
-				.OnClicked(this, &FRelationTableCustomization::OnClearRelations)
+				SNew(SSearchBox)
+				.Visibility(this, &FRelationTableCustomization::GetFilterVisibility)
+				.OnTextChanged(this, &FRelationTableCustomization::OnFilterChanged)
 			]
 		]
 	]
 	.ValueContent()
-	.HAlign(HAlign_Left)
-	.VAlign(VAlign_Center)
 	[
-		SNew(SBox)
-		.Padding(FMargin{ 10, 0 })
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.VAlign(VAlign_Center)
+		.AutoWidth()
 		[
 			SNew(STextBlock)
+			.Font(IDetailLayoutBuilder::GetDetailFont())
 			.Text(this, &FRelationTableCustomization::GetHeaderValueText)
+		]
+		+SHorizontalBox::Slot()
+		.Padding(2.0f)
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Center)
+		.AutoWidth()
+		[
+			AddButton
+		]
+		+SHorizontalBox::Slot()
+		.Padding(2.0f)
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Center)
+		.AutoWidth()
+		[
+			ClearButton
 		]
 	];
 
@@ -150,61 +158,24 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 	]
 	+ SHeaderRow::Column(FactionAId)
 	.HAlignCell(HAlign_Left)
-	.FillWidth(1)
-	.HeaderContentPadding(FMargin(5, 3))
+	.FillWidth(0.25f)
+	.HeaderContentPadding(FMargin(5, 2))
 	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		.Padding(2, 0)
-		.HAlign(HAlign_Left)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromName(FactionAId))
-		]
-		+ SHorizontalBox::Slot()
-		.HAlign(HAlign_Right)
-		.Padding(4, 0)
-		[
-			SNew(SBox)
-			.MaxDesiredHeight(20.f)
-			.MinDesiredWidth(100.f)
-			[
-				SNew(SSearchBox)
-				.InitialText(FText::GetEmpty())
-				.OnTextChanged(this, &FRelationTableCustomization::OnFactionFilterChanged, FactionAId)
-			]
-		]
+		SNew(STextBlock)
+		.Text(FText::FromName(FactionAId))
 	]
 	+ SHeaderRow::Column(FactionBId)
 	.HAlignCell(HAlign_Left)
-	.FillWidth(1)
-	.HeaderContentPadding(FMargin(5, 3))
+	.FillWidth(0.25f)
+	.HeaderContentPadding(FMargin(5, 2))
 	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		.Padding(2, 0)
-		.HAlign(HAlign_Left)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromName(FactionBId))
-		]
-		+ SHorizontalBox::Slot()
-		.HAlign(HAlign_Right)
-		.Padding(4, 0)
-		[
-			SNew(SBox)
-			.MaxDesiredHeight(20.f)
-			.MinDesiredWidth(100.f)
-			[
-				SNew(SSearchBox)
-				.InitialText(FText::GetEmpty())
-				.OnTextChanged(this, &FRelationTableCustomization::OnFactionFilterChanged, FactionBId)
-			]
-		]
+		SNew(STextBlock)
+		.Text(FText::FromName(FactionBId))
 	]
 	+ SHeaderRow::Column(AttitudeId)
 	.HAlignCell(HAlign_Left)
-	.HeaderContentPadding(FMargin(5, 3))
+	.FillWidth(0.5f)
+	.HeaderContentPadding(FMargin(5, 2))
 	[
 		SNew(STextBlock)
 		.Text(FText::FromName(AttitudeId))
@@ -224,11 +195,11 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 
 
 	StructBuilder.AddCustomRow(LOCTEXT("RelationsPropertySearch", "Relations"))
-	.WholeRowContent()
+	.ValueContent()
 	.HAlign(HAlign_Fill)
 	[
 		SNew(SBox)
-		.Padding(FMargin{0,10,0,20})
+		.Padding(FMargin{0, 0, 0, 8})
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
@@ -261,12 +232,22 @@ FRelationTableCustomization::~FRelationTableCustomization()
 
 TSharedRef<SWidget> FRelationTableCustomization::CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle)
 {
+	auto IdHandle = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id));
+
 	return SNew(SBox)
 	.Padding(1)
-	.HAlign(HAlign_Fill)
-	.MinDesiredWidth(1000.f)
+	.MinDesiredWidth(150.f)
+	.MaxDesiredWidth(250.f)
 	[
-		SNew(SFaction, PropertyHandle)
+		SNew(SFaction)
+		.Faction_Lambda([IdHandle]() {
+			FName Id;
+			IdHandle->GetValue(Id);
+			return FFaction{Id};
+		})
+		.OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
+			IdHandle->SetValue(Faction.GetId());
+		})
 	];
 }
 
@@ -294,12 +275,12 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 			.HAlign(HAlign_Center)
 			.VAlign(VAlign_Center)
 			.ContentPadding(FMargin{ 0, 1, 0, 0 })
-			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-			.ForegroundColor(FEditorStyle::GetSlateColor("DefaultForeground"))
+			.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+			.ForegroundColor(FAppStyle::GetSlateColor("DefaultForeground"))
 			.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)
 			[
 				SNew(STextBlock)
-				.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.10"))
+				.Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
 				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
 			];
 		}
@@ -378,15 +359,15 @@ void FRelationTableCustomization::RefreshRelations()
 
 		FName FactionAName;
 		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA))
-			->GetChildHandle(NameMember)->GetValue(FactionAName);
+			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(FactionAName);
 
 		FName FactionBName;
 		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB))
-			->GetChildHandle(NameMember)->GetValue(FactionBName);
+			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(FactionBName);
 
 		TSharedPtr<uint32> Item { MakeShared<uint32>(I) };
 		AvailableRelations.Add(Item);
-		if ((FilterFactionA.IsEmpty() || FactionAName.ToString().Contains(FilterFactionA)) && (FilterFactionB.IsEmpty() || FactionBName.ToString().Contains(FilterFactionB)))
+		if (FilterText.IsEmpty() || FactionAName.ToString().Contains(FilterText) || FactionBName.ToString().Contains(FilterText))
 		{
 			VisibleRelations.Add(Item);
 		}
@@ -398,25 +379,24 @@ void FRelationTableCustomization::RefreshRelations()
 	}
 }
 
-void FRelationTableCustomization::OnFactionFilterChanged(const FText& Text, FName Faction)
+void FRelationTableCustomization::OnFilterChanged(const FText& Text)
 {
-	if (Faction == FactionAId)
-		FilterFactionA = Text.ToString();
-	else if (Faction == FactionBId)
-		FilterFactionB = Text.ToString();
-
+	FilterText = Text.ToString();
 	RefreshRelations();
 }
 
-FReply FRelationTableCustomization::OnNewRelation()
+EVisibility FRelationTableCustomization::GetFilterVisibility() const
+{
+	return EVisibility::Visible;
+}
+
+void FRelationTableCustomization::OnNewRelation()
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_New", "Added new relation"));
 	GetOuter()->Modify();
 
 	ListHandleArray->AddItem();
 	RefreshRelations();
-
-	return FReply::Handled();
 }
 
 FReply FRelationTableCustomization::OnDeleteRelation(uint32 Index)
@@ -430,15 +410,13 @@ FReply FRelationTableCustomization::OnDeleteRelation(uint32 Index)
 	return FReply::Handled();
 }
 
-FReply FRelationTableCustomization::OnClearRelations()
+void FRelationTableCustomization::OnClearRelations()
 {
 	const FScopedTransaction Transaction(LOCTEXT("Relation_ClearRelations", "Deleted all relations"));
 	GetOuter()->Modify();
 
 	ListHandleArray->EmptyArray();
 	RefreshRelations();
-
-	return FReply::Handled();
 }
 
 UObject* FRelationTableCustomization::GetOuter() const

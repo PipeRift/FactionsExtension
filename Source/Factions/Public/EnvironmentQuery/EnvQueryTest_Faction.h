@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "EnvironmentQuery/EnvQueryTest.h"
-
 #include "Faction.h"
-#include "FactionsLibrary.h"
+#include "FactionsSubsystem.h"
+
+#include <CoreMinimal.h>
+#include <EnvironmentQuery/EnvQueryTest.h>
+
 #include "EnvQueryTest_Faction.generated.h"
 
 
@@ -19,7 +20,6 @@ class FACTIONS_API UEnvQueryTest_Faction : public UEnvQueryTest
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditAnywhere, Category = Faction)
 	EFactionTestMode Mode;
 
@@ -36,7 +36,6 @@ public:
 	UEnvQueryTest_Faction();
 
 protected:
-
 	virtual void RunTest(FEnvQueryInstance& QueryInstance) const override;
 
 	virtual FText GetDescriptionTitle() const override;
