@@ -16,22 +16,23 @@ public class FactionsEditor : ModuleRules
 		});
 
         PrivateDependencyModuleNames.AddRange(new string[] {
+            "AppFramework",
+            "AssetTools",
+            "BlueprintGraph",
             "Core",
             "CoreUObject",
-            "AppFramework",
-            "Engine",
-            "UnrealEd",
-            "Slate",
-            "SlateCore",
-            "AssetTools",
+            "DetailCustomizations",
             "EditorStyle",
+            "Engine",
+            "Factions",
             "GraphEditor",
             "Kismet",
             "PropertyEditor",
-            "BlueprintGraph",
-            "DetailCustomizations",
             "Settings",
-            "Factions"
+            "Slate",
+            "SlateCore",
+            "ToolWidgets",
+            "UnrealEd"
 			// ... add private dependencies that you statically link with here ...
 		});
 

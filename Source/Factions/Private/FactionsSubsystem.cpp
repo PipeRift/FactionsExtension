@@ -66,7 +66,7 @@ void UFactionsSubsystem::RemoveFaction(FFaction Faction)
 {
 	if (!Faction.IsNone())
 	{
-		Factions.Descriptors.Remove(Faction.GetIdName());
+		Factions.Descriptors.Remove(Faction.GetId());
 	}
 }
 
@@ -107,7 +107,7 @@ bool UFactionsSubsystem::GetActorsByFaction(const FFaction Faction, TArray<AActo
 			AActor* Actor = *It;
 			check(Actor);
 
-			FFaction ActorFaction = GetActorFaction(Actor);
+			FFaction ActorFaction = GetFaction(Actor);
 			if (Callback(ActorFaction))
 			{
 				OutActors.Add(Actor);

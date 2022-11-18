@@ -13,20 +13,28 @@
 
 void SFactionPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {
-	FFactionsModule& Module = FFactionsModule::Get();
-
-	//Bind On Settings Changed event
-	Module.OnModifiedSettings().BindRaw(this, &SFactionPin::UpdateItems, false);
-
-	SStringEnumPin::Construct(SStringEnumPin::FArguments(), InGraphPinObj);
+	SGraphPin::Construct(SGraphPin::FArguments(), InGraphPinObj);
 }
 
 TSharedRef<SWidget> SFactionPin::GetDefaultValueWidget()
 {
-	//Get actual default value
 	ParseDefaultValue();
 
-	return SStringEnumPin::GetDefaultValueWidget();
+	return SNew(SBox)
+	.MaxDesiredHeight(20.f)
+	.Visibility( this, &SGraphPin::GetDefaultValueVisibility )
+	[
+		SNew(SFaction)
+		.ContentPadding(0.f)
+		.Faction_Lambda([this]() {
+			return FFaction{FactionDefaultNameValue};
+		})
+		.OnFactionSelected_Lambda([this](FFaction Faction, ESelectInfo::Type)
+		{
+			FactionDefaultNameValue = Faction.GetId();
+			ApplyDefaultValue();
+		})
+	];
 }
 
 void SFactionPin::ParseDefaultValue()
@@ -64,7 +72,7 @@ void SFactionPin::ApplyDefaultValue()
 	if (!FactionDefaultNameValue.IsNone())
 	{
 		PriorityString = TEXT("(");
-		PriorityString += TEXT("Name=\"");
+		PriorityString += TEXT("Id=\"");
 		PriorityString += FactionDefaultNameValue.ToString();
 		PriorityString += TEXT("\")");
 	}
@@ -77,46 +85,4 @@ void SFactionPin::ApplyDefaultValue()
 	{
 		GraphPinObj->GetSchema()->TrySetDefaultValue(*GraphPinObj, PriorityString);
 	}
-}
-
-
-void SFactionPin::GetEnumItems(TArray<FString>& Values)
-{
-	for (const auto& KeyValue : GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors)
-	{
-		Values.Add(KeyValue.Key.ToString());
-	}
-	// Make sure None is at the start
-	Values.Remove(NO_FACTION_NAME.ToString());
-	Values.Insert(NO_FACTION_NAME.ToString(), 0);
-}
-
-void SFactionPin::OnItemSelected(FString Value)
-{
-	const TMap<FName, FFactionDescriptor>& AllFactions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
-
-	FName NameValue = FName(*Value);
-
-	//If Faction not found, Set default value
-	if (NameValue != NO_FACTION_NAME && AllFactions.Contains(NameValue))
-		FactionDefaultNameValue = NameValue;
-	else
-		FactionDefaultNameValue = NO_FACTION_NAME;
-
-	ApplyDefaultValue();
-}
-
-FText SFactionPin::GetSelectedItem() const
-{
-	//Call parent but don't use it. This is for widget logic
-	SStringEnumPin::GetSelectedItem();
-
-	const auto& Factions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
-
-	if (Factions.Contains(FactionDefaultNameValue))
-	{
-		//Return name with prefix number
-		return FText::FromName(FactionDefaultNameValue);
-	}
-	return FText::FromName(NO_FACTION_NAME);
 }

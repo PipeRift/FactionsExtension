@@ -39,14 +39,14 @@ void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const
 		if (ContextItems.Num() <= 0)
 			TargetFaction = FFaction::NoFaction;
 		else
-			TargetFaction = Factions->GetActorFaction(ContextItems[0]);
+			TargetFaction = UFactionsSubsystem::GetFaction(ContextItems[0]);
 	}
 
-	auto IteratePoints = [this, &QueryInstance, Factions, bNegate](auto Callback) {
+	auto IteratePoints = [this, &QueryInstance, bNegate](auto Callback) {
 		for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
 		{
 			AActor* PointActor = GetItemActor(QueryInstance, It.GetIndex());
-			FFaction PointFaction = Factions->GetActorFaction(PointActor);
+			FFaction PointFaction = UFactionsSubsystem::GetFaction(PointActor);
 
 			It.SetScore(TestPurpose, FilterType, Callback(PointFaction), bNegate);
 		}

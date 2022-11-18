@@ -24,12 +24,13 @@ struct FACTIONS_API FFaction
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
-	FName Name;
+	FName Id;
+
 
 public:
-	FFaction() : Name(NO_FACTION_NAME) {}
+	FFaction() : Id(NO_FACTION_NAME) {}
 
-	FFaction(FName Name) : Name(Name) {}
+	FFaction(FName Id) : Id(Id) {}
 
 	FFaction(const FGenericTeamId& InTeam);
 
@@ -40,7 +41,7 @@ public:
 	 */
 	FORCEINLINE bool operator==(const FFaction& Other) const
 	{
-		return Name == Other.Name;
+		return Id == Other.Id;
 	}
 	FORCEINLINE bool operator!=(const FFaction& Other) const
 	{
@@ -55,17 +56,17 @@ public:
 
 	friend uint32 GetTypeHash(const FFaction& InRelation)
 	{
-		return GetTypeHash(InRelation.Name);
+		return GetTypeHash(InRelation.Id);
 	}
 
-	FName GetIdName() const
+	FName GetId() const
 	{
-		return Name;
+		return Id;
 	}
 
 	FString ToString() const
 	{
-		return GetIdName().ToString();
+		return GetId().ToString();
 	}
 
 	const FGenericTeamId GetTeam() const;

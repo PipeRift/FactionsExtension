@@ -36,7 +36,8 @@ public:
 		return true;
 	}
 
-	DECLARE_DELEGATE_RetVal(void, FOnModifiedSettings) FOnModifiedSettings& OnModifiedSettings()
+	DECLARE_MULTICAST_DELEGATE(FOnModifiedSettings);
+	FOnModifiedSettings& OnModifiedSettings()
 	{
 		return ModifiedSettingsDelegate;
 	}

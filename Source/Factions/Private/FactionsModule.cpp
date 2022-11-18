@@ -77,7 +77,7 @@ bool FFactionsModule::HandleSettingsSaved()
 
 	if (ModifiedSettingsDelegate.IsBound())
 	{
-		ModifiedSettingsDelegate.Execute();
+		ModifiedSettingsDelegate.Broadcast();
 	}
 
 	// You can put any validation code in here and resave the settings in case an invalid

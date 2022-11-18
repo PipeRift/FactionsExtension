@@ -23,17 +23,17 @@ FFaction::FFaction(const FGenericTeamId& InTeam)
 
 			if (Keys.IsValidIndex(InTeam.GetId()))
 			{
-				Name = Keys[InTeam.GetId()];
+				Id = Keys[InTeam.GetId()];
 				return;
 			}
 		}
 	}
-	Name = NO_FACTION_NAME;
+	Id = NO_FACTION_NAME;
 }
 
 bool FFaction::IsNone() const
 {
-	return Name == NO_FACTION_NAME;
+	return Id == NO_FACTION_NAME;
 }
 
 const FGenericTeamId FFaction::GetTeam() const
@@ -51,12 +51,12 @@ const FGenericTeamId FFaction::GetTeam() const
 	Settings->GetFactions().Descriptors.GetKeys(Keys);
 
 	// Find Id
-	const int32 Id = Keys.IndexOfByKey(Name);
-	if (Id == INDEX_NONE || Id >= FGenericTeamId::NoTeam.GetId())
+	const int32 Index = Keys.IndexOfByKey(Id);
+	if (Index == INDEX_NONE || Index >= FGenericTeamId::NoTeam.GetId())
 	{
 		// If Faction ID is 255 or higher, Teams won't support it.
 		return FGenericTeamId::NoTeam;
 	}
 
-	return {static_cast<uint8>(Id)};
+	return {static_cast<uint8>(Index)};
 }

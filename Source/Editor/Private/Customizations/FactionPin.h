@@ -1,9 +1,9 @@
 #pragma once
 
-#include "StringEnumPin.h"
+#include <SGraphPin.h>
 
 
-class SFactionPin : public SStringEnumPin
+class SFactionPin : public SGraphPin
 {
 public:
     SLATE_BEGIN_ARGS(SFactionPin) {}
@@ -19,21 +19,7 @@ private:
     void ParseDefaultValue();
     void ApplyDefaultValue();
 
+
 protected:
     FName FactionDefaultNameValue;
-
-    /** Returns all the enum items.
-    * This is for override purposes.
-    */
-    virtual void GetEnumItems(TArray<FString>& Values);
-
-    /** Called when selection changed.
-    * This is for override purposes.
-    */
-    virtual void OnItemSelected(FString Value);
-
-    /** Returns the actually selected item.
-    * This is for override purposes.
-    */
-    virtual FText GetSelectedItem() const;
 };

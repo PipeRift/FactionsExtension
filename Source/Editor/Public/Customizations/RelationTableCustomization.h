@@ -84,7 +84,5 @@ private:
 	static const FName FactionAId;
 	static const FName FactionBId;
 	static const FName AttitudeId;
-
-	static const FName NameMember;
 };
 

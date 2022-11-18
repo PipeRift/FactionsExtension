@@ -25,8 +25,6 @@ const FName FRelationTableCustomization::FactionBId("Faction B");
 const FName FRelationTableCustomization::AttitudeId("Relation");
 const FName FRelationTableCustomization::DeleteId("Delete");
 
-const FName FRelationTableCustomization::NameMember("Name");
-
 
 class SRelationViewItem : public SMultiColumnTableRow<TSharedPtr<uint32>>
 {
@@ -160,23 +158,24 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 	]
 	+ SHeaderRow::Column(FactionAId)
 	.HAlignCell(HAlign_Left)
-	.FillWidth(1)
-	.HeaderContentPadding(FMargin(5, 3))
+	.FillWidth(0.25f)
+	.HeaderContentPadding(FMargin(5, 2))
 	[
 		SNew(STextBlock)
 		.Text(FText::FromName(FactionAId))
 	]
 	+ SHeaderRow::Column(FactionBId)
 	.HAlignCell(HAlign_Left)
-	.FillWidth(1)
-	.HeaderContentPadding(FMargin(5, 3))
+	.FillWidth(0.25f)
+	.HeaderContentPadding(FMargin(5, 2))
 	[
 		SNew(STextBlock)
 		.Text(FText::FromName(FactionBId))
 	]
 	+ SHeaderRow::Column(AttitudeId)
 	.HAlignCell(HAlign_Left)
-	.HeaderContentPadding(FMargin(5, 3))
+	.FillWidth(0.5f)
+	.HeaderContentPadding(FMargin(5, 2))
 	[
 		SNew(STextBlock)
 		.Text(FText::FromName(AttitudeId))
@@ -196,11 +195,11 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 
 
 	StructBuilder.AddCustomRow(LOCTEXT("RelationsPropertySearch", "Relations"))
-	.WholeRowContent()
+	.ValueContent()
 	.HAlign(HAlign_Fill)
 	[
 		SNew(SBox)
-		.Padding(FMargin{0,8,0,16})
+		.Padding(FMargin{0, 0, 0, 8})
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
@@ -233,12 +232,22 @@ FRelationTableCustomization::~FRelationTableCustomization()
 
 TSharedRef<SWidget> FRelationTableCustomization::CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle)
 {
+	auto IdHandle = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id));
+
 	return SNew(SBox)
 	.Padding(1)
-	.HAlign(HAlign_Fill)
-	.MinDesiredWidth(1000.f)
+	.MinDesiredWidth(150.f)
+	.MaxDesiredWidth(250.f)
 	[
-		SNew(SFaction, PropertyHandle)
+		SNew(SFaction)
+		.Faction_Lambda([IdHandle]() {
+			FName Id;
+			IdHandle->GetValue(Id);
+			return FFaction{Id};
+		})
+		.OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
+			IdHandle->SetValue(Faction.GetId());
+		})
 	];
 }
 
@@ -350,11 +359,11 @@ void FRelationTableCustomization::RefreshRelations()
 
 		FName FactionAName;
 		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA))
-			->GetChildHandle(NameMember)->GetValue(FactionAName);
+			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(FactionAName);
 
 		FName FactionBName;
 		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB))
-			->GetChildHandle(NameMember)->GetValue(FactionBName);
+			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(FactionBName);
 
 		TSharedPtr<uint32> Item { MakeShared<uint32>(I) };
 		AvailableRelations.Add(Item);

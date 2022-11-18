@@ -2,86 +2,47 @@
 
 #include "Customizations/FactionCustomization.h"
 
-#include "FactionsModule.h"
-
 #include "Faction.h"
+#include "FactionsModule.h"
 #include "FactionsSubsystem.h"
+#include "Customizations/SFaction.h"
+
+#include <DetailWidgetRow.h>
+
 
 #define LOCTEXT_NAMESPACE "FFactionCustomization"
 
 
-bool FFactionCustomization::CanCustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FFactionCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle,
+		class FDetailWidgetRow& HeaderRow,
+		IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-	NameHandle = StructPropertyHandle->GetChildHandle("Name");
-
-	if (NameHandle->IsValidHandle())
+	if (!StructHandle->IsValidHandle())
 	{
-		FFactionsModule& Module = FFactionsModule::Get();
-		//Bind On Settings Changed event
-		Module.OnModifiedSettings().BindRaw(this, &FFactionCustomization::UpdateItems, true);
-		return true;
-	}
-	return false;
-}
-
-void FFactionCustomization::GetAllItems(TArray<FString>& Values) const
-{
-	for (const auto& KeyValue : GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors)
-	{
-		Values.Add(KeyValue.Key.ToString());
-	}
-	// Make sure None is at the start
-	Values.Remove(NO_FACTION_NAME.ToString());
-	Values.Insert(NO_FACTION_NAME.ToString(), 0);
-}
-
-void FFactionCustomization::OnItemSelected(FString Value)
-{
-	const auto& Factions = GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors;
-
-	FName NameValue = FName(*Value);
-
-	if (NameValue != NO_FACTION_NAME && Factions.Contains(NameValue))
-	{
-		NameHandle->SetValue(NameValue);
-	}
-	else
-	{
-		//Priority not found. Set default value
-		NameHandle->SetValue(NO_FACTION_NAME);
-	}
-}
-
-/** Display the current column selection */
-FText FFactionCustomization::GetSelectedText() const
-{
-	FName Id = GetIdValue();
-	if (!Id.IsNone())
-	{
-		return FText::FromName(Id);
-	}
-	return FText::FromName(NO_FACTION_NAME);
-}
-
-FSlateColor FFactionCustomization::GetForegroundColor() const
-{
-	FName Id = GetIdValue();
-
-	if (Id.IsNone() || GetDefault<UFactionsSubsystem>()->GetFactions().Descriptors.Contains(Id))
-	{
-		return FStringEnumCustomization::GetForegroundColor();
+		return;
 	}
 
-	return FLinearColor::Red;
-}
+	auto IdHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id));
 
-FName FFactionCustomization::GetIdValue() const
-{
-	FName Id;
-	if(NameHandle.IsValid() && NameHandle->GetValue(Id) == FPropertyAccess::Success)
-		return Id;
-	return FName{};
+	HeaderRow.NameContent()
+	[
+		StructHandle->CreatePropertyNameWidget()
+	]
+	.ValueContent()
+	.MinDesiredWidth(150.0f)
+	.MaxDesiredWidth(250.0f)
+	[
+		SNew(SFaction)
+		.Faction_Lambda([IdHandle]() {
+			FName Id;
+			IdHandle->GetValue(Id);
+			return FFaction{Id};
+		})
+		.OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
+			IdHandle->SetValue(Faction.GetId());
+		})
+	];
 }
 
 #undef LOCTEXT_NAMESPACE
