@@ -212,19 +212,19 @@ public:
 	static void BPSetObjectFaction(UObject* Target, FFaction Faction) { SetFaction(Target, Faction); }
 
 	/** @return Attitude of Source's faction towards Target's faction */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Attitude"))
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Attitude (Object)"))
 	TEnumAsByte<ETeamAttitude::Type> BPGetObjectAttitude(const UObject* Source, const UObject* Target) const { return GetAttitude(Source, Target); }
 
 	/** @return true if Source is Hostile to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Hostile"))
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Hostile (Object)"))
 	bool BPIsObjectHostile(const UObject* Source, const UObject* Target) { return IsHostile(Source, Target); }
 
 	/** @return true if Source is Friendly to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Friendly"))
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Friendly (Object)"))
 	bool BPIsObjectFriendly(const UObject* Source, const UObject* Target) { return IsFriendly(Source, Target); }
 
 	/** @return true if One is Neutral to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Neutral"))
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Neutral (Object)"))
 	bool BPIsObjectNeutral(const UObject* Source, const UObject* Target) { return IsNeutral(Source, Target); }
 
 
