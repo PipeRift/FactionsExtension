@@ -32,10 +32,10 @@ class FACTIONS_API UFactionsSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(config, EditAnywhere, SaveGame)
+	UPROPERTY(config, EditAnywhere, SaveGame, Category = Factions)
 	FFactionTable Factions;
 
-	UPROPERTY(config, EditAnywhere, SaveGame)
+	UPROPERTY(config, EditAnywhere, SaveGame, Category = Factions)
 	FRelationTable Relations;
 
 	// UPROPERTY(Transient)

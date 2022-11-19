@@ -10,8 +10,6 @@ public class Factions : ModuleRules
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicIncludePaths.AddRange(new string[] {
-			Path.Combine(ModuleDirectory, "Public/Factions"),
-			Path.Combine(ModuleDirectory, "Public/Database"),
 			Path.Combine(ModuleDirectory, "Public/EnvironmentQuery")
 		});
 
