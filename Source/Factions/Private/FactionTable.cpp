@@ -5,10 +5,10 @@
 
 FFactionDescriptor* FFactionTable::GetDescriptor(FFaction Faction)
 {
-	return !Faction.IsNone() ? Descriptors.Find(Faction.GetId()) : nullptr;
+	return !Faction.IsNone() ? List.Find(Faction.GetId()) : nullptr;
 }
 
 const FFactionDescriptor* FFactionTable::GetDescriptor(FFaction Faction) const
 {
-	return !Faction.IsNone() ? Descriptors.Find(Faction.GetId()) : nullptr;
+	return !Faction.IsNone() ? List.Find(Faction.GetId()) : nullptr;
 }

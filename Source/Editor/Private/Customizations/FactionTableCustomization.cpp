@@ -180,11 +180,11 @@ void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Str
 	FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-	DescriptorsHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionTable, Descriptors));
+	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionTable, List));
 
 	// Refresh when Num changes
 	OnItemsNumChanged = FSimpleDelegate::CreateRaw(this, &FFactionTableCustomization::RefreshList);
-	DescriptorsHandle->AsMap()->SetOnNumElementsChanged(OnItemsNumChanged);
+	ListHandle->AsMap()->SetOnNumElementsChanged(OnItemsNumChanged);
 
 	RefreshList();
 
@@ -436,7 +436,7 @@ void FFactionTableCustomization::SetSelection(
 
 void FFactionTableCustomization::RefreshList()
 {
-	if (!DescriptorsHandle.IsValid() || !DescriptorsHandle->IsValidHandle())
+	if (!ListHandle.IsValid() || !ListHandle->IsValidHandle())
 	{
 		AvailableFactions.Empty();
 		VisibleFactions.Empty();
@@ -446,7 +446,7 @@ void FFactionTableCustomization::RefreshList()
 	const int32 LastSelectedIndex = CurrentSelection.IsValid() ? CurrentSelection.Pin()->Id : INDEX_NONE;
 
 	uint32 Num;
-	FPropertyAccess::Result Result = DescriptorsHandle->AsMap()->GetNumElements(Num);
+	FPropertyAccess::Result Result = ListHandle->AsMap()->GetNumElements(Num);
 	if (Result != FPropertyAccess::Success)
 		return;
 
@@ -459,7 +459,7 @@ void FFactionTableCustomization::RefreshList()
 			Faction = MakeShared<FFactionListItem>();
 		}
 
-		TSharedPtr<IPropertyHandle> Property = DescriptorsHandle->GetChildHandle(I);
+		TSharedPtr<IPropertyHandle> Property = ListHandle->GetChildHandle(I);
 
 		Faction->Id = I;
 		Faction->Property = Property->IsValidHandle() ? Property : TSharedPtr<IPropertyHandle>{};
@@ -508,7 +508,7 @@ void FFactionTableCustomization::OnNewFaction()
 	const FScopedTransaction Transaction(LOCTEXT("Relation_New", "Add relation"));
 	GetOuter()->Modify();
 
-	DescriptorsHandle->AsMap()->AddItem();
+	ListHandle->AsMap()->AddItem();
 }
 
 FReply FFactionTableCustomization::OnDeleteFaction(FFactionListItemPtr Item)
@@ -516,7 +516,7 @@ FReply FFactionTableCustomization::OnDeleteFaction(FFactionListItemPtr Item)
 	const FScopedTransaction Transaction(LOCTEXT("Relation_DeleteFaction", "Delete faction"));
 	GetOuter()->Modify();
 
-	DescriptorsHandle->AsMap()->DeleteItem(Item->Id);
+	ListHandle->AsMap()->DeleteItem(Item->Id);
 	return FReply::Handled();
 }
 
@@ -540,7 +540,7 @@ void FFactionTableCustomization::OnClearFactions()
 	GetOuter()->Modify();
 
 	// For some reason Empty is not deleting children, therefore, we will delete one by one
-	DescriptorsHandle->AsMap()->Empty();
+	ListHandle->AsMap()->Empty();
 }
 
 void FFactionTableCustomization::OnFinishedChangingProperties(
@@ -576,7 +576,7 @@ UObject* FFactionTableCustomization::GetOuter() const
 FText FFactionTableCustomization::GetHeaderValueText() const
 {
 	uint32 Num;
-	if (DescriptorsHandle->AsMap()->GetNumElements(Num) != FPropertyAccess::Success)
+	if (ListHandle->AsMap()->GetNumElements(Num) != FPropertyAccess::Success)
 		return FText::GetEmpty();
 
 	return FText::Format(LOCTEXT("ValueDescription", "{0} factions"), FText::AsNumber(Num));

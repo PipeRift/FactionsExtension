@@ -87,19 +87,13 @@ private:
 	/** Begin GenericTeamAgent interface */
 
 	/** Assigns Team Agent to given TeamID */
-	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override
-	{
-		SetFaction(FFaction(TeamID));
-	}
+	void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 
 	/** Retrieve team identifier in form of FGenericTeamId */
-	virtual FGenericTeamId GetGenericTeamId() const override
-	{
-		return GetFaction().GetTeam();
-	}
+	FGenericTeamId GetGenericTeamId() const override;
 
 	/** Retrieved owner attitude toward given Other object */
-	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override
+	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override
 	{
 		return GetAttitude(Other);
 	}

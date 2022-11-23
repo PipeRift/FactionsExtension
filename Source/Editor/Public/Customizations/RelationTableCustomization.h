@@ -65,7 +65,7 @@ private:
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
 	TSharedPtr<IPropertyHandle> ListHandle;
-	TSharedPtr<IPropertyHandleArray> ListHandleArray;
+	TSharedPtr<IPropertyHandleSet> ListHandleArray;
 
 
 	/** Array of the relations that are available for editing */
@@ -78,6 +78,8 @@ private:
 	TSharedPtr<SListView<TSharedPtr<uint32>>> RelationListView;
 
 	FString FilterText;
+
+	FSimpleDelegate OnItemsNumChanged;
 
 
 	static const FName DeleteId;

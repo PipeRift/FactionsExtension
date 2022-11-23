@@ -72,8 +72,12 @@ TSharedRef<IPropertyTypeCustomization> FRelationTableCustomization::MakeInstance
 void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FRelationTable, ConfigList));
-	ListHandleArray = ListHandle->AsArray();
+	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FRelationTable, List));
+	ListHandleArray = ListHandle->AsSet();
+
+	// Refresh when Num changes
+	OnItemsNumChanged = FSimpleDelegate::CreateRaw(this, &FRelationTableCustomization::RefreshRelations);
+	ListHandleArray->SetOnNumElementsChanged(OnItemsNumChanged);
 
 	RefreshRelations();
 
@@ -396,7 +400,6 @@ void FRelationTableCustomization::OnNewRelation()
 	GetOuter()->Modify();
 
 	ListHandleArray->AddItem();
-	RefreshRelations();
 }
 
 FReply FRelationTableCustomization::OnDeleteRelation(uint32 Index)
@@ -405,7 +408,6 @@ FReply FRelationTableCustomization::OnDeleteRelation(uint32 Index)
 	GetOuter()->Modify();
 
 	ListHandleArray->DeleteItem(Index);
-	RefreshRelations();
 
 	return FReply::Handled();
 }
@@ -415,8 +417,7 @@ void FRelationTableCustomization::OnClearRelations()
 	const FScopedTransaction Transaction(LOCTEXT("Relation_ClearRelations", "Deleted all relations"));
 	GetOuter()->Modify();
 
-	ListHandleArray->EmptyArray();
-	RefreshRelations();
+	ListHandleArray->Empty();
 }
 
 UObject* FRelationTableCustomization::GetOuter() const

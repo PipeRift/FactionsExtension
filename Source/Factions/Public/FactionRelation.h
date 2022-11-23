@@ -17,11 +17,11 @@
 USTRUCT(BlueprintType)
 struct FACTIONS_API FFactionRelation
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	FFactionRelation()
-		: FactionA(FFaction::NoFaction)
-		, FactionB(FFaction::NoFaction)
+		: FactionA(FFaction::NoFaction())
+		, FactionB(FFaction::NoFaction())
 		, Attitude(ETeamAttitude::Neutral)
 	{}
 
