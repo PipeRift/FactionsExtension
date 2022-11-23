@@ -79,6 +79,8 @@ private:
 
 	FString FilterText;
 
+	FSimpleDelegate OnItemsNumChanged;
+
 
 	static const FName DeleteId;
 	static const FName FactionAId;

@@ -75,6 +75,10 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FRelationTable, List));
 	ListHandleArray = ListHandle->AsSet();
 
+	// Refresh when Num changes
+	OnItemsNumChanged = FSimpleDelegate::CreateRaw(this, &FRelationTableCustomization::RefreshRelations);
+	ListHandleArray->SetOnNumElementsChanged(OnItemsNumChanged);
+
 	RefreshRelations();
 
 	auto AddButton = PropertyCustomizationHelpers::MakeAddButton( FSimpleDelegate::CreateSP(this, &FRelationTableCustomization::OnNewRelation),
@@ -396,7 +400,6 @@ void FRelationTableCustomization::OnNewRelation()
 	GetOuter()->Modify();
 
 	ListHandleArray->AddItem();
-	RefreshRelations();
 }
 
 FReply FRelationTableCustomization::OnDeleteRelation(uint32 Index)
@@ -405,7 +408,6 @@ FReply FRelationTableCustomization::OnDeleteRelation(uint32 Index)
 	GetOuter()->Modify();
 
 	ListHandleArray->DeleteItem(Index);
-	RefreshRelations();
 
 	return FReply::Handled();
 }
@@ -416,7 +418,6 @@ void FRelationTableCustomization::OnClearRelations()
 	GetOuter()->Modify();
 
 	ListHandleArray->Empty();
-	RefreshRelations();
 }
 
 UObject* FRelationTableCustomization::GetOuter() const
