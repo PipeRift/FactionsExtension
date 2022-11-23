@@ -72,8 +72,8 @@ TSharedRef<IPropertyTypeCustomization> FRelationTableCustomization::MakeInstance
 void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FRelationTable, ConfigList));
-	ListHandleArray = ListHandle->AsArray();
+	ListHandle = StructHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FRelationTable, List));
+	ListHandleArray = ListHandle->AsSet();
 
 	RefreshRelations();
 
@@ -415,7 +415,7 @@ void FRelationTableCustomization::OnClearRelations()
 	const FScopedTransaction Transaction(LOCTEXT("Relation_ClearRelations", "Deleted all relations"));
 	GetOuter()->Modify();
 
-	ListHandleArray->EmptyArray();
+	ListHandleArray->Empty();
 	RefreshRelations();
 }
 

@@ -20,25 +20,11 @@ struct FRelationTable
 
 public:
 	UPROPERTY(EditAnywhere, config, Category = Relations)
-	TArray<FFactionRelation> ConfigList;
-
-protected:
-	UPROPERTY(Transient, SaveGame)
-	TSet<FFactionRelation> IndexedList;
-
+	TSet<FFactionRelation> List;
 
 public:
-	const TSet<FFactionRelation>& GetRelations() const
-	{
-		return IndexedList;
-	}
-	TSet<FFactionRelation>& GetRelations()
-	{
-		return IndexedList;
-	}
 
-	// Copies relations to a runtime set for fast searching
-	void RefreshIndexCache();
+	int32 Num() const { return List.Num(); }
 };
 
 

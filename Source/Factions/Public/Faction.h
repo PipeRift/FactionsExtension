@@ -2,13 +2,7 @@
 
 #pragma once
 
-#include "GenericTeamAgentInterface.h"
-
 #include "Faction.generated.h"
-
-
-#define NO_FACTION_NAME \
-	FName {}
 
 
 /**
@@ -19,22 +13,29 @@ struct FACTIONS_API FFaction
 {
 	GENERATED_BODY()
 
-	static const FFaction NoFaction;
+	static inline const FName NoId{};
 
-
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Faction)
 	FName Id;
 
 
 public:
-	FFaction() : Id(NO_FACTION_NAME) {}
+	FFaction(FName Id = NoId) : Id(Id) {}
 
-	FFaction(FName Id) : Id(Id) {}
+	bool IsNone() const
+	{
+		return Id == NoId;
+	}
 
-	FFaction(const FGenericTeamId& InTeam);
+	FName GetId() const
+	{
+		return Id;
+	}
 
-	bool IsNone() const;
+	FString ToString() const
+	{
+		return GetId().ToString();
+	}
 
 	/**
 	 * Operator overloading & Hashes
@@ -48,26 +49,13 @@ public:
 		return !(*this == Other);
 	}
 
-	// Implicit conversion to GenericTeamId
-	operator FGenericTeamId() const
-	{
-		return GetTeam();
-	}
-
 	friend uint32 GetTypeHash(const FFaction& InRelation)
 	{
 		return GetTypeHash(InRelation.Id);
 	}
 
-	FName GetId() const
+	static const FFaction NoFaction()
 	{
-		return Id;
+		return {NoId};
 	}
-
-	FString ToString() const
-	{
-		return GetId().ToString();
-	}
-
-	const FGenericTeamId GetTeam() const;
 };

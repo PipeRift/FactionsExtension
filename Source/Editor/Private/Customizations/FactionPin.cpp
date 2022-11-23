@@ -61,7 +61,7 @@ void SFactionPin::ParseDefaultValue()
 	}
 	else
 	{
-		FactionDefaultNameValue = NO_FACTION_NAME;
+		FactionDefaultNameValue = FFaction::NoId;
 	}
 }
 

@@ -89,7 +89,7 @@ FText SFaction::GetSelectedItem() const
 	{
 		return FText::FromName(Id.GetId());
 	}
-	return FText::FromName(NO_FACTION_NAME);
+	return FText::FromName(FFaction::NoId);
 }
 
 void SFaction::GetFactionNames(TArray<FString>& Names) const
@@ -97,16 +97,16 @@ void SFaction::GetFactionNames(TArray<FString>& Names) const
 	const UFactionsSubsystem* Settings = GetDefault<UFactionsSubsystem>();
 	check(Settings);
 
-	for (const auto& KeyValue : Settings->GetFactions().Descriptors)
+	for (const auto& It : Settings->GetFactions().List)
 	{
-		if (KeyValue.Key != NO_FACTION_NAME)
+		if (It.Key != FFaction::NoId)
 		{
-			Names.Add(KeyValue.Key.ToString());
+			Names.Add(It.Key.ToString());
 		}
 	}
 
 	// Make sure None is at the start
-	Names.Insert(NO_FACTION_NAME.ToString(), 0);
+	Names.Insert(FFaction::NoId.ToString(), 0);
 }
 
 FSlateColor SFaction::GetForegroundColor() const

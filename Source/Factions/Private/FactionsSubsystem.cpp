@@ -5,11 +5,18 @@
 #include <EngineUtils.h>
 
 
+using FBehaviorSort = FNameFastLess;
+
+
 UFactionsSubsystem::UFactionsSubsystem() : Super()
 {
 	AddFaction(TEXT("Default"), {FColor::Blue});
+}
 
-	FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UFactionsSubsystem::OnWorldInitialization);
+void UFactionsSubsystem::PostInitProperties()
+{
+	Super::PostInitProperties();
+	BakeFactions();
 }
 
 const FFactionDescriptor* UFactionsSubsystem::GetDescriptor(FFaction Faction) const
@@ -25,11 +32,40 @@ TEnumAsByte<ETeamAttitude::Type> UFactionsSubsystem::GetAttitude(
 		return Relation->Attitude;
 	}
 
-	if (const auto* Behavior = GetDescriptor(Source))
+	const int32 Index = GetFactionIndex(Source.Id);
+	if (BakedBehaviors.IsValidIndex(Index))
 	{
-		return Source == Target ? Behavior->SelfAttitude : Behavior->ExternalAttitude;
+		const auto& Behavior = BakedBehaviors[Index];
+		return Source == Target ? Behavior.SelfAttitude : Behavior.ExternalAttitude;
 	}
 	return ETeamAttitude::Neutral;
+}
+
+int32 UFactionsSubsystem::GetFactionIndex(FFaction Faction) const
+{
+	return Algo::BinarySearchBy(BakedBehaviors, Faction.GetId(), [](const auto& Behavior) {
+		return Behavior.Id;
+	}, FBehaviorSort{});
+}
+
+FFaction UFactionsSubsystem::FromTeamId(FGenericTeamId TeamId) const
+{
+	const int32 Index = TeamId.GetId();
+	if (BakedBehaviors.IsValidIndex(Index))
+	{
+		return {BakedBehaviors[Index].Id};
+	}
+	return FFaction::NoFaction();
+}
+
+FGenericTeamId UFactionsSubsystem::ToTeamId(FFaction Faction) const
+{
+	const int32 Index = GetFactionIndex(Faction);
+	if (Index != INDEX_NONE && Index < FGenericTeamId::NoTeam.GetId())
+	{
+		return FGenericTeamId{uint8(Index)};
+	}
+	return {};
 }
 
 FString UFactionsSubsystem::GetDisplayName(const FFaction Faction) const
@@ -44,9 +80,10 @@ FString UFactionsSubsystem::GetDisplayName(const FFaction Faction) const
 
 FFaction UFactionsSubsystem::AddFaction(const FName& Id, const FFactionDescriptor& Descriptor)
 {
-	if (!Id.IsNone() && !Factions.Descriptors.Contains(Id))
+	if (!Id.IsNone() && !Factions.List.Contains(Id))
 	{
-		Factions.Descriptors.Add(Id, Descriptor);
+		Factions.List.Add(Id, Descriptor);
+		AddBakedFaction(Id, Descriptor);
 		return {Id};
 	}
 	return {};
@@ -56,7 +93,7 @@ FFaction UFactionsSubsystem::EmplaceFaction(const FName& Id, FFactionDescriptor 
 {
 	if (!Id.IsNone())
 	{
-		Factions.Descriptors.Emplace(Id, MoveTemp(Descriptor));
+		Factions.List.Emplace(Id, MoveTemp(Descriptor));
 		return {Id};
 	}
 	return {};
@@ -66,7 +103,7 @@ void UFactionsSubsystem::RemoveFaction(FFaction Faction)
 {
 	if (!Faction.IsNone())
 	{
-		Factions.Descriptors.Remove(Faction.GetId());
+		Factions.List.Remove(Faction.GetId());
 	}
 }
 
@@ -74,7 +111,7 @@ bool UFactionsSubsystem::AddRelation(const FFactionRelation& Relation)
 {
 	if (Relation.IsValid())
 	{
-		return Relations.GetRelations().Add(Relation).IsValidId();
+		return Relations.List.Add(Relation).IsValidId();
 	}
 	return false;
 }
@@ -83,7 +120,7 @@ bool UFactionsSubsystem::RemoveRelation(const FFactionRelation& Relation)
 {
 	if (Relation.IsValid())
 	{
-		return Relations.GetRelations().Remove(Relation) > 0;
+		return Relations.List.Remove(Relation) > 0;
 	}
 	return false;
 }
@@ -153,7 +190,7 @@ bool UFactionsSubsystem::SetDescriptor(const FFaction Faction, const FFactionDes
 
 void UFactionsSubsystem::GetAllFactions(TArray<FFaction>& OutFactions) const
 {
-	const auto& AllFactions = GetFactions().Descriptors;
+	const auto& AllFactions = GetFactions().List;
 
 	OutFactions.Reserve(OutFactions.Num() + AllFactions.Num());
 	for (const auto& Entry : AllFactions)
@@ -178,11 +215,6 @@ void UFactionsSubsystem::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void UFactionsSubsystem::OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS)
-{
-	Relations.RefreshIndexCache();
-}
-
 #if WITH_EDITOR
 bool UFactionsSubsystem::CanEditChange(const FProperty* InProperty) const
 {
@@ -200,3 +232,49 @@ bool UFactionsSubsystem::CanEditChange(const FProperty* InProperty) const
 }
 
 #endif	  // WITH_EDITOR
+
+
+void UFactionsSubsystem::BakeFactions()
+{
+	// Avoid memory deallocation
+	BakedBehaviors.Empty(Factions.Num());
+	// Reduce possible memory allocation
+	BakedBehaviors.Reserve(Factions.Num());
+
+	for (const auto& It : Factions.List)
+	{
+		const auto& Descriptor = It.Value;
+		BakedBehaviors.Add({
+			It.Key,
+			Descriptor.SelfAttitude,
+			Descriptor.ExternalAttitude
+		});
+	}
+	BakedBehaviors.Sort([](const auto& A, const auto& B){
+		return A.Id.FastLess(B.Id);
+	});
+}
+
+void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor)
+{
+	// Insert sorted
+	const int32 Index = Algo::LowerBoundBy(BakedBehaviors, Id, [](const auto& Behavior) {
+		return Behavior.Id;
+	}, FBehaviorSort{});
+	check(Index >= 0 && Index <= BakedBehaviors.Num());
+
+	const FBakedFactionBehavior Behavior {
+		Id,
+		Descriptor.SelfAttitude,
+		Descriptor.ExternalAttitude
+	};
+	// Since we returned lower bound we already know Id <= Index key. So if Id is not < Index key, they must be equal
+	if (BakedBehaviors.IsValidIndex(Index) && !FBehaviorSort{}(Id, BakedBehaviors[Index].Id))
+	{
+		BakedBehaviors.Insert(Behavior, Index);
+	}
+	else
+	{
+		BakedBehaviors.Add(Behavior);
+	}
+}

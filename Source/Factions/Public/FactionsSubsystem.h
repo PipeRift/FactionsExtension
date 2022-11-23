@@ -8,7 +8,8 @@
 
 #include <CoreMinimal.h>
 #include <Engine/World.h>
-#include <Subsystems/GameInstanceSubsystem.h>
+#include <Subsystems/WorldSubsystem.h>
+#include <GenericTeamAgentInterface.h>
 
 #include "FactionsSubsystem.generated.h"
 
@@ -24,10 +25,31 @@ enum class EFactionTestMode : uint8
 
 
 /**
+ * Defined the behavior of a faction after it has been backed form a FactionTable
+ */
+USTRUCT()
+struct FACTIONS_API FBakedFactionBehavior
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName Id;
+
+	/** Attitude this faction will have against itself. Relations can override it. */
+	UPROPERTY()
+	TEnumAsByte<ETeamAttitude::Type> SelfAttitude = ETeamAttitude::Friendly;
+
+	/** Attitude this faction will have against others. Relations can override it. */
+	UPROPERTY()
+	TEnumAsByte<ETeamAttitude::Type> ExternalAttitude = ETeamAttitude::Neutral;
+};
+
+
+/**
  * The FactionsSubsystem contains the global registry of factions and the attitudes between them
  */
 UCLASS(ClassGroup = FactionsExtension, config = Game, defaultconfig, meta = (DisplayName = "Factions"))
-class FACTIONS_API UFactionsSubsystem : public UGameInstanceSubsystem
+class FACTIONS_API UFactionsSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -38,20 +60,20 @@ protected:
 	UPROPERTY(config, EditAnywhere, SaveGame, Category = Factions)
 	FRelationTable Relations;
 
-	// UPROPERTY(Transient)
-	// TMap<FName, FFactionBehavior> BakedFactions;
-
-	// UPROPERTY(Transient)
-	// TArray<FFactionRelation> BakedRelations;
+	// Baked list of faction behaviors for faster look-up performance.
+	// Always sorted by Id (FName). Index of array equals GenericTeamId.
+	UPROPERTY(Transient)
+	TArray<FBakedFactionBehavior> BakedBehaviors;
 
 
 public:
 	UFactionsSubsystem();
+	void PostInitProperties() override;
 
 
 	const FFactionRelation* FindRelation(const FFaction& A, const FFaction& B) const
 	{
-		return Relations.GetRelations().Find({A, B});
+		return Relations.List.Find({A, B});
 	}
 
 	FFactionTable& GetFactions()
@@ -75,6 +97,11 @@ public:
 	bool IsHostile(const UObject* Source, const UObject* Target) const;
 	bool IsFriendly(const UObject* Source, const UObject* Target) const;
 	bool IsNeutral(const UObject* Source, const UObject* Target) const;
+
+	int32 GetFactionIndex(FFaction Faction) const;
+
+	FFaction FromTeamId(FGenericTeamId TeamId) const;
+	FGenericTeamId ToTeamId(FFaction Faction) const;
 
 
 	/** BLUEPRINTS & C++ API */
@@ -231,11 +258,12 @@ public:
 protected:
 	virtual void BeginDestroy() override;
 
-	void OnWorldInitialization(UWorld* World, const UWorld::InitializationValues IVS);
-
 #if WITH_EDITOR
 	virtual bool CanEditChange(const FProperty* InProperty) const override;
 #endif
+
+	void BakeFactions();
+	void AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor);
 };
 
 
@@ -294,7 +322,7 @@ inline bool UFactionsSubsystem::ShareFaction(const UObject* A, const UObject* B)
 
 inline bool UFactionsSubsystem::IsValid(FFaction Faction) const
 {
-	return !Faction.IsNone() && Factions.Descriptors.Contains(Faction.GetId());
+	return !Faction.IsNone() && Factions.List.Contains(Faction.GetId());
 }
 
 inline bool UFactionsSubsystem::BPEquals(const FFaction A, const FFaction B)
@@ -316,7 +344,7 @@ inline UFactionsSubsystem* UFactionsSubsystem::Get(const UObject* ContextObject)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::ReturnNull))
 	{
-		return UGameInstance::GetSubsystem<UFactionsSubsystem>(World->GetGameInstance());
+		return UWorld::GetSubsystem<UFactionsSubsystem>(World);
 	}
 	return nullptr;
 }

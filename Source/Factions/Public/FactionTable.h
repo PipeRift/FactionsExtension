@@ -21,9 +21,11 @@ struct FACTIONS_API FFactionTable
 	GENERATED_BODY()
 
 	UPROPERTY(config, EditAnywhere, Category = "Factions", SaveGame)
-	TMap<FName, FFactionDescriptor> Descriptors;
+	TMap<FName, FFactionDescriptor> List;
 
 
 	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
 	FFactionDescriptor* GetDescriptor(FFaction Faction);
+
+	int32 Num() const { return List.Num(); }
 };

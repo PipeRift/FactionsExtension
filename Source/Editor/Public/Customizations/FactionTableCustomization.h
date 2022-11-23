@@ -124,7 +124,7 @@ private:
 
 	/** Handle to the struct properties being customized */
 	TSharedPtr<IPropertyHandle> StructHandle;
-	TSharedPtr<IPropertyHandle> DescriptorsHandle;
+	TSharedPtr<IPropertyHandle> ListHandle;
 
 
 	/** Array of the factions that are available for editing */

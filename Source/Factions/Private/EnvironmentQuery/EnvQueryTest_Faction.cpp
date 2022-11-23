@@ -37,7 +37,7 @@ void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const
 			return;
 
 		if (ContextItems.Num() <= 0)
-			TargetFaction = FFaction::NoFaction;
+			TargetFaction = FFaction::NoFaction();
 		else
 			TargetFaction = UFactionsSubsystem::GetFaction(ContextItems[0]);
 	}

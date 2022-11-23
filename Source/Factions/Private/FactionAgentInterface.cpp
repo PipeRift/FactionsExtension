@@ -24,7 +24,7 @@ FFaction IFactionAgentInterface::GetFaction(const UObject* Source)
 		IFactionAgentInterface::Execute_EventGetFaction(Source, Faction);
 		return Faction;
 	}
-	return FFaction::NoFaction;
+	return FFaction::NoFaction();
 }
 
 void IFactionAgentInterface::SetFaction(UObject* Source, const FFaction& Faction)
@@ -37,11 +37,24 @@ void IFactionAgentInterface::SetFaction(UObject* Source, const FFaction& Faction
 
 FFaction IFactionAgentInterface::GetFaction() const
 {
-	return FFaction::NoFaction;
+	return FFaction::NoFaction();
 }
 
 void IFactionAgentInterface::SetFaction(const FFaction& Faction)
 {
 	// By default call BP event
 	IFactionAgentInterface::Execute_EventSetFaction(Cast<UObject>(this), Faction);
+}
+
+void IFactionAgentInterface::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	const auto* Factions = UFactionsSubsystem::Get(Cast<UObject>(this));
+	SetFaction(Factions->FromTeamId(TeamID));
+}
+
+/** Retrieve team identifier in form of FGenericTeamId */
+FGenericTeamId IFactionAgentInterface::GetGenericTeamId() const
+{
+	const auto* Factions = UFactionsSubsystem::Get(Cast<UObject>(this));
+	return Factions->ToTeamId(GetFaction());
 }
