@@ -5,15 +5,9 @@
 #include "TestHelpers.h"
 
 
-namespace
-{
-	constexpr uint32 TestFlags =
-		EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter;
-}
-
 #define BASE_SPEC FFactionsSpec
 
-BEGIN_TESTSPEC(FFactionRegistrySpec, "FactionsExtension.Registry", TestFlags)
+BEGIN_TESTSPEC(FFactionRegistrySpec, "FactionsExtension.Registry", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 UFactionsSubsystem* Factions = nullptr;
 FFaction FactionA;
 FFaction FactionB;
@@ -23,19 +17,22 @@ void FFactionRegistrySpec::Define()
 {
 	BeforeEach([this]() {
 		Factions = NewObject<UFactionsSubsystem>();
-		Factions->AddToRoot();
 		TestTrue(TEXT("Faction Subsystem is not null"), Factions != nullptr);
 		FactionA = Factions->AddFaction("A", {});
 		FactionB = Factions->AddFaction("B", {});
 	});
 
 	It("Faction can be registered", [this]() {
-		TestFalse(TEXT("Faction is not none"), FactionA.IsNone());
+		TestFalse(TEXT("FactionA is none"), FactionA.IsNone());
+		TestFalse(TEXT("FactionB is none"), FactionB.IsNone());
+		TestTrue(TEXT("FactionA is valid"), Factions->IsValid(FactionA));
+		TestTrue(TEXT("FactionB is valid"), Factions->IsValid(FactionB));
 	});
 
 	It("Faction can be unregistered", [this]() {
+		TestTrue(TEXT("Faction is valid"), Factions->IsValid(FactionA));
 		Factions->RemoveFaction(FactionA);
-		TestTrue(TEXT("Faction is none"), FactionA.IsNone());
+		TestFalse(TEXT("Faction is valid"), Factions->IsValid(FactionA));
 	});
 
 	It("Relation can be registered", [this]() {

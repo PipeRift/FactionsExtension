@@ -84,9 +84,8 @@ FFaction UFactionsSubsystem::AddFaction(const FName& Id, const FFactionDescripto
 	{
 		Factions.List.Add(Id, Descriptor);
 		AddBakedFaction(Id, Descriptor);
-		return {Id};
 	}
-	return {};
+	return {Id};
 }
 
 FFaction UFactionsSubsystem::EmplaceFaction(const FName& Id, FFactionDescriptor Descriptor)
