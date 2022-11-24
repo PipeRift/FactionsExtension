@@ -30,7 +30,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
-	FLinearColor Color;
+	FLinearColor Color = FColor::Cyan;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
 	FText DisplayName;
@@ -43,12 +43,4 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics, meta = (DisplayThumbnail = false))
 	TSoftObjectPtr<UFactionDescriptorAsset> Descriptor;
-
-
-	FFactionDescriptor(FLinearColor InColor = FColor::Cyan) : Color(InColor) {}
-
-	FFactionDescriptor(FText DisplayName, FLinearColor InColor = FColor::Cyan)
-		: Color(InColor)
-		, DisplayName(DisplayName)
-	{}
 };

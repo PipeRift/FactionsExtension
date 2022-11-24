@@ -18,8 +18,8 @@ void FFactionRegistrySpec::Define()
 	BeforeEach([this]() {
 		Factions = NewObject<UFactionsSubsystem>();
 		TestTrue(TEXT("Faction Subsystem is not null"), Factions != nullptr);
-		FactionA = Factions->AddFaction("A", {});
-		FactionB = Factions->AddFaction("B", {});
+		FactionA = Factions->EmplaceFaction("A", {});
+		FactionB = Factions->EmplaceFaction("B", {});
 	});
 
 	It("Faction can be registered", [this]() {

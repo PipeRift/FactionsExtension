@@ -10,7 +10,7 @@ using FBehaviorSort = FNameFastLess;
 
 UFactionsSubsystem::UFactionsSubsystem() : Super()
 {
-	AddFaction(TEXT("Default"), {FColor::Blue});
+	AddFaction(TEXT("Default"), {});
 }
 
 void UFactionsSubsystem::PostInitProperties()
@@ -93,6 +93,7 @@ FFaction UFactionsSubsystem::EmplaceFaction(const FName& Id, FFactionDescriptor 
 	if (!Id.IsNone())
 	{
 		Factions.List.Emplace(Id, MoveTemp(Descriptor));
+		AddBakedFaction(Id, Descriptor);
 		return {Id};
 	}
 	return {};
@@ -122,6 +123,21 @@ bool UFactionsSubsystem::RemoveRelation(const FFactionRelation& Relation)
 		return Relations.List.Remove(Relation) > 0;
 	}
 	return false;
+}
+
+int32 UFactionsSubsystem::ClearFactions()
+{
+	const int32 Count = Factions.Num();
+	Factions.List.Empty();
+	BakedBehaviors.Empty();
+	return Count;
+}
+
+int32 UFactionsSubsystem::ClearRelations()
+{
+	const int32 Count = Relations.Num();
+	Relations.List.Empty();
+	return Count;
 }
 
 bool UFactionsSubsystem::GetActorsByFaction(const FFaction Faction, TArray<AActor*>& OutActors,
@@ -267,10 +283,18 @@ void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Des
 		Descriptor.SelfAttitude,
 		Descriptor.ExternalAttitude
 	};
-	// Since we returned lower bound we already know Id <= Index key. So if Id is not < Index key, they must be equal
-	if (BakedBehaviors.IsValidIndex(Index) && !FBehaviorSort{}(Id, BakedBehaviors[Index].Id))
+	if (BakedBehaviors.IsValidIndex(Index))
 	{
-		BakedBehaviors.Insert(Behavior, Index);
+		// Since we returned lower bound we already know Id <= Index key. So if Id is not < Index key, they must be equal
+		if (!FBehaviorSort{}(Id, BakedBehaviors[Index].Id))
+		{
+			// Found, replace
+			BakedBehaviors[Index] = Behavior;
+		}
+		else
+		{
+			BakedBehaviors.Insert(Behavior, Index);
+		}
 	}
 	else
 	{

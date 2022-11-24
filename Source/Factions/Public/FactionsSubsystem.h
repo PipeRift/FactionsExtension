@@ -203,6 +203,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Factions)
 	bool RemoveRelation(const FFactionRelation& Relation);
 
+	/**
+	 * Removes all factions
+	 * @return number of removed factions
+	 */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	int32 ClearFactions();
+
+	/**
+	 * Removes all relations
+	 * @return number of removed relations
+	 */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	int32 ClearRelations();
+
+	/** Removes all factions and relations */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	void Reset();
+
 
 	/** BLUEPRINT ONLY API */
 
@@ -323,6 +341,12 @@ inline bool UFactionsSubsystem::ShareFaction(const UObject* A, const UObject* B)
 inline bool UFactionsSubsystem::IsValid(FFaction Faction) const
 {
 	return !Faction.IsNone() && Factions.List.Contains(Faction.GetId());
+}
+
+inline void Reset()
+{
+	ClearRelations();
+	ClearFactions();
 }
 
 inline bool UFactionsSubsystem::BPEquals(const FFaction A, const FFaction B)
