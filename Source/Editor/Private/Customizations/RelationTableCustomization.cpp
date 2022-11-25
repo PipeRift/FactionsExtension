@@ -120,7 +120,6 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 		.AutoWidth()
 		[
 			SNew(STextBlock)
-			.Font(IDetailLayoutBuilder::GetDetailFont())
 			.Text(this, &FRelationTableCustomization::GetHeaderValueText)
 		]
 		+SHorizontalBox::Slot()
