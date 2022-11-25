@@ -256,6 +256,7 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 	// Create descriptor details
 	auto& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs DetailsViewArgs;
+	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Automatic;
 	DetailsViewArgs.bUpdatesFromSelection = false;
 	DetailsViewArgs.bLockable = false;
 	DetailsViewArgs.bAllowSearch = false;
@@ -403,9 +404,12 @@ void FFactionTableCustomization::PostRedo(bool bSuccess)
 void FFactionTableCustomization::SetSelection(
 	FFactionListItemPtr InNewSelection, ESelectInfo::Type InSelectInfo /*= ESelectInfo::Direct*/)
 {
+	if (CurrentSelection == InNewSelection)
+	{
+		return;
+	}
+
 	// Clear previous details
-	DescriptorDetailsView->SetStructureData({});
-	SelectedDescriptorCopy = {};
 	OnSelectedDescriptorChanged = {};
 
 	CurrentSelection = InNewSelection;
@@ -422,15 +426,17 @@ void FFactionTableCustomization::SetSelection(
 			DescriptorDetailsView->SetStructureData(SelectedDescriptorCopy);
 		}
 
-		// Listen for external changes to the descriptor
+		// Listen for external changes to the descriptor to update the copy
 		OnSelectedDescriptorChanged = FSimpleDelegate::CreateLambda([this]() {
 			UpdateSelectedCopy();
 		});
-		CurrentSelection.Pin()->GetSelfAttitudeProperty()->SetOnPropertyValueChanged(
-			OnSelectedDescriptorChanged);
-		CurrentSelection.Pin()->GetExternalAttitudeProperty()->SetOnPropertyValueChanged(
-			OnSelectedDescriptorChanged);
-		CurrentSelection.Pin()->GetColorProperty()->SetOnPropertyValueChanged(OnSelectedDescriptorChanged);
+		CurrentSelection.Pin()->GetValueProperty()->SetOnChildPropertyValueChanged(OnSelectedDescriptorChanged);
+	}
+	else
+	{
+		// Nothing set, clear selection
+		DescriptorDetailsView->SetStructureData({});
+		SelectedDescriptorCopy = {};
 	}
 }
 
@@ -555,8 +561,10 @@ void FFactionTableCustomization::OnFinishedChangingProperties(
 		void* Data = nullptr;
 		if (Property.IsValid() && Property->GetValueData(Data) == FPropertyAccess::Result::Success)
 		{
+			Property->NotifyPreChange();
 			UScriptStruct* Type = FFactionDescriptor::StaticStruct();
 			Type->GetCppStructOps()->Copy((uint8*) Data, SelectedDescriptorCopy->GetStructMemory(), 1);
+			Property->NotifyPostChange(PropertyChangedEvent.ChangeType);
 		}
 	}
 }

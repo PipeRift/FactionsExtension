@@ -17,8 +17,9 @@ namespace UnrealBuildTool.Rules
                 "Core",
                 "Engine",
                 "CoreUObject",
-                "Factions",
-                "AIModule"
+                "AIModule",
+			    "StructUtils",
+                "Factions"
             });
 
             if (Target.bBuildEditor == true)

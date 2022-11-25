@@ -71,11 +71,16 @@ FGenericTeamId UFactionsSubsystem::ToTeamId(FFaction Faction) const
 FString UFactionsSubsystem::GetDisplayName(const FFaction Faction) const
 {
 	const auto* Descriptor = GetDescriptor(Faction);
-	if (Descriptor && !Descriptor->DisplayName.IsEmpty())
+	if (Descriptor)
 	{
-		return Descriptor->DisplayName.ToString();
+		const bool bUseId = Descriptor->bIdAsDisplayName ||
+			(bUseIdsIfDisplayNamesAreEmpty && Descriptor->DisplayName.IsEmpty());
+		if (!bUseId)
+		{
+			return Descriptor->DisplayName.ToString();
+		}
 	}
-	return Faction.ToString();
+	return Faction.GetId().ToString();
 }
 
 FFaction UFactionsSubsystem::AddFaction(const FName& Id, const FFactionDescriptor& Descriptor)

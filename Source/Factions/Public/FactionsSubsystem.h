@@ -60,8 +60,14 @@ protected:
 	UPROPERTY(config, EditAnywhere, SaveGame, Category = Factions)
 	FRelationTable Relations;
 
-	// Baked list of faction behaviors for faster look-up performance.
-	// Always sorted by Id (FName). Index of array equals GenericTeamId.
+	/** If any faction's DisplayName is empty, use the Id instead */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Factions)
+	bool bUseIdsIfDisplayNamesAreEmpty = true;
+
+	/**
+	 * Baked list of faction behaviors for faster look-up performance.
+	 * Always sorted by Id (FName). Index of array equals GenericTeamId.
+	 */
 	UPROPERTY(Transient)
 	TArray<FBakedFactionBehavior> BakedBehaviors;
 
@@ -343,7 +349,7 @@ inline bool UFactionsSubsystem::IsValid(FFaction Faction) const
 	return !Faction.IsNone() && Factions.List.Contains(Faction.GetId());
 }
 
-inline void Reset()
+inline void UFactionsSubsystem::Reset()
 {
 	ClearRelations();
 	ClearFactions();

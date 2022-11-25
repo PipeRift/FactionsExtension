@@ -32,11 +32,6 @@ public:
 		return Id;
 	}
 
-	FString ToString() const
-	{
-		return GetId().ToString();
-	}
-
 	/**
 	 * Operator overloading & Hashes
 	 */
