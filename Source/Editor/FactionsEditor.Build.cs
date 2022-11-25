@@ -11,7 +11,8 @@ public class FactionsEditor : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new string[] {
             "Core",
-            "InputCore"
+            "InputCore",
+            "PropertyEditor",
 			// ... add other public dependencies that you statically link with here ...
 		});
 
@@ -27,7 +28,6 @@ public class FactionsEditor : ModuleRules
             "Factions",
             "GraphEditor",
             "Kismet",
-            "PropertyEditor",
             "Settings",
             "Slate",
             "SlateCore",

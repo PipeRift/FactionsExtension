@@ -3,10 +3,10 @@
 #pragma once
 
 #include "Faction.h"
-#include "FactionDescriptorAsset.h"
 
 #include <Engine/Texture.h>
 #include <GenericTeamAgentInterface.h>
+#include <InstancedStruct.h>
 
 #include "FactionDescriptor.generated.h"
 
@@ -32,15 +32,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
 	FLinearColor Color = FColor::Cyan;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics, meta = (EditCondition="!bIdAsDisplayName"))
 	FText DisplayName;
+
+	// If true, DisplayName is ignored and Id is used instead
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
+	bool bIdAsDisplayName = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
 	TSoftObjectPtr<UTexture> Icon;
 
-	/** Asset containing optional extra fields for a faction.
-	 * Create a class from UFactionDescriptorAsset to create your own fields (either in C++ or BPs)
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics, meta = (DisplayThumbnail = false))
-	TSoftObjectPtr<UFactionDescriptorAsset> Descriptor;
+	/** Contains optional extra fields for a faction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
+	FInstancedStruct Details;
 };
