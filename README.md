@@ -1,30 +1,20 @@
 # Factions Extension Plugin
 [![Version](https://img.shields.io/github/v/release/piperift/FactionsExtension?label=version)](https://github.com/PipeRift/FactionsExtension/releases)
-![UE4](https://img.shields.io/badge/UE4-4.18%2B-orange)
+![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-5.1%2B-orange)
 [![Discord](https://img.shields.io/discord/288221302089711616?color=%237289da&label=discord)](https://discord.gg/nnsdr22)
 
 Add factions and relations in your game using C++ or Blueprints
 
-This plugin is for Unreal Engine 4 and maintains active support for the last two versions of the engine.<br>
+This plugin is for Unreal Engine. For older engine versions visit [Releases](https://github.com/PipeRift/FactionsExtension/releases) to find compatible versions<br>
 
-## Introduction
+## What are "Factions"
+When we say **Faction** we refer to a **group of entities or actors** that can share behavior or data.
 
-### What are "Factions"
-When we say Faction we refer to a **group of entities or actors** that share something in common.
+Many games use the concept of factions or teams extensively. For example, in FPS games there will be enemies and friends, in RTS games every player will have its own faction, and in open-world games enemies might be part of a group and be hostile (in other words, they share a faction).
 
-Almost every single type of game uses factions in different ways. For example, in Shooter games there will be enemies and friends, in RTS games every player will be a faction by itself, and in Open-World games you will have factions fighting each other while you run around.
+This plugin adds this feature to Unreal Engine. It is a very flexible tool that will make the design, editing and behavior of your own factions a trivial part of development.
 
-This plugin fulfills the needs of this feature in UE4 with a very flexible tool that will make the implementation, editing and design of your own factions a 5 minutes thing.
+## "What" can have a faction?
+*Everything!*... Being more specific, **all objects**, including **actors and components** can have a faction.
 
-### "What" can have a faction?
-*Everything!*... well not everything, but pretty much. **All actors of any type can have a faction.**
-
-## Documentation
-
-Documentation is available online:
-
-#### [Documentation](https://piperift.com/FactionsExtension/)
-
-## Test Project
-
-You can download this **[Test project](https://mega.nz/#!JMowlKCA!wZv-L6oNSJCwDw1CUbTFyjPOXvd6viB-QLgK-u36xtY)** to see and test the API
+## [Documentation](https://piperift.com/FactionsExtension/)
