@@ -49,6 +49,10 @@ TEnumAsByte<ETeamAttitude::Type> UFactionsSubsystem::GetAttitude(
 		const auto& Behavior = BakedBehaviors[Index];
 		return Source == Target ? Behavior.SelfAttitude : Behavior.ExternalAttitude;
 	}
+	else if (!Source.IsNone())
+	{
+		UE_LOG(LogFactions, Warning, TEXT("Tried to get an attitude using an invalid faction ('%s'). All factions must be registered in the Factions Subsystem."), *Source.GetId().ToString());
+	}
 	return ETeamAttitude::Neutral;
 }
 
