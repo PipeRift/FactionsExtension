@@ -111,6 +111,7 @@ public:
 					.ToolTipText(LOCTEXT("EditNameId_Tooltip", "Replace a faction's Id"))
 					.RevertTextOnEscape(true)
 					.ClearKeyboardFocusOnCommit(true)
+					.SelectAllTextWhenFocused(true)
 					.OnTextCommitted(this, &SFactionViewItem::OnIdNameCommited)
 				]
 			]

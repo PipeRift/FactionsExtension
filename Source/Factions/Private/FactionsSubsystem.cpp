@@ -49,6 +49,10 @@ TEnumAsByte<ETeamAttitude::Type> UFactionsSubsystem::GetAttitude(
 		const auto& Behavior = BakedBehaviors[Index];
 		return Source == Target ? Behavior.SelfAttitude : Behavior.ExternalAttitude;
 	}
+	else if (!Source.IsNone())
+	{
+		UE_LOG(LogFactions, Warning, TEXT("Tried to get an attitude using an invalid faction ('%s'). All factions must be registered in the Factions Subsystem."), *Source.GetId().ToString());
+	}
 	return ETeamAttitude::Neutral;
 }
 
@@ -120,6 +124,7 @@ void UFactionsSubsystem::RemoveFaction(FFaction Faction)
 {
 	if (!Faction.IsNone())
 	{
+		RemoveBakedFaction(Faction);
 		Factions.List.Remove(Faction.GetId());
 	}
 }
@@ -328,5 +333,14 @@ void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Des
 	else
 	{
 		BakedBehaviors.Add(Behavior);
+	}
+}
+
+void UFactionsSubsystem::RemoveBakedFaction(FFaction Faction)
+{
+	const int32 Index = GetFactionIndex(Faction);
+	if (Index != INDEX_NONE)
+	{
+		BakedBehaviors.RemoveAt(Index);
 	}
 }

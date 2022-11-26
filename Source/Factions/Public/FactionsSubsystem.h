@@ -288,6 +288,7 @@ protected:
 
 	void BakeFactions();
 	void AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor);
+	void RemoveBakedFaction(FFaction Faction);
 };
 
 
