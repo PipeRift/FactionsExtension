@@ -203,6 +203,14 @@ bool UFactionsSubsystem::SetDescriptor(const FFaction Faction, const FFactionDes
 	if (auto* Found = GetFactions().GetDescriptor(Faction))
 	{
 		*Found = Descriptor;
+
+		const int32 Index = GetFactionIndex(Faction);
+		if (ensure(Index != INDEX_NONE))
+		{
+			auto& Baked = BakedBehaviors[Index];
+			Baked.SelfAttitude = Found->SelfAttitude;
+			Baked.ExternalAttitude = Found->ExternalAttitude;
+		}
 		return true;
 	}
 	return false;
