@@ -36,12 +36,10 @@ struct FACTIONS_API FBakedFactionBehavior
 	FName Id;
 
 	/** Attitude this faction will have against itself. Relations can override it. */
-	UPROPERTY()
-	TEnumAsByte<ETeamAttitude::Type> SelfAttitude = ETeamAttitude::Friendly;
+	ETeamAttitude::Type SelfAttitude = ETeamAttitude::Friendly;
 
 	/** Attitude this faction will have against others. Relations can override it. */
-	UPROPERTY()
-	TEnumAsByte<ETeamAttitude::Type> ExternalAttitude = ETeamAttitude::Neutral;
+	ETeamAttitude::Type ExternalAttitude = ETeamAttitude::Neutral;
 };
 
 
@@ -70,6 +68,8 @@ protected:
 	 */
 	UPROPERTY(Transient)
 	TArray<FBakedFactionBehavior> BakedBehaviors;
+
+	static bool hasSetTeamIdAttitudeSolver;
 
 
 public:

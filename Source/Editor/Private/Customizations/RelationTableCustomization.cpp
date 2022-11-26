@@ -11,18 +11,20 @@
 #include <Widgets/Layout/SScrollBox.h>
 #include <Widgets/Input/SSearchBox.h>
 #include <Widgets/Input/SButton.h>
+#include <Styling/StyleColors.h>
 
 #include "Customizations/SFaction.h"
-
+#include "FactionsEditorStyle.h"
 #include "FactionsSubsystem.h"
 #include "Faction.h"
 
 #define LOCTEXT_NAMESPACE "FRelationTableCustomization"
 
 
-const FName FRelationTableCustomization::FactionAId("Faction A");
-const FName FRelationTableCustomization::FactionBId("Faction B");
+const FName FRelationTableCustomization::SourceId("Source");
+const FName FRelationTableCustomization::TargetId("Target");
 const FName FRelationTableCustomization::AttitudeId("Relation");
+const FName FRelationTableCustomization::BidirectionalId("Bidirectional");
 const FName FRelationTableCustomization::DeleteId("Delete");
 
 
@@ -159,25 +161,33 @@ void FRelationTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
 		SNew(STextBlock)
 		.Text(FText::GetEmpty())
 	]
-	+ SHeaderRow::Column(FactionAId)
+	+ SHeaderRow::Column(SourceId)
 	.HAlignCell(HAlign_Left)
-	.FillWidth(0.25f)
+	.ManualWidth(175.f)
 	.HeaderContentPadding(FMargin(5, 2))
 	[
 		SNew(STextBlock)
-		.Text(FText::FromName(FactionAId))
+		.Text(FText::FromName(SourceId))
 	]
-	+ SHeaderRow::Column(FactionBId)
+	+ SHeaderRow::Column(BidirectionalId)
 	.HAlignCell(HAlign_Left)
-	.FillWidth(0.25f)
+	.ManualWidth(24.f)
 	.HeaderContentPadding(FMargin(5, 2))
 	[
 		SNew(STextBlock)
-		.Text(FText::FromName(FactionBId))
+		.Text(FText{})
+	]
+	+ SHeaderRow::Column(TargetId)
+	.HAlignCell(HAlign_Left)
+	.ManualWidth(175.f)
+	.HeaderContentPadding(FMargin(5, 2))
+	[
+		SNew(STextBlock)
+		.Text(FText::FromName(TargetId))
 	]
 	+ SHeaderRow::Column(AttitudeId)
 	.HAlignCell(HAlign_Left)
-	.FillWidth(0.5f)
+	.FillWidth(1.f)
 	.HeaderContentPadding(FMargin(5, 2))
 	[
 		SNew(STextBlock)
@@ -238,8 +248,9 @@ TSharedRef<SWidget> FRelationTableCustomization::CreateFactionWidget(TSharedRef<
 	auto IdHandle = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id));
 
 	return SNew(SBox)
-	.Padding(1)
-	.MinDesiredWidth(150.f)
+	.HAlign(HAlign_Fill)
+	.Padding(FMargin{3,0})
+	.MinDesiredWidth(175.f)
 	.MaxDesiredWidth(250.f)
 	[
 		SNew(SFaction)
@@ -287,15 +298,15 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 				.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)
 			];
 		}
-		else if (ColumnName == FactionAId)
+		else if (ColumnName == SourceId)
 		{
-			const TSharedPtr<IPropertyHandle> FactionHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA)) };
+			const TSharedPtr<IPropertyHandle> FactionHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Source)) };
 
 			return CreateFactionWidget(FactionHandle.ToSharedRef());
 		}
-		else if (ColumnName == FactionBId)
+		else if (ColumnName == TargetId)
 		{
-			const TSharedPtr<IPropertyHandle> FactionHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB)) };
+			const TSharedPtr<IPropertyHandle> FactionHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Target)) };
 
 			return CreateFactionWidget(FactionHandle.ToSharedRef());
 		}
@@ -309,6 +320,27 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 			.MinDesiredWidth(100.f)
 			[
 				AttitudeHandle->CreatePropertyValueWidget()
+			];
+		}
+		else if (ColumnName == BidirectionalId)
+		{
+			const TSharedPtr<IPropertyHandle> BidirectionalHandle{ RelationHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, bBidirectional)) };
+
+			return SNew(SBox)
+			.HAlign(HAlign_Center)
+			.Padding(FMargin{3,0})
+			[
+				SNew(SCheckBox)
+				.Style(FFactionsEditorStyle::Get(), "Relation.DirectionalCheckBox")
+				.IsChecked_Lambda([=](){
+					bool bValue = false;
+					BidirectionalHandle->GetValue(bValue);
+					return bValue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
+				})
+				.OnCheckStateChanged_Lambda([=](const ECheckBoxState NewState){
+					BidirectionalHandle->SetValue(NewState == ECheckBoxState::Checked);
+				})
+				.ToolTipText(BidirectionalHandle->GetToolTipText())
 			];
 		}
 	}
@@ -360,17 +392,17 @@ void FRelationTableCustomization::RefreshRelations()
 	{
 		TSharedRef<IPropertyHandle> ItemProperty = ListHandleArray->GetElement(I);
 
-		FName FactionAName;
-		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA))
-			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(FactionAName);
+		FName SourceName;
+		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Source))
+			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(SourceName);
 
-		FName FactionBName;
-		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB))
-			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(FactionBName);
+		FName TargetName;
+		ItemProperty->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Target))
+			->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFaction, Id))->GetValue(TargetName);
 
 		TSharedPtr<uint32> Item { MakeShared<uint32>(I) };
 		AvailableRelations.Add(Item);
-		if (FilterText.IsEmpty() || FactionAName.ToString().Contains(FilterText) || FactionBName.ToString().Contains(FilterText))
+		if (FilterText.IsEmpty() || SourceName.ToString().Contains(FilterText) || TargetName.ToString().Contains(FilterText))
 		{
 			VisibleRelations.Add(Item);
 		}

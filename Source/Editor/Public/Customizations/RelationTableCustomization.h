@@ -9,9 +9,35 @@
 
 class FRelationTableCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
 {
+public:
+	/** Handle to the struct properties being customized */
+	TSharedPtr<IPropertyHandle> StructHandle;
+	TSharedPtr<IPropertyHandle> ListHandle;
+	TSharedPtr<IPropertyHandleSet> ListHandleArray;
+
+
+	/** Array of the relations that are available for editing */
+	TArray<TSharedPtr<uint32>> AvailableRelations;
+
+	/** Array of the relations that are available for editing */
+	TArray<TSharedPtr<uint32>> VisibleRelations;
+
+	/** List view responsible for showing the rows in VisibleRows for each entry in AvailableColumns */
+	TSharedPtr<SListView<TSharedPtr<uint32>>> RelationListView;
+
+	FString FilterText;
+
+	FSimpleDelegate OnItemsNumChanged;
+
+
+	static const FName DeleteId;
+	static const FName SourceId;
+	static const FName TargetId;
+	static const FName AttitudeId;
+	static const FName BidirectionalId;
+
 
 public:
-
 	FRelationTableCustomization()
 		: FilterText{ "" }
 	{};
@@ -60,31 +86,5 @@ private:
 	UObject* GetOuter() const;
 
 	FText GetHeaderValueText() const;
-
-
-	/** Handle to the struct properties being customized */
-	TSharedPtr<IPropertyHandle> StructHandle;
-	TSharedPtr<IPropertyHandle> ListHandle;
-	TSharedPtr<IPropertyHandleSet> ListHandleArray;
-
-
-	/** Array of the relations that are available for editing */
-	TArray<TSharedPtr<uint32>> AvailableRelations;
-
-	/** Array of the relations that are available for editing */
-	TArray<TSharedPtr<uint32>> VisibleRelations;
-
-	/** List view responsible for showing the rows in VisibleRows for each entry in AvailableColumns */
-	TSharedPtr<SListView<TSharedPtr<uint32>>> RelationListView;
-
-	FString FilterText;
-
-	FSimpleDelegate OnItemsNumChanged;
-
-
-	static const FName DeleteId;
-	static const FName FactionAId;
-	static const FName FactionBId;
-	static const FName AttitudeId;
 };
 

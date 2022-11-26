@@ -9,6 +9,7 @@
 
 #include "FactionsSubsystem.h"
 #include "Customizations/SFaction.h"
+#include "FactionsEditorStyle.h"
 
 #define LOCTEXT_NAMESPACE "FFactionRelationCustomization"
 
@@ -19,29 +20,51 @@ TSharedRef<IPropertyTypeCustomization> FFactionRelationCustomization::MakeInstan
 
 void FFactionRelationCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	TSharedPtr<IPropertyHandle> AHandle        = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionA));
-	TSharedPtr<IPropertyHandle> BHandle        = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, FactionB));
+	TSharedPtr<IPropertyHandle> SourceHandle        = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Source));
+	TSharedPtr<IPropertyHandle> TargetHandle        = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Target));
 	TSharedPtr<IPropertyHandle> AttitudeHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, Attitude));
+	TSharedPtr<IPropertyHandle> BidirectionalHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, bBidirectional));
 
 	HeaderRow
 	.NameContent()
+	.HAlign(HAlign_Fill)
+	[
+		StructPropertyHandle->CreatePropertyNameWidget()
+	]
+	.ValueContent()
+	.HAlign(HAlign_Fill)
 	[
 		SNew(SHorizontalBox)
 		+SHorizontalBox::Slot()
 		.HAlign(HAlign_Fill)
 		[
-			CreateFactionWidget(AHandle.ToSharedRef())
+			CreateFactionWidget(SourceHandle.ToSharedRef())
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SCheckBox)
+			.Style(FFactionsEditorStyle::Get(), "Relation.DirectionalCheckBox")
+			.IsChecked_Lambda([=](){
+				bool bValue = false;
+				BidirectionalHandle->GetValue(bValue);
+				return bValue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
+			})
+			.OnCheckStateChanged_Lambda([=](const ECheckBoxState NewState){
+				BidirectionalHandle->SetValue(NewState == ECheckBoxState::Checked);
+			})
+			.ToolTipText(BidirectionalHandle->GetToolTipText())
 		]
 		+ SHorizontalBox::Slot()
 		.HAlign(HAlign_Fill)
 		[
-			CreateFactionWidget(BHandle.ToSharedRef())
+			CreateFactionWidget(TargetHandle.ToSharedRef())
 		]
-	]
-	.ValueContent()
-	.MinDesiredWidth(150.f)
-	[
-		AttitudeHandle->CreatePropertyValueWidget()
+		+ SHorizontalBox::Slot()
+		.HAlign(HAlign_Fill)
+		[
+			AttitudeHandle->CreatePropertyValueWidget()
+		]
 	];
 }
 

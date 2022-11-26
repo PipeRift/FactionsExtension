@@ -7,6 +7,8 @@
 
 using FBehaviorSort = FNameFastLess;
 
+bool UFactionsSubsystem::hasSetTeamIdAttitudeSolver = false;
+
 
 UFactionsSubsystem::UFactionsSubsystem() : Super()
 {
@@ -17,6 +19,15 @@ void UFactionsSubsystem::PostInitProperties()
 {
 	Super::PostInitProperties();
 	BakeFactions();
+
+	if (!IsDefaultSubobject() && !hasSetTeamIdAttitudeSolver)
+	{
+		FGenericTeamId::SetAttitudeSolver([this](FGenericTeamId A, FGenericTeamId B)
+		{
+			return GetAttitude(FromTeamId(A), FromTeamId(B));
+		});
+		hasSetTeamIdAttitudeSolver = true;
+	}
 }
 
 const FFactionDescriptor* UFactionsSubsystem::GetDescriptor(FFaction Faction) const
@@ -61,11 +72,12 @@ FFaction UFactionsSubsystem::FromTeamId(FGenericTeamId TeamId) const
 FGenericTeamId UFactionsSubsystem::ToTeamId(FFaction Faction) const
 {
 	const int32 Index = GetFactionIndex(Faction);
-	if (Index != INDEX_NONE && Index < FGenericTeamId::NoTeam.GetId())
+	if (Index != INDEX_NONE &&
+		ensureMsgf(Index < FGenericTeamId::NoTeam.GetId(), TEXT("Faction Index exceeded maximum GenericTeamIds. GenericTeamId only supports up to 255 teams")))
 	{
 		return FGenericTeamId{uint8(Index)};
 	}
-	return {};
+	return FGenericTeamId::NoTeam;
 }
 
 FString UFactionsSubsystem::GetDisplayName(const FFaction Faction) const
@@ -239,7 +251,11 @@ bool UFactionsSubsystem::BPGetDescriptor(const FFaction Faction, FFactionDescrip
 
 void UFactionsSubsystem::BeginDestroy()
 {
-	FWorldDelegates::OnPostWorldInitialization.RemoveAll(this);
+	if (hasSetTeamIdAttitudeSolver)
+	{
+		FGenericTeamId::ResetAttitudeSolver();
+		hasSetTeamIdAttitudeSolver = false;
+	}
 	Super::BeginDestroy();
 }
 
