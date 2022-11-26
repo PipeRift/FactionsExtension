@@ -32,7 +32,8 @@ public class FactionsEditor : ModuleRules
             "Slate",
             "SlateCore",
             "ToolWidgets",
-            "UnrealEd"
+            "UnrealEd",
+			"Projects"
 			// ... add private dependencies that you statically link with here ...
 		});
 

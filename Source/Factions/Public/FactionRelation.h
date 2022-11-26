@@ -20,40 +20,44 @@ struct FACTIONS_API FFactionRelation
 	GENERATED_BODY()
 
 	FFactionRelation()
-		: FactionA(FFaction::NoFaction())
-		, FactionB(FFaction::NoFaction())
+		: Source(FFaction::NoFaction())
+		, Target(FFaction::NoFaction())
 		, Attitude(ETeamAttitude::Neutral)
 	{}
 
-	FFactionRelation(FFaction A, FFaction B, ETeamAttitude::Type InAttitude = ETeamAttitude::Neutral)
-		: FactionA(A)
-		, FactionB(B)
+	FFactionRelation(FFaction Source, FFaction Target, ETeamAttitude::Type InAttitude = ETeamAttitude::Neutral)
+		: Source(Source)
+		, Target(Target)
 		, Attitude(InAttitude)
 	{}
 
 	/** First Faction of the relation */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Relation, meta = (DisplayName = "A"))
-	FFaction FactionA;
+	FFaction Source;
 
 	/** Second Faction of the relation */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Relation, meta = (DisplayName = "B"))
-	FFaction FactionB;
+	FFaction Target;
 
 	/** Defines how this two factions will react to each other */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Relation)
 	TEnumAsByte<ETeamAttitude::Type> Attitude;
 
+	/** Does this relation define the attitude from Source to Target only, or Target to Source as well? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Relation)
+	bool bBidirectional = true;
+
 
 	bool IsValid() const
 	{
 		// Factions are the same or both are invalid
-		return FactionA == FactionB || (!FactionA.IsNone() && !FactionB.IsNone());
+		return Source == Target || (!Source.IsNone() && !Target.IsNone());
 	}
 
 	FORCEINLINE bool operator==(const FFactionRelation& Other) const
 	{
-		return (FactionA == Other.FactionA && FactionB == Other.FactionB) ||
-			   (FactionA == Other.FactionB && FactionB == Other.FactionA);
+		return (Source == Other.Source && Target == Other.Target) ||
+			(bBidirectional && Source == Other.Target && Target == Other.Source);
 	}
 	FORCEINLINE bool operator!=(const FFactionRelation& Other) const
 	{
@@ -62,7 +66,7 @@ struct FACTIONS_API FFactionRelation
 
 	friend uint32 GetTypeHash(const FFactionRelation& InRelation)
 	{
-		return GetTypeHash(InRelation.FactionA) ^ GetTypeHash(InRelation.FactionB);
+		return GetTypeHash(InRelation.Source) ^ GetTypeHash(InRelation.Target);
 	}
 };
 
