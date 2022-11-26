@@ -124,6 +124,7 @@ void UFactionsSubsystem::RemoveFaction(FFaction Faction)
 {
 	if (!Faction.IsNone())
 	{
+		RemoveBakedFaction(Faction);
 		Factions.List.Remove(Faction.GetId());
 	}
 }
@@ -332,5 +333,14 @@ void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Des
 	else
 	{
 		BakedBehaviors.Add(Behavior);
+	}
+}
+
+void UFactionsSubsystem::RemoveBakedFaction(FFaction Faction)
+{
+	const int32 Index = GetFactionIndex(Faction);
+	if (Index != INDEX_NONE)
+	{
+		BakedBehaviors.RemoveAt(Index);
 	}
 }
