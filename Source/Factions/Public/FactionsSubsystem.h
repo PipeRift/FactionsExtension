@@ -82,10 +82,6 @@ public:
 		return Relations.List.Find({A, B});
 	}
 
-	FFactionTable& GetFactions()
-	{
-		return Factions;
-	}
 	const FFactionTable& GetFactions() const
 	{
 		return Factions;

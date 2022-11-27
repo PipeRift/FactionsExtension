@@ -217,7 +217,7 @@ bool UFactionsSubsystem::GetActorsByFaction(const FFaction Faction, TArray<AActo
 
 bool UFactionsSubsystem::SetDescriptor(const FFaction Faction, const FFactionDescriptor& Descriptor)
 {
-	if (auto* Found = GetFactions().GetDescriptor(Faction))
+	if (auto* Found = Factions.GetDescriptor(Faction))
 	{
 		*Found = Descriptor;
 
