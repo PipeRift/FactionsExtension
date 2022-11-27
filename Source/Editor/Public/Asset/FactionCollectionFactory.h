@@ -12,7 +12,6 @@ class UFactionCollectionFactory : public UFactory
 {
 	GENERATED_BODY()
 
-
 	UFactionCollectionFactory();
 
 	// UFactory interface

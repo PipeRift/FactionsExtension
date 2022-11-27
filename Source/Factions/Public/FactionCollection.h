@@ -7,12 +7,10 @@
 
 #include <Engine/DataAsset.h>
 
-
 #include "FactionCollection.generated.h"
 
 
 #define LOCTEXT_NAMESPACE "FactionCollection"
-
 
 /**
  * Struct containing information about a faction. Static use.

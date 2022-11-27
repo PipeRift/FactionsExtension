@@ -14,5 +14,4 @@ public:
 	virtual bool HasActions(const TArray<UObject*>& InObjects) const override { return false; }
 	virtual uint32 GetCategories() override;
 	// End of IAssetTypeActions interface
-
 };
