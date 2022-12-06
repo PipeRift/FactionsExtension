@@ -5,6 +5,7 @@
 #include "FactionAgentInterface.h"
 #include "FactionTable.h"
 #include "RelationTable.h"
+#include "FactionCollection.h"
 
 #include <CoreMinimal.h>
 #include <Engine/World.h>
@@ -69,6 +70,10 @@ protected:
 	UPROPERTY(Transient)
 	TArray<FBakedFactionBehavior> BakedBehaviors;
 
+	/** Currently added collections */
+	UPROPERTY(Transient)
+	TArray<UFactionCollection*> Collections;
+
 	static bool hasSetTeamIdAttitudeSolver;
 
 
@@ -89,7 +94,6 @@ public:
 
 	static UFactionsSubsystem* Get(const UObject* ContextObject);
 
-	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
 
 	/** C++ ONLY API */
 
@@ -100,8 +104,9 @@ public:
 	bool IsFriendly(const UObject* Source, const UObject* Target) const;
 	bool IsNeutral(const UObject* Source, const UObject* Target) const;
 
-	int32 GetFactionIndex(FFaction Faction) const;
+	const FFactionDescriptor* FindDescriptor(FFaction Faction, UFactionCollection** OutCollection = nullptr) const;
 
+	int32 GetFactionIndex(FFaction Faction) const;
 	FFaction FromTeamId(FGenericTeamId TeamId) const;
 	FGenericTeamId ToTeamId(FFaction Faction) const;
 
@@ -206,6 +211,14 @@ public:
 	bool RemoveRelation(const FFactionRelation& Relation);
 
 	/**
+	 * Add a faction collection (along with its factions and relations)
+	 * @param Collection to be added
+	 * @return true if the collection was registered, false if the two factions were the same or invalid.
+	 */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	bool AddCollection(UFactionCollection* Collection);
+
+	/**
 	 * Removes all factions
 	 * @return number of removed factions
 	 */
@@ -244,8 +257,9 @@ public:
 	 * @param Descriptor of the faction, if found
 	 * @return true if the faction was valid and information was found
 	 */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DisplayName = "Get Descriptor"))
-	bool BPGetDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor) const;
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DisplayName = "Find Descriptor"))
+	bool BPFindDescriptor(
+		const FFaction Faction, FFactionDescriptor& Descriptor, UFactionCollection*& Collection) const;
 
 	/** Return the faction of an actor. None if the actor doesn't implement FactionAgentInterface */
 	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Faction"))
@@ -283,8 +297,27 @@ protected:
 #endif
 
 	void BakeFactions();
-	void AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor);
+	void AddBakedFaction(
+		FName Id, const FFactionDescriptor& Descriptor, bool* bWasAlreadyAdded = nullptr);
 	void RemoveBakedFaction(FFaction Faction);
+
+
+	/** DEPRECATIONS */
+public:
+	UE_DEPRECATED(5.1, "This function is deprecated. Use FindDescriptor instead")
+	const FFactionDescriptor* GetDescriptor(FFaction Faction) const
+	{
+		return FindDescriptor(Faction);
+	}
+
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DisplayName = "Get Descriptor", DeprecatedFunction,
+			DeprecationMessage = "This function is deprecated. Use FindDescriptor instead"))
+	bool BPGetDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor) const
+	{
+		UFactionCollection* Collection = nullptr;
+		return BPFindDescriptor(Faction, Descriptor, Collection);
+	}
 };
 
 

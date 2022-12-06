@@ -15,7 +15,7 @@
 
 FText FAssetTypeAction_FactionCollection::GetName() const
 {
-	return LOCTEXT("FAssetTypeAction_FactionAssetName", "Faction Descriptor");
+	return LOCTEXT("FAssetTypeAction_FactionCollectionName", "Faction Collection");
 }
 
 FColor FAssetTypeAction_FactionCollection::GetTypeColor() const

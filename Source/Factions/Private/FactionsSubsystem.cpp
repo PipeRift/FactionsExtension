@@ -30,9 +30,26 @@ void UFactionsSubsystem::PostInitProperties()
 	}
 }
 
-const FFactionDescriptor* UFactionsSubsystem::GetDescriptor(FFaction Faction) const
+const FFactionDescriptor* UFactionsSubsystem::FindDescriptor(
+	FFaction Faction, UFactionCollection** OutCollection) const
 {
-	return GetFactions().GetDescriptor(Faction);
+	const FFactionDescriptor* Descriptor = GetFactions().GetDescriptor(Faction);
+	UFactionCollection* Collection = nullptr;
+
+	for (auto It = Collections.begin(); !Descriptor && It != Collections.end(); ++It)
+	{
+		Collection = *It;
+		if (Collection)
+		{
+			Descriptor = Collection->Factions.GetDescriptor(Faction);
+		}
+	}
+
+	if (Descriptor && OutCollection)
+	{
+		*OutCollection = Collection;
+	}
+	return nullptr;
 }
 
 TEnumAsByte<ETeamAttitude::Type> UFactionsSubsystem::GetAttitude(
@@ -86,8 +103,7 @@ FGenericTeamId UFactionsSubsystem::ToTeamId(FFaction Faction) const
 
 FString UFactionsSubsystem::GetDisplayName(const FFaction Faction) const
 {
-	const auto* Descriptor = GetDescriptor(Faction);
-	if (Descriptor)
+	if (const auto* Descriptor = FindDescriptor(Faction))
 	{
 		const bool bUseId = Descriptor->bIdAsDisplayName ||
 			(bUseIdsIfDisplayNamesAreEmpty && Descriptor->DisplayName.IsEmpty());
@@ -145,6 +161,45 @@ bool UFactionsSubsystem::RemoveRelation(const FFactionRelation& Relation)
 		return Relations.List.Remove(Relation) > 0;
 	}
 	return false;
+}
+
+bool UFactionsSubsystem::AddCollection(UFactionCollection* Collection)
+{
+	if (Collections.Contains(Collection))
+	{
+		UE_LOG(LogFactions, Warning, TEXT("Collection ('%s') has already been added before."),
+			*Collection->GetName());
+		return false;
+	}
+
+	Collections.Add(Collection);
+
+	bool bFactionExisted = false;
+	for (const auto& Descriptor : Collection->Factions.List)
+	{
+		AddBakedFaction(Descriptor.Key, Descriptor.Value, &bFactionExisted);
+		if (bFactionExisted)
+		{
+			UE_LOG(LogFactions, Warning,
+				TEXT("Added a duplicated faction from a collection. Relation: (%s)"),
+				*Descriptor.Key.ToString());
+		}
+	}
+
+	
+	bool bRepeated = false;
+	Relations.List.Reserve(Relations.List.Num() + Collection->Relations.List.Num());
+	for (const auto& Relation : Collection->Relations.List)
+	{
+		Relations.List.Add(Relation, &bRepeated);
+		if (bRepeated)
+		{
+			UE_LOG(LogFactions, Warning, TEXT("Added a duplicated relation from a collection. Relation: (%s)"), *Relation.ToString(Collection));
+		}
+	}
+	Relations.List.Append(Collection->Relations.List);
+
+	return true;
 }
 
 int32 UFactionsSubsystem::ClearFactions()
@@ -235,18 +290,17 @@ bool UFactionsSubsystem::SetDescriptor(const FFaction Faction, const FFactionDes
 
 void UFactionsSubsystem::GetAllFactions(TArray<FFaction>& OutFactions) const
 {
-	const auto& AllFactions = GetFactions().List;
-
-	OutFactions.Reserve(OutFactions.Num() + AllFactions.Num());
-	for (const auto& Entry : AllFactions)
+	OutFactions.Reserve(OutFactions.Num() + BakedBehaviors.Num());
+	for (const auto& Behavior : BakedBehaviors)
 	{
-		OutFactions.Add({Entry.Key});
+		OutFactions.Add({Behavior.Id});
 	}
 }
 
-bool UFactionsSubsystem::BPGetDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor) const
+bool UFactionsSubsystem::BPFindDescriptor(
+	const FFaction Faction, FFactionDescriptor& Descriptor, UFactionCollection*& Collection) const
 {
-	if (auto* Found = GetFactions().GetDescriptor(Faction))
+	if (auto* Found = FindDescriptor(Faction, &Collection))
 	{
 		Descriptor = *Found;
 		return true;
@@ -304,7 +358,7 @@ void UFactionsSubsystem::BakeFactions()
 	});
 }
 
-void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor)
+void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor, bool* bWasAlreadyAdded)
 {
 	// Insert sorted
 	const int32 Index = Algo::LowerBoundBy(BakedBehaviors, Id, [](const auto& Behavior) {
@@ -317,6 +371,7 @@ void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Des
 		Descriptor.SelfAttitude,
 		Descriptor.ExternalAttitude
 	};
+	bool bReplaced = false;
 	if (BakedBehaviors.IsValidIndex(Index))
 	{
 		// Since we returned lower bound we already know Id <= Index key. So if Id is not < Index key, they must be equal
@@ -324,6 +379,7 @@ void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Des
 		{
 			// Found, replace
 			BakedBehaviors[Index] = Behavior;
+			bReplaced = true;
 		}
 		else
 		{
@@ -333,6 +389,11 @@ void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Des
 	else
 	{
 		BakedBehaviors.Add(Behavior);
+	}
+
+	if (bWasAlreadyAdded)
+	{
+		*bWasAlreadyAdded = bReplaced;
 	}
 }
 
