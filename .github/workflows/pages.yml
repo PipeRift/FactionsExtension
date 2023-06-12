@@ -12,5 +12,4 @@ jobs:
     - name: Build & Publish
       uses: ZanderZhao/gitbook-action@master
       with:                                   #    or fork this repo and use YourName/gitbook-action@master
-        token: ${{ secrets.GITHUB_TOKEN }}  # -> remember add this in settings/secrets as following
         source_dir: '/Docs'
