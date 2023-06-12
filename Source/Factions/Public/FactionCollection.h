@@ -20,11 +20,7 @@ class FACTIONS_API UFactionCollection : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
-protected:
-
-	// Preffix to be added to faction ids where final ids become: {Scope}.{Id}
-	UPROPERTY(EditAnywhere, Category = Collection)
-	FString Scope;
+public:
 
 	UPROPERTY(EditAnywhere, Category = Collection)
 	FFactionTable Factions;

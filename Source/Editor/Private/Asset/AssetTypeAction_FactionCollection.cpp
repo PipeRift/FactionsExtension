@@ -1,11 +1,12 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "Asset/AssetTypeAction_FactionCollection.h"
-#include "FactionCollection.h"
-#include "FactionsModule.h"
 
 #include "AssetToolsModule.h"
 #include "ContentBrowserModule.h"
+#include "FactionCollection.h"
+#include "FactionsModule.h"
+
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
@@ -15,7 +16,7 @@
 
 FText FAssetTypeAction_FactionCollection::GetName() const
 {
-	return LOCTEXT("FAssetTypeAction_FactionAssetName", "Faction Collection");
+	return LOCTEXT("FAssetTypeAction_FactionCollectionName", "Faction Collection");
 }
 
 FColor FAssetTypeAction_FactionCollection::GetTypeColor() const
