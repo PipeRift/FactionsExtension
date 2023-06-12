@@ -7,10 +7,10 @@
     "gitbook": "^3.2.3",
     "gitbook-cli": "^2.3.2",
     "gitbook-summary": "^1.2.2",
-    "gulp": "^3.9.1",
-    "gulp-cli": "^2.0.1",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
     "gulp-gitbook": "0.0.2",
-    "run-sequence": "^2.2.1"
+    "gulp4-run-sequence": "^1.0.2"
   },
   "author": "Piperift",
   "homepage": "https://piperift.com",
