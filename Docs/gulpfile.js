@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 var exec = require("child_process").exec;
-const runSequence = require('gulp4-run-sequence');
+const runSequence = require('run-sequence');
 var gulpGitbook = require('gulp-gitbook');
 
 gulp.task('default', function () {
