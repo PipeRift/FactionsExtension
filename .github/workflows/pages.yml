@@ -34,18 +34,20 @@ jobs:
         id: pages
         uses: actions/configure-pages@v1
 
-      - run: cd Docs
-
       - name: Install dependencies
-        run: npm install
+        run:
+          - cd Docs
+          - npm install
 
       - name: Build
-        run: npm run build
+        run:
+          - cd Docs
+          - npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./_book
+          path: ./Docs/_book
 
   deploy:
     environment:
