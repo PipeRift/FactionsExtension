@@ -35,14 +35,14 @@ jobs:
         uses: actions/configure-pages@v1
 
       - name: Install dependencies
-        run:
-          - cd Docs
-          - npm install
+        run: |
+          cd Docs
+          npm install
 
       - name: Build
-        run:
-          - cd Docs
-          - npm run build
+        run: |
+          cd Docs
+          npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
