@@ -1,0 +1,303 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Introduction · Factions Extension Documentation</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Piperift">
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab|Karla" rel="stylesheet">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-links/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-collapsible-chapters/collapsible-chapters.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-hints/plugin-hints.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+        <link rel="stylesheet" href="website-1686607184265.css">
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+
+    </head>
+    <body>
+        <div id="piperift-navbar"></div>
+        <script id="piperift-navbar" src="https://piperift.com/navbar/load.js"></script>
+
+        
+<div class="book">
+    <div class="book-summary">
+        
+            <div class="book-logo"><a href="./">
+                
+                
+                <img class="book-logo-white" src="/FactionsExtension/assets/logo.dark.png"/>
+                
+                
+                <img class="book-logo-sepia" src="/FactionsExtension/assets/logo.png"/>
+                
+                
+                <img class="book-logo-night" src="/FactionsExtension/assets/logo.png"/>
+                
+            </a></div>
+            
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter active" data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" >
+            
+                <span>
+            
+                    
+                    Documentation
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="documentation/implementation.html">
+            
+                <a href="documentation/implementation.html">
+            
+                    
+                    Implementation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="documentation/usage.html">
+            
+                <a href="documentation/usage.html">
+            
+                    
+                    Usage
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="installation.html">
+            
+                <a href="installation.html">
+            
+                    
+                    Installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Introduction</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+                                <section class="normal markdown-section">
+                                
+                                <a class="links-link btn fa fa-book pull-left" href="downloads/book.mobi">&#xA0;&#xA0;MOBI</a><a class="links-link btn fa fa-leanpub pull-left" href="downloads/book.epub">&#xA0;&#xA0;EPUB</a><a class="links-link btn fa fa-file-pdf-o pull-left" href="downloads/book.pdf">&#xA0;&#xA0;PDF</a><h1 id="factions-extension-documentation">Factions Extension Documentation</h1>
+<p>Add factions and relations in your game using C++ or Blueprints</p>
+<p>This plugin is for Unreal Engine 4 and has support for versions <strong>4.20</strong>, <strong>4.19</strong> and <strong>4.18</strong>.<br>
+You can download this <strong><a href="https://mega.nz/#!JMowlKCA!wZv-L6oNSJCwDw1CUbTFyjPOXvd6viB-QLgK-u36xtY" target="_blank">Test project</a></strong> to see and test the API</p>
+<h2 id="introduction">Introduction</h2>
+<h3 id="what-are-factions">What are &quot;Factions&quot;</h3>
+<p>When we say Faction we refer to a <strong>group of entities or actors</strong> that share something in common.</p>
+<p>Almost every single type of game uses factions in different ways. For example, in Shooter games there will be enemies and friends, in RTS games every player will be a faction by itself, and in Open-World games you will have factions fighting each other while you run around.</p>
+<p>This plugin fulfills the needs of this feature in UE4 with a very flexible tool that will make the implementation, editing and design of your own factions a 5 minutes thing.</p>
+<h3 id="what-can-have-a-faction">&quot;What&quot; can have a faction?</h3>
+<p><em>Everything!</em>... well not everything, but pretty much. <strong>All actors of any type can have a faction.</strong></p>
+
+                                
+                                </section>
+                            
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"next":{"title":"Documentation","level":"1.2","depth":1,"ref":"","articles":[{"title":"Implementation","level":"1.2.1","depth":2,"path":"documentation/implementation.md","ref":"documentation/implementation.md","articles":[]},{"title":"Usage","level":"1.2.2","depth":2,"path":"documentation/usage.md","ref":"documentation/usage.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["custom-favicon","copy-code-button","styles-less","links","prism","-highlight","collapsible-chapters","hide-published-with","hints"],"ignores":["node_modules","_book","downloads","lib"],"styles":{"website":"website-1686607184265.css","ebook":"ebook-1686607184268.css","pdf":"pdf-1686607184270.css"},"pluginsConfig":{"prism":{},"styles-less":{},"search":{},"collapsible-chapters":{},"hints":{"info":"fa fa-info-circle","tip":"fa fa-mortar-board","danger":"fa fa-exclamation-circle","working":"fa fa-wrench"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"hide-published-with":{},"fontsettings":{"theme":"white","family":"sans","size":2},"favicon":"./assets/favicon.ico","custom-favicon":{},"links":{"links":[{"label":"PDF","icon":"fa fa-file-pdf-o","url":"downloads/book.pdf"},{"label":"EPUB","icon":"fa fa-leanpub","url":"downloads/book.epub"},{"label":"MOBI","icon":"fa fa-book","url":"downloads/book.mobi"}]},"copy-code-button":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"Piperift","logo":{"white":"/assets/logo.dark.png","sepia":"/assets/logo.png","night":"/assets/logo.png"},"url":{"relativePath":"/FactionsExtension"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"languaje":"es","variables":{},"title":"Factions Extension Documentation","gitbook":"*"},"file":{"path":"README.md","mtime":"2018-08-07T15:09:07.454Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2023-06-12T21:59:37.874Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-copy-code-button/toggle.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-links/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-collapsible-chapters/collapsible-chapters.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-hide-published-with/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
