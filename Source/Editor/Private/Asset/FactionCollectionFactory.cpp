@@ -7,8 +7,8 @@
 #include "Kismet2/SClassPickerDialog.h"
 #include "FactionCollection.h"
 
-#define LOCTEXT_NAMESPACE "FactionCollection"
 
+#define LOCTEXT_NAMESPACE "FactionCollection"
 
 UFactionCollectionFactory::UFactionCollectionFactory()
 	: Super()

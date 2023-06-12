@@ -147,6 +147,20 @@ bool UFactionsSubsystem::RemoveRelation(const FFactionRelation& Relation)
 	return false;
 }
 
+bool UFactionsSubsystem::AddCollection(const UFactionCollection* collection)
+{
+	return false;
+}
+
+void UFactionsSubsystem::RemoveCollection(const UFactionCollection* collection)
+{
+}
+
+bool UFactionsSubsystem::HasCollection(TSoftObjectPtr<UFactionCollection> collection) const
+{
+	return false;
+}
+
 int32 UFactionsSubsystem::ClearFactions()
 {
 	const int32 Count = Factions.Num();

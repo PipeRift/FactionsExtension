@@ -5,6 +5,7 @@
 #include "FactionAgentInterface.h"
 #include "FactionTable.h"
 #include "RelationTable.h"
+#include "FactionCollection.h"
 
 #include <CoreMinimal.h>
 #include <Engine/World.h>
@@ -204,6 +205,21 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = Factions)
 	bool RemoveRelation(const FFactionRelation& Relation);
+
+	/**
+	 * Add a collection with all its factions and relations
+	 * @return true if the collection was added successfully
+	 */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	bool AddCollection(const UFactionCollection* collection);
+
+	/** Remove a collection with all its factions and relations */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	void RemoveCollection(const UFactionCollection* collection);
+
+	/** @return true if collection has been added */
+	UFUNCTION(BlueprintPure, Category = Factions)
+	bool HasCollection(TSoftObjectPtr<UFactionCollection> collection) const;
 
 	/**
 	 * Removes all factions

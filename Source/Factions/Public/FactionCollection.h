@@ -31,6 +31,17 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Collection)
 	FRelationTable Relations;
+
+
+	const FFactionTable& GetFactions() const
+	{
+		return Factions;
+	}
+
+	const FRelationTable& GetRelations() const
+	{
+		return Relations;
+	}
 };
 
 #undef LOCTEXT_NAMESPACE
