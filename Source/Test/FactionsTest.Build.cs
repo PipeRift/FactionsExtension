@@ -10,7 +10,7 @@ namespace UnrealBuildTool.Rules
         public FactionsTest(ReadOnlyTargetRules Target) : base(Target)
         {
             PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-            bEnforceIWYU = true;
+            IWYUSupport = IWYUSupport.Full;
 
             PublicDependencyModuleNames.AddRange(new string[]
             {
@@ -18,7 +18,7 @@ namespace UnrealBuildTool.Rules
                 "Engine",
                 "CoreUObject",
                 "AIModule",
-			    "StructUtils",
+                "StructUtils",
                 "Factions"
             });
 

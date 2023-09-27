@@ -108,7 +108,7 @@ void SFactionColor::CreateColorPicker(bool bUseAlpha)
 		PickerArgs.OnColorPickerWindowClosed = FOnWindowClosed::CreateSP(this, &SFactionColor::OnColorPickerWindowClosed);
 		PickerArgs.OnInteractivePickBegin = FSimpleDelegate::CreateSP(this, &SFactionColor::OnColorPickerInteractiveBegin);
 		PickerArgs.OnInteractivePickEnd = FSimpleDelegate::CreateSP(this, &SFactionColor::OnColorPickerInteractiveEnd);
-		PickerArgs.InitialColorOverride = InitialColor;
+		PickerArgs.InitialColor = InitialColor;
 		PickerArgs.ParentWidget = ColorPickerParentWidget;
 		PickerArgs.OptionalOwningDetailsView = ColorPickerParentWidget;
 		FWidgetPath ParentWidgetPath;
