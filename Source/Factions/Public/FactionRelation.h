@@ -68,6 +68,16 @@ struct FACTIONS_API FFactionRelation
 	{
 		return GetTypeHash(InRelation.Source) ^ GetTypeHash(InRelation.Target);
 	}
+
+	FString ToString(const UObject* Owner) const;
 };
+
+inline FString FFactionRelation::ToString(const UObject* Owner) const
+{
+	FString Value{};
+	StaticStruct()->ExportText(Value, this, nullptr, const_cast<UObject*>(Owner),
+		(PPF_ExportsNotFullyQualified | PPF_Copy | PPF_Delimited | PPF_IncludeTransient), nullptr);
+	return Value;
+}
 
 #undef LOCTEXT_NAMESPACE

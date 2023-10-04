@@ -3,13 +3,14 @@
 #pragma once
 
 #include "FactionAgentInterface.h"
+#include "FactionCollection.h"
 #include "FactionTable.h"
 #include "RelationTable.h"
 
 #include <CoreMinimal.h>
 #include <Engine/World.h>
-#include <Subsystems/WorldSubsystem.h>
 #include <GenericTeamAgentInterface.h>
+#include <Subsystems/WorldSubsystem.h>
 
 #include "FactionsSubsystem.generated.h"
 
@@ -69,6 +70,10 @@ protected:
 	UPROPERTY(Transient)
 	TArray<FBakedFactionBehavior> BakedBehaviors;
 
+	/** Currently added collections */
+	UPROPERTY(Transient)
+	TArray<UFactionCollection*> Collections;
+
 	static bool hasSetTeamIdAttitudeSolver;
 
 
@@ -82,10 +87,6 @@ public:
 		return Relations.List.Find({A, B});
 	}
 
-	FFactionTable& GetFactions()
-	{
-		return Factions;
-	}
 	const FFactionTable& GetFactions() const
 	{
 		return Factions;
@@ -93,7 +94,6 @@ public:
 
 	static UFactionsSubsystem* Get(const UObject* ContextObject);
 
-	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
 
 	/** C++ ONLY API */
 
@@ -104,8 +104,10 @@ public:
 	bool IsFriendly(const UObject* Source, const UObject* Target) const;
 	bool IsNeutral(const UObject* Source, const UObject* Target) const;
 
-	int32 GetFactionIndex(FFaction Faction) const;
+	const FFactionDescriptor* FindDescriptor(
+		FFaction Faction, UFactionCollection** OutCollection = nullptr) const;
 
+	int32 GetFactionIndex(FFaction Faction) const;
 	FFaction FromTeamId(FGenericTeamId TeamId) const;
 	FGenericTeamId ToTeamId(FFaction Faction) const;
 
@@ -210,6 +212,14 @@ public:
 	bool RemoveRelation(const FFactionRelation& Relation);
 
 	/**
+	 * Add a faction collection (along with its factions and relations)
+	 * @param Collection to be added
+	 * @return true if the collection was registered, false if the two factions were the same or invalid.
+	 */
+	UFUNCTION(BlueprintCallable, Category = Factions)
+	bool AddCollection(UFactionCollection* Collection);
+
+	/**
 	 * Removes all factions
 	 * @return number of removed factions
 	 */
@@ -248,35 +258,60 @@ public:
 	 * @param Descriptor of the faction, if found
 	 * @return true if the faction was valid and information was found
 	 */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DisplayName = "Get Descriptor"))
-	bool BPGetDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor) const;
+	UFUNCTION(BlueprintPure, Category = Factions, meta = (DisplayName = "Find Descriptor"))
+	bool BPFindDescriptor(
+		const FFaction Faction, FFactionDescriptor& Descriptor, UFactionCollection*& Collection) const;
 
 	/** Return the faction of an actor. None if the actor doesn't implement FactionAgentInterface */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Faction"))
-	static FFaction BPGetObjectFaction(const UObject* Source) { return GetFaction(Source); }
+	UFUNCTION(
+		BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Faction"))
+	static FFaction BPGetObjectFaction(const UObject* Source)
+	{
+		return GetFaction(Source);
+	}
 
 	/** Sets the faction of an actor. Won't apply if the actor doesn't implement FactionAgentInterface.
 	 * @param Target actor that will receive the new faction
 	 * @param Faction that will be set
 	 */
-	UFUNCTION(BlueprintCallable, Category = Factions, meta = (DefaultToSelf = "Target", DisplayName = "Set Faction"))
-	static void BPSetObjectFaction(UObject* Target, FFaction Faction) { SetFaction(Target, Faction); }
+	UFUNCTION(BlueprintCallable, Category = Factions,
+		meta = (DefaultToSelf = "Target", DisplayName = "Set Faction"))
+	static void BPSetObjectFaction(UObject* Target, FFaction Faction)
+	{
+		SetFaction(Target, Faction);
+	}
 
 	/** @return Attitude of Source's faction towards Target's faction */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Attitude (Object)"))
-	TEnumAsByte<ETeamAttitude::Type> BPGetObjectAttitude(const UObject* Source, const UObject* Target) const { return GetAttitude(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Get Attitude (Object)"))
+	TEnumAsByte<ETeamAttitude::Type> BPGetObjectAttitude(const UObject* Source, const UObject* Target) const
+	{
+		return GetAttitude(Source, Target);
+	}
 
 	/** @return true if Source is Hostile to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Hostile (Object)"))
-	bool BPIsObjectHostile(const UObject* Source, const UObject* Target) { return IsHostile(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Is Hostile (Object)"))
+	bool BPIsObjectHostile(const UObject* Source, const UObject* Target)
+	{
+		return IsHostile(Source, Target);
+	}
 
 	/** @return true if Source is Friendly to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Friendly (Object)"))
-	bool BPIsObjectFriendly(const UObject* Source, const UObject* Target) { return IsFriendly(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Is Friendly (Object)"))
+	bool BPIsObjectFriendly(const UObject* Source, const UObject* Target)
+	{
+		return IsFriendly(Source, Target);
+	}
 
 	/** @return true if One is Neutral to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Neutral (Object)"))
-	bool BPIsObjectNeutral(const UObject* Source, const UObject* Target) { return IsNeutral(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Is Neutral (Object)"))
+	bool BPIsObjectNeutral(const UObject* Source, const UObject* Target)
+	{
+		return IsNeutral(Source, Target);
+	}
 
 
 protected:
@@ -287,8 +322,26 @@ protected:
 #endif
 
 	void BakeFactions();
-	void AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor);
+	void AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor, bool* bWasAlreadyAdded = nullptr);
 	void RemoveBakedFaction(FFaction Faction);
+
+
+	/** DEPRECATIONS */
+public:
+	UE_DEPRECATED(5.1, "This function is deprecated. Use FindDescriptor instead")
+	const FFactionDescriptor* GetDescriptor(FFaction Faction) const
+	{
+		return FindDescriptor(Faction);
+	}
+
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DisplayName = "Get Descriptor", DeprecatedFunction,
+			DeprecationMessage = "This function is deprecated. Use FindDescriptor instead"))
+	bool BPGetDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor) const
+	{
+		UFactionCollection* Collection = nullptr;
+		return BPFindDescriptor(Faction, Descriptor, Collection);
+	}
 };
 
 
@@ -318,8 +371,7 @@ inline void UFactionsSubsystem::SetFaction(UObject* Target, FFaction Faction)
 	IFactionAgentInterface::SetFaction(Target, Faction);
 }
 
-inline ETeamAttitude::Type UFactionsSubsystem::GetAttitude(
-	const UObject* Source, const UObject* Target) const
+inline ETeamAttitude::Type UFactionsSubsystem::GetAttitude(const UObject* Source, const UObject* Target) const
 {
 	return GetAttitude(GetFaction(Source), GetFaction(Target));
 }
