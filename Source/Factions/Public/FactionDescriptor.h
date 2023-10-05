@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -32,7 +32,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics)
 	FLinearColor Color = FColor::Cyan;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Cosmetics, meta = (EditCondition="!bIdAsDisplayName"))
+	UPROPERTY(
+		EditAnywhere, BlueprintReadWrite, Category = Cosmetics, meta = (EditCondition = "!bIdAsDisplayName"))
 	FText DisplayName;
 
 	// If true, DisplayName is ignored and Id is used instead

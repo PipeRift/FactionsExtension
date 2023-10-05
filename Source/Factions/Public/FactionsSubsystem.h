@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -8,10 +8,11 @@
 
 #include <CoreMinimal.h>
 #include <Engine/World.h>
-#include <Subsystems/WorldSubsystem.h>
 #include <GenericTeamAgentInterface.h>
+#include <Subsystems/WorldSubsystem.h>
 
 #include "FactionsSubsystem.generated.h"
+
 
 
 UENUM()
@@ -252,31 +253,55 @@ public:
 	bool BPGetDescriptor(const FFaction Faction, FFactionDescriptor& Descriptor) const;
 
 	/** Return the faction of an actor. None if the actor doesn't implement FactionAgentInterface */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Faction"))
-	static FFaction BPGetObjectFaction(const UObject* Source) { return GetFaction(Source); }
+	UFUNCTION(
+		BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Faction"))
+	static FFaction BPGetObjectFaction(const UObject* Source)
+	{
+		return GetFaction(Source);
+	}
 
 	/** Sets the faction of an actor. Won't apply if the actor doesn't implement FactionAgentInterface.
 	 * @param Target actor that will receive the new faction
 	 * @param Faction that will be set
 	 */
-	UFUNCTION(BlueprintCallable, Category = Factions, meta = (DefaultToSelf = "Target", DisplayName = "Set Faction"))
-	static void BPSetObjectFaction(UObject* Target, FFaction Faction) { SetFaction(Target, Faction); }
+	UFUNCTION(BlueprintCallable, Category = Factions,
+		meta = (DefaultToSelf = "Target", DisplayName = "Set Faction"))
+	static void BPSetObjectFaction(UObject* Target, FFaction Faction)
+	{
+		SetFaction(Target, Faction);
+	}
 
 	/** @return Attitude of Source's faction towards Target's faction */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Get Attitude (Object)"))
-	TEnumAsByte<ETeamAttitude::Type> BPGetObjectAttitude(const UObject* Source, const UObject* Target) const { return GetAttitude(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Get Attitude (Object)"))
+	TEnumAsByte<ETeamAttitude::Type> BPGetObjectAttitude(const UObject* Source, const UObject* Target) const
+	{
+		return GetAttitude(Source, Target);
+	}
 
 	/** @return true if Source is Hostile to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Hostile (Object)"))
-	bool BPIsObjectHostile(const UObject* Source, const UObject* Target) { return IsHostile(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Is Hostile (Object)"))
+	bool BPIsObjectHostile(const UObject* Source, const UObject* Target)
+	{
+		return IsHostile(Source, Target);
+	}
 
 	/** @return true if Source is Friendly to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Friendly (Object)"))
-	bool BPIsObjectFriendly(const UObject* Source, const UObject* Target) { return IsFriendly(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Is Friendly (Object)"))
+	bool BPIsObjectFriendly(const UObject* Source, const UObject* Target)
+	{
+		return IsFriendly(Source, Target);
+	}
 
 	/** @return true if One is Neutral to Target */
-	UFUNCTION(BlueprintPure, Category = Factions, meta = (DefaultToSelf = "Source", DisplayName = "Is Neutral (Object)"))
-	bool BPIsObjectNeutral(const UObject* Source, const UObject* Target) { return IsNeutral(Source, Target); }
+	UFUNCTION(BlueprintPure, Category = Factions,
+		meta = (DefaultToSelf = "Source", DisplayName = "Is Neutral (Object)"))
+	bool BPIsObjectNeutral(const UObject* Source, const UObject* Target)
+	{
+		return IsNeutral(Source, Target);
+	}
 
 
 protected:
@@ -318,8 +343,7 @@ inline void UFactionsSubsystem::SetFaction(UObject* Target, FFaction Faction)
 	IFactionAgentInterface::SetFaction(Target, Faction);
 }
 
-inline ETeamAttitude::Type UFactionsSubsystem::GetAttitude(
-	const UObject* Source, const UObject* Target) const
+inline ETeamAttitude::Type UFactionsSubsystem::GetAttitude(const UObject* Source, const UObject* Target) const
 {
 	return GetAttitude(GetFaction(Source), GetFaction(Target));
 }

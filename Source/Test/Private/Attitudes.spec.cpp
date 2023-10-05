@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "Faction.h"
 #include "FactionsSubsystem.h"
@@ -7,7 +7,8 @@
 
 #define BASE_SPEC FFactionsSpec
 
-BEGIN_TESTSPEC(FAttitudesSpec, "FactionsExtension.Attitudes", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+BEGIN_TESTSPEC(FAttitudesSpec, "FactionsExtension.Attitudes",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 UFactionsSubsystem* Factions = nullptr;
 FFaction FactionA;
 FFaction FactionB;
@@ -19,8 +20,10 @@ void FAttitudesSpec::Define()
 		Factions = NewObject<UFactionsSubsystem>();
 		TestTrueExpr(Factions != nullptr);
 		Factions->ClearRelations();
-		FactionA = Factions->EmplaceFaction("A", {/*Self*/ ETeamAttitude::Friendly, /*External*/ ETeamAttitude::Hostile});
-		FactionB = Factions->EmplaceFaction("B", {/*Self*/ ETeamAttitude::Hostile,  /*External*/ ETeamAttitude::Friendly});
+		FactionA = Factions->EmplaceFaction(
+			"A", {/*Self*/ ETeamAttitude::Friendly, /*External*/ ETeamAttitude::Hostile});
+		FactionB = Factions->EmplaceFaction(
+			"B", {/*Self*/ ETeamAttitude::Hostile, /*External*/ ETeamAttitude::Friendly});
 	});
 
 	It("Can check self attitude", [this]() {

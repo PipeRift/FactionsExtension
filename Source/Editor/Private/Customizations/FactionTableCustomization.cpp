@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2020 Piperift. All Rights Reserved.
+﻿// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "Customizations/FactionTableCustomization.h"
 
@@ -77,45 +77,30 @@ public:
 		}
 		else if (Column == FFactionTableCustomization::ColumnColor)
 		{
-			return SNew(SBox)
-			.Padding(FMargin{5, 0})
-			[
-				SNew(SFactionColor, Item->GetColorProperty())
-			];
+			return SNew(SBox).Padding(FMargin{5, 0})[SNew(SFactionColor, Item->GetColorProperty())];
 		}
 
-		return SNew(SBox)
-		.Padding(FMargin{5, 0})
-		[
-			SAssignNew(IdNameSwitcher, SWidgetSwitcher)
-			+ SWidgetSwitcher::Slot()
-			[
-				SNew(SBox)
-				.VAlign(VAlign_Center)
-				.MinDesiredWidth(30.f)
-				.MinDesiredHeight(18.f)
-				[
-					SNew(STextBlock)
-					.Text(this, &SFactionViewItem::GetIdAsText)
-					.OnDoubleClicked(this, &SFactionViewItem::OnIdNameDoubleClicked)
-				]
-			]
-			+ SWidgetSwitcher::Slot()
-			[
-				SNew(SBox)
-				.VAlign(VAlign_Center)
-				.MinDesiredWidth(30.f)
-				[
-					SAssignNew(IdNameTextBox, SEditableTextBox)
-					.Text(this, &SFactionViewItem::GetIdAsText)
-					.ToolTipText(LOCTEXT("EditNameId_Tooltip", "Replace a faction's Id"))
-					.RevertTextOnEscape(true)
-					.ClearKeyboardFocusOnCommit(true)
-					.SelectAllTextWhenFocused(true)
-					.OnTextCommitted(this, &SFactionViewItem::OnIdNameCommited)
-				]
-			]
-		];
+		return SNew(SBox).Padding(FMargin{5,
+			0})[SAssignNew(IdNameSwitcher, SWidgetSwitcher) +
+				SWidgetSwitcher::Slot()[SNew(SBox)
+											.VAlign(VAlign_Center)
+											.MinDesiredWidth(30.f)
+											.MinDesiredHeight(
+												18.f)[SNew(STextBlock)
+														  .Text(this, &SFactionViewItem::GetIdAsText)
+														  .OnDoubleClicked(this,
+															  &SFactionViewItem::OnIdNameDoubleClicked)]] +
+				SWidgetSwitcher::Slot()
+					[SNew(SBox)
+							.VAlign(VAlign_Center)
+							.MinDesiredWidth(30.f)
+								[SAssignNew(IdNameTextBox, SEditableTextBox)
+										.Text(this, &SFactionViewItem::GetIdAsText)
+										.ToolTipText(LOCTEXT("EditNameId_Tooltip", "Replace a faction's Id"))
+										.RevertTextOnEscape(true)
+										.ClearKeyboardFocusOnCommit(true)
+										.SelectAllTextWhenFocused(true)
+										.OnTextCommitted(this, &SFactionViewItem::OnIdNameCommited)]]];
 	}
 
 private:
@@ -198,55 +183,31 @@ void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Str
 		LOCTEXT("ClearFactionToolTip", "Removes all factions"));
 
 	HeaderRow.NameContent()
-	.HAlign(HAlign_Fill)
-	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		.HAlign(HAlign_Left)
-		[
-			StructHandle->CreatePropertyNameWidget()
-		]
-		+ SHorizontalBox::Slot()
-		.HAlign(HAlign_Right)
-		.AutoWidth()
-		.Padding(4, 0)
-		[
-			SNew(SBox)
-			.MaxDesiredHeight(20.f)
-			.MinDesiredWidth(100.f)
-			[
-				SNew(SSearchBox)
-				.InitialText(FText::GetEmpty())
-				.OnTextChanged(this, &FFactionTableCustomization::OnFilterChanged)
-			]
-		]
-	]
-	.ValueContent()
-	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		.VAlign(VAlign_Center)
-		.AutoWidth()[
-			SNew(STextBlock)
-			.Text(this, &FFactionTableCustomization::GetHeaderValueText)
-		]
-		+ SHorizontalBox::Slot()
-		.Padding(2.0f)
-		.HAlign(HAlign_Center)
-		.VAlign(VAlign_Center)
-		.AutoWidth()
-		[
-			AddButton
-		]
-		+ SHorizontalBox::Slot()
-		.Padding(2.0f)
-		.HAlign(HAlign_Center)
-		.VAlign(VAlign_Center)
-		.AutoWidth()
-		[
-			ClearButton
-		]
-	];
+		.HAlign(HAlign_Fill)
+			[SNew(SHorizontalBox) +
+				SHorizontalBox::Slot().HAlign(HAlign_Left)[StructHandle->CreatePropertyNameWidget()] +
+				SHorizontalBox::Slot()
+					.HAlign(HAlign_Right)
+					.AutoWidth()
+					.Padding(4, 0)[SNew(SBox).MaxDesiredHeight(20.f).MinDesiredWidth(
+						100.f)[SNew(SSearchBox)
+								   .InitialText(FText::GetEmpty())
+								   .OnTextChanged(this, &FFactionTableCustomization::OnFilterChanged)]]]
+		.ValueContent()[SNew(SHorizontalBox) +
+						SHorizontalBox::Slot()
+							.VAlign(VAlign_Center)
+							.AutoWidth()[SNew(STextBlock)
+											 .Text(this, &FFactionTableCustomization::GetHeaderValueText)] +
+						SHorizontalBox::Slot()
+							.Padding(2.0f)
+							.HAlign(HAlign_Center)
+							.VAlign(VAlign_Center)
+							.AutoWidth()[AddButton] +
+						SHorizontalBox::Slot()
+							.Padding(2.0f)
+							.HAlign(HAlign_Center)
+							.VAlign(VAlign_Center)
+							.AutoWidth()[ClearButton]];
 
 	GEditor->RegisterForUndo(this);
 }
@@ -277,101 +238,59 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 		SNew(SScrollBar).Orientation(Orient_Vertical).Thickness(FVector2D(8.0f, 8.0f));
 
 	TSharedRef<SHeaderRow> ListHeaderRow =
-	SNew(SHeaderRow)
-	+ SHeaderRow::Column(ColumnDelete)
-	.HAlignCell(HAlign_Fill)
-	.VAlignCell(VAlign_Fill)
-	.VAlignHeader(VAlign_Center)
-	.FixedWidth(22.f)
-	[
-		SNew(STextBlock)
-		.Text(LOCTEXT("FactionColumnDelete", ""))
-	]
-	+ SHeaderRow::Column(ColumnId)
-	.HAlignCell(HAlign_Fill)
-	.VAlignCell(VAlign_Center)
-	.VAlignHeader(VAlign_Center)
-	.FillWidth(1.f)
-	[
-		SNew(STextBlock)
-		.Text(LOCTEXT("FactionColumnId", "Id"))
-		.ToolTipText(LOCTEXT("FactionColumnIdTooltip",
-			"A faction's Id serves as its unique identifier. For setting a name use "
-			"the Display Name"))
-	]
-	+ SHeaderRow::Column(ColumnSelfAttitude)
-	.HAlignCell(HAlign_Center)
-	.VAlignCell(VAlign_Center)
-	.VAlignHeader(VAlign_Center)
-	.FixedWidth(90.f)
-	[
-		SNew(STextBlock)
-		.Text(LOCTEXT("FactionColumnSelfAttitude", "To Self"))
-	]
-	+ SHeaderRow::Column(ColumnExternalAttitude)
-	.HAlignCell(HAlign_Center)
-	.VAlignCell(VAlign_Center)
-	.VAlignHeader(VAlign_Center)
-	.FixedWidth(90.f)
-	[
-		SNew(STextBlock)
-		.Text(LOCTEXT("FactionColumnExternalAttitude", "To Others"))
-	]
-	+ SHeaderRow::Column(ColumnColor)
-	.HAlignCell(HAlign_Center)
-	.VAlignCell(VAlign_Center)
-	.VAlignHeader(VAlign_Center)
-	.FixedWidth(70.f)[
-		SNew(STextBlock)
-		.Text(LOCTEXT("FactionColumnColor", "Color"))
-	];
+		SNew(SHeaderRow) +
+		SHeaderRow::Column(ColumnDelete)
+			.HAlignCell(HAlign_Fill)
+			.VAlignCell(VAlign_Fill)
+			.VAlignHeader(VAlign_Center)
+			.FixedWidth(22.f)[SNew(STextBlock).Text(LOCTEXT("FactionColumnDelete", ""))] +
+		SHeaderRow::Column(ColumnId)
+			.HAlignCell(HAlign_Fill)
+			.VAlignCell(VAlign_Center)
+			.VAlignHeader(VAlign_Center)
+			.FillWidth(1.f)[SNew(STextBlock)
+								.Text(LOCTEXT("FactionColumnId", "Id"))
+								.ToolTipText(LOCTEXT("FactionColumnIdTooltip",
+									"A faction's Id serves as its unique identifier. For setting a name use "
+									"the Display Name"))] +
+		SHeaderRow::Column(ColumnSelfAttitude)
+			.HAlignCell(HAlign_Center)
+			.VAlignCell(VAlign_Center)
+			.VAlignHeader(VAlign_Center)
+			.FixedWidth(90.f)[SNew(STextBlock).Text(LOCTEXT("FactionColumnSelfAttitude", "To Self"))] +
+		SHeaderRow::Column(ColumnExternalAttitude)
+			.HAlignCell(HAlign_Center)
+			.VAlignCell(VAlign_Center)
+			.VAlignHeader(VAlign_Center)
+			.FixedWidth(90.f)[SNew(STextBlock).Text(LOCTEXT("FactionColumnExternalAttitude", "To Others"))] +
+		SHeaderRow::Column(ColumnColor)
+			.HAlignCell(HAlign_Center)
+			.VAlignCell(VAlign_Center)
+			.VAlignHeader(VAlign_Center)
+			.FixedWidth(70.f)[SNew(STextBlock).Text(LOCTEXT("FactionColumnColor", "Color"))];
 
 	ListView = SNew(SListView<FFactionListItemPtr>)
-		.ListItemsSource(&VisibleFactions)
-		.HeaderRow(ListHeaderRow)
-		.OnGenerateRow(this, &FFactionTableCustomization::MakeListRow)
-		//.OnListViewScrolled(this, &FFactionTableCustomization::OnScrolled)
-		.OnSelectionChanged(this, &FFactionTableCustomization::SetSelection)
-		.ExternalScrollbar(VerticalScrollBar)
-		.ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
-		.SelectionMode(ESelectionMode::Single)
-		.AllowOverscroll(EAllowOverscroll::No);
+				   .ListItemsSource(&VisibleFactions)
+				   .HeaderRow(ListHeaderRow)
+				   .OnGenerateRow(this, &FFactionTableCustomization::MakeListRow)
+				   //.OnListViewScrolled(this, &FFactionTableCustomization::OnScrolled)
+				   .OnSelectionChanged(this, &FFactionTableCustomization::SetSelection)
+				   .ExternalScrollbar(VerticalScrollBar)
+				   .ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
+				   .SelectionMode(ESelectionMode::Single)
+				   .AllowOverscroll(EAllowOverscroll::No);
 
 	StructBuilder.AddCustomRow(LOCTEXT("FactionsPropertySearch", "Factions"))
 		.NameContent()
 		.VAlign(VAlign_Top)
-		.HAlign(HAlign_Fill)[SNew(SBox).Padding(FMargin{0, 0, 0, 8})
-		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.FillWidth(1.f)
-			[
-				SNew(SBox)
-				.MaxDesiredHeight(180.f)
-				[
-					ListView.ToSharedRef()
-				]
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SBox)
-				.WidthOverride(14.f)
-				[
-					VerticalScrollBar
-				]
-			]
-		]
-	]
-	.ValueContent()
-	.HAlign(HAlign_Fill)
-	[
-		SNew(SBox)
-		.Padding(FMargin{0, 0, 0, 8})
-		[
-			DescriptorDetailsView->GetWidget().ToSharedRef()
-		]
-	];
+		.HAlign(HAlign_Fill)[SNew(SBox).Padding(FMargin{0, 0, 0,
+			8})[SNew(SHorizontalBox) +
+				SHorizontalBox::Slot().FillWidth(
+					1.f)[SNew(SBox).MaxDesiredHeight(180.f)[ListView.ToSharedRef()]] +
+				SHorizontalBox::Slot().AutoWidth()[SNew(SBox).WidthOverride(14.f)[VerticalScrollBar]]]]
+		.ValueContent()
+		.HAlign(HAlign_Fill)[SNew(SBox).Padding(
+			FMargin{0, 0, 0, 8})[DescriptorDetailsView->GetWidget().ToSharedRef()]];
 
 	if (!CurrentSelection.IsValid() && AvailableFactions.Num() > 0)
 	{
@@ -431,7 +350,8 @@ void FFactionTableCustomization::SetSelection(
 		OnSelectedDescriptorChanged = FSimpleDelegate::CreateLambda([this]() {
 			UpdateSelectedCopy();
 		});
-		CurrentSelection.Pin()->GetValueProperty()->SetOnChildPropertyValueChanged(OnSelectedDescriptorChanged);
+		CurrentSelection.Pin()->GetValueProperty()->SetOnChildPropertyValueChanged(
+			OnSelectedDescriptorChanged);
 	}
 	else
 	{
@@ -500,8 +420,7 @@ void FFactionTableCustomization::RefreshList()
 TSharedRef<ITableRow> FFactionTableCustomization::MakeListRow(
 	FFactionListItemPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
-	return SNew(SFactionViewItem, OwnerTable)
-		.Customization(SharedThis(this)).Item(Item);
+	return SNew(SFactionViewItem, OwnerTable).Customization(SharedThis(this)).Item(Item);
 }
 
 void FFactionTableCustomization::OnFilterChanged(const FText& Text)

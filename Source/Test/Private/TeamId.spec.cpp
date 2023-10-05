@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "Faction.h"
 #include "FactionsSubsystem.h"
@@ -7,10 +7,11 @@
 
 #define BASE_SPEC FFactionsSpec
 
-BEGIN_TESTSPEC(FTeamIdSpec, "FactionsExtension.TeamId", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
-	UFactionsSubsystem* Factions = nullptr;
-	FFaction FactionA;
-	FFaction FactionB;
+BEGIN_TESTSPEC(FTeamIdSpec, "FactionsExtension.TeamId",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+UFactionsSubsystem* Factions = nullptr;
+FFaction FactionA;
+FFaction FactionB;
 END_TESTSPEC(FTeamIdSpec)
 
 void FTeamIdSpec::Define()
@@ -22,8 +23,7 @@ void FTeamIdSpec::Define()
 		FactionB = Factions->EmplaceFaction("B", {});
 	});
 
-	It("No Faction equals no Team Id", [this]()
-	{
+	It("No Faction equals no Team Id", [this]() {
 		FGenericTeamId TeamId = Factions->ToTeamId(FFaction::NoFaction());
 		TestTrue(TEXT("TeamId is Invalid"), TeamId == FGenericTeamId::NoTeam.GetId());
 
@@ -44,7 +44,7 @@ void FTeamIdSpec::Define()
 	});
 
 	// TODO
-	//It("Exceeding factions have no Team Id", [this]() {
+	// It("Exceeding factions have no Team Id", [this]() {
 	//});
 
 	AfterEach([this]() {

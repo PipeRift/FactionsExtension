@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 #pragma once
 
 #include <IPropertyTypeCustomization.h>
@@ -27,7 +27,7 @@ protected:
 		class FDetailWidgetRow& HeaderRow,
 		IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 
-	void CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle,
-		IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils) override
+	void CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle, IDetailChildrenBuilder& ChildBuilder,
+		IPropertyTypeCustomizationUtils& CustomizationUtils) override
 	{}
 };

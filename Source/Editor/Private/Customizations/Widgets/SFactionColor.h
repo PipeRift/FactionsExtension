@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 #pragma once
 
 #include <Widgets/SCompoundWidget.h>
@@ -14,29 +14,29 @@ public:
 	void Construct(const FArguments& InArgs, TSharedPtr<IPropertyHandle> _Handle);
 
 protected:
-
 	/** Creates the color widget that when clicked spawns the color picker window. */
 	TSharedRef<SWidget> CreateColorWidget(TWeakPtr<IPropertyHandle>);
 
 	/**
 	 * Get the color used by this struct as a linear color value
-	 * @param InColor To be filled with the color value used by this struct, or white if this struct is being used to edit multiple values
+	 * @param InColor To be filled with the color value used by this struct, or white if this struct is being
+	 * used to edit multiple values
 	 * @return The result of trying to get the color value
 	 */
 	FPropertyAccess::Result GetColorAsLinear(FLinearColor& InColor) const;
 
 	/**
-	* Creates a new color picker for interactively selecting the color
-	*
-	* @param bUseAlpha If true alpha will be displayed, otherwise it is ignored
-	*/
+	 * Creates a new color picker for interactively selecting the color
+	 *
+	 * @param bUseAlpha If true alpha will be displayed, otherwise it is ignored
+	 */
 	void CreateColorPicker(bool bUseAlpha);
 
 	/**
-	* Called when the property is set from the color picker
-	*
-	* @param NewColor The new color value
-	*/
+	 * Called when the property is set from the color picker
+	 *
+	 * @param NewColor The new color value
+	 */
 	void OnSetColorFromColorPicker(FLinearColor NewColor);
 
 	/**
@@ -45,11 +45,11 @@ protected:
 	void ResetColors();
 
 	/**
-	* Called when the user clicks cancel in the color picker
-	* The values are reset to their original state when this happens
-	*
-	* @param OriginalColor Original color of the property
-	*/
+	 * Called when the user clicks cancel in the color picker
+	 * The values are reset to their original state when this happens
+	 *
+	 * @param OriginalColor Original color of the property
+	 */
 	void OnColorPickerCancelled(FLinearColor OriginalColor);
 
 	/**
@@ -58,13 +58,13 @@ protected:
 	void OnColorPickerWindowClosed(const TSharedRef<SWindow>& Window);
 
 	/**
-	* Called when the user enters an interactive color change (dragging something in the picker)
-	*/
+	 * Called when the user enters an interactive color change (dragging something in the picker)
+	 */
 	void OnColorPickerInteractiveBegin();
 
 	/**
-	* Called when the user completes an interactive color change (dragging something in the picker)
-	*/
+	 * Called when the user completes an interactive color change (dragging something in the picker)
+	 */
 	void OnColorPickerInteractiveEnd();
 
 	/**
@@ -75,7 +75,7 @@ protected:
 	/**
 	 * @return The color that should be displayed in the color block in slate color format
 	 */
-	FSlateColor  OnGetSlateColorForBlock() const;
+	FSlateColor OnGetSlateColorForBlock() const;
 
 	/**
 	 * @return The border color encompassing the entire color block
@@ -90,10 +90,10 @@ protected:
 	FReply OnOpenFullColorPickerClicked();
 
 	/**
-	* Called to see if the value is enabled for editing
-	*
-	* @param WeakHandlePtr	Handle to the property that the new value is for
-	*/
+	 * Called to see if the value is enabled for editing
+	 *
+	 * @param WeakHandlePtr	Handle to the property that the new value is for
+	 */
 	bool IsValueEnabled(TWeakPtr<IPropertyHandle> WeakHandlePtr) const;
 
 
@@ -101,16 +101,19 @@ protected:
 	/** Stores a linear or srgb color without converting between the two. Only one is valid at a time */
 	struct FLinearOrSrgbColor
 	{
-		FLinearOrSrgbColor(const FLinearColor& InLinearColor)
-			: LinearColor(InLinearColor)
-		{}
+		FLinearOrSrgbColor(const FLinearColor& InLinearColor) : LinearColor(InLinearColor) {}
 
-		FLinearOrSrgbColor(const FColor& InSrgbColor)
-			: SrgbColor(InSrgbColor)
-		{}
+		FLinearOrSrgbColor(const FColor& InSrgbColor) : SrgbColor(InSrgbColor) {}
 
-		FLinearColor GetLinear() const { return LinearColor; }
-		FColor GetSrgb() const { return SrgbColor; }
+		FLinearColor GetLinear() const
+		{
+			return LinearColor;
+		}
+		FColor GetSrgb() const
+		{
+			return SrgbColor;
+		}
+
 	private:
 		FLinearColor LinearColor;
 		FColor SrgbColor;
@@ -125,7 +128,7 @@ protected:
 	/** Cached widget for the color picker to use as a parent */
 	TSharedPtr<SWidget> ColorPickerParentWidget;
 
-	TSharedPtr<SWidget > ColorWidgetBackgroundBorder;
+	TSharedPtr<SWidget> ColorWidgetBackgroundBorder;
 
 	/** Overrides the default state of the sRGB check box */
 	TOptional<bool> sRGBOverride;

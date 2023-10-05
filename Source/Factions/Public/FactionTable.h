@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -27,5 +27,8 @@ struct FACTIONS_API FFactionTable
 	const FFactionDescriptor* GetDescriptor(FFaction Faction) const;
 	FFactionDescriptor* GetDescriptor(FFaction Faction);
 
-	int32 Num() const { return List.Num(); }
+	int32 Num() const
+	{
+		return List.Num();
+	}
 };
