@@ -27,7 +27,7 @@
     },
     {
       "Name": "FactionsTest",
-      "Type": "DeveloperTool",
+      "Type": "Editor",
       "LoadingPhase": "PreDefault"
     }
   ],
