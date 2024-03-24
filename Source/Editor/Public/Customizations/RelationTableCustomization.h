@@ -1,10 +1,11 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 #pragma once
 
+#include <EditorUndoClient.h>
 #include <IPropertyTypeCustomization.h>
 #include <PropertyHandle.h>
-#include <EditorUndoClient.h>
 #include <Widgets/Views/SListView.h>
+
 
 
 class FRelationTableCustomization : public IPropertyTypeCustomization, public FEditorUndoClient
@@ -38,20 +39,22 @@ public:
 
 
 public:
-	FRelationTableCustomization()
-		: FilterText{ "" }
-	{};
+	FRelationTableCustomization() : FilterText{""} {};
 
 	/**
-	* Creates a new instance.
-	*
-	* @return A new struct customization for Anchor Type.
-	*/
+	 * Creates a new instance.
+	 *
+	 * @return A new struct customization for Anchor Type.
+	 */
 	static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
 	/** IPropertyTypeCustomization interface */
-	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
-	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle,
+		class FDetailWidgetRow& HeaderRow,
+		IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle,
+		class IDetailChildrenBuilder& StructBuilder,
+		IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 
 	~FRelationTableCustomization();
 
@@ -64,11 +67,11 @@ public:
 	//~ End FEditorUndoClient Interface
 
 private:
-
 	TSharedRef<SWidget> CreateFactionWidget(TSharedRef<IPropertyHandle> PropertyHandle);
 
 	/** Make the widget for a row entry in the data table row list view */
-	TSharedRef<ITableRow> MakeRelationWidget(TSharedPtr<uint32> RelationIndex, const TSharedRef<STableViewBase>& OwnerTable);
+	TSharedRef<ITableRow> MakeRelationWidget(
+		TSharedPtr<uint32> RelationIndex, const TSharedRef<STableViewBase>& OwnerTable);
 
 	void OnRelationsScrolled(double InScrollOffset);
 
@@ -87,4 +90,3 @@ private:
 
 	FText GetHeaderValueText() const;
 };
-

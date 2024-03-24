@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "Faction.h"
 #include "FactionsSubsystem.h"
@@ -7,7 +7,8 @@
 
 #define BASE_SPEC FFactionsSpec
 
-BEGIN_TESTSPEC(FFactionRegistrySpec, "FactionsExtension.Registry", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+BEGIN_TESTSPEC(FFactionRegistrySpec, "FactionsExtension.Registry",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 UFactionsSubsystem* Factions = nullptr;
 FFaction FactionA;
 FFaction FactionB;

@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -8,15 +8,16 @@
 class FFactionsExtensionTest : public IModuleInterface
 {
 public:
-
 	virtual void StartupModule() override {}
 	virtual void ShutdownModule() override {}
 
-	static inline FFactionsExtensionTest& Get() {
+	static inline FFactionsExtensionTest& Get()
+	{
 		return FModuleManager::LoadModuleChecked<FFactionsExtensionTest>("FactionsExtensionTest");
 	}
 
-	static inline bool IsAvailable() {
+	static inline bool IsAvailable()
+	{
 		return FModuleManager::Get().IsModuleLoaded("FactionsExtensionTest");
 	}
 };

@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -25,7 +25,8 @@ struct FACTIONS_API FFactionRelation
 		, Attitude(ETeamAttitude::Neutral)
 	{}
 
-	FFactionRelation(FFaction Source, FFaction Target, ETeamAttitude::Type InAttitude = ETeamAttitude::Neutral)
+	FFactionRelation(
+		FFaction Source, FFaction Target, ETeamAttitude::Type InAttitude = ETeamAttitude::Neutral)
 		: Source(Source)
 		, Target(Target)
 		, Attitude(InAttitude)
@@ -57,7 +58,7 @@ struct FACTIONS_API FFactionRelation
 	FORCEINLINE bool operator==(const FFactionRelation& Other) const
 	{
 		return (Source == Other.Source && Target == Other.Target) ||
-			(bBidirectional && Source == Other.Target && Target == Other.Source);
+			   (bBidirectional && Source == Other.Target && Target == Other.Source);
 	}
 	FORCEINLINE bool operator!=(const FFactionRelation& Other) const
 	{

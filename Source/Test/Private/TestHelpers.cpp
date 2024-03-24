@@ -1,24 +1,25 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "TestHelpers.h"
 
 #include <Engine/Engine.h>
 #include <Engine/LocalPlayer.h>
+#include <EngineUtils.h>
 #include <GameFramework/Actor.h>
 #include <GameFramework/PlayerController.h>
 #include <GameFramework/WorldSettings.h>
-#include <EngineUtils.h>
+
 #if WITH_EDITOR
-#include <Tests/AutomationEditorPromotionCommon.h>
-#include <Editor.h>
+#	include <Editor.h>
+#	include <Tests/AutomationEditorPromotionCommon.h>
+
 #endif
 
 
 // In order to know how many tests we have defined, we need to access private members of FAutomationSpecBase!
 // Thats why we replicate its layout as public for reinterpreting later.
 // This is a HACK and should be removed when UE4 API updates.
-struct FAutomationSpecBaseLayoutMock : public FAutomationTestBase
-	, public TSharedFromThis<FAutomationSpecBase>
+struct FAutomationSpecBaseLayoutMock : public FAutomationTestBase, public TSharedFromThis<FAutomationSpecBase>
 {
 	struct FSpecIt
 	{
@@ -57,12 +58,14 @@ struct FAutomationSpecBaseLayoutMock : public FAutomationTestBase
 	TArray<TSharedRef<FSpecDefinitionScope>> DefinitionScopeStack;
 	bool bHasBeenDefined;
 };
-static_assert(sizeof(FAutomationSpecBase) == sizeof(FAutomationSpecBaseLayoutMock), "Layout mock has wrong size. Maybe FAutomationSpecBase changed?");
+static_assert(sizeof(FAutomationSpecBase) == sizeof(FAutomationSpecBaseLayoutMock),
+	"Layout mock has wrong size. Maybe FAutomationSpecBase changed?");
 
 
 void FFactionsSpec::PrepareTestWorld(FFactionsTestOnWorldReady OnWorldReady)
 {
-	checkf(!IsInGameThread(), TEXT("PrepareTestWorld can only be done asynchronously. (LatentBeforeEach with ThreadPool or TaskGraph)"));
+	checkf(!IsInGameThread(), TEXT("PrepareTestWorld can only be done asynchronously. (LatentBeforeEach with "
+								   "ThreadPool or TaskGraph)"));
 
 	UWorld* SelectedWorld = nullptr;
 #if WITH_EDITOR
@@ -73,10 +76,8 @@ void FFactionsSpec::PrepareTestWorld(FFactionsTestOnWorldReady OnWorldReady)
 	{
 		bWorldIsReady = false;
 
-		AsyncTask(ENamedThreads::GameThread, [this]()
-		{
-			PIEStartedHandle = FEditorDelegates::PostPIEStarted.AddLambda([this](const bool bIsSimulating)
-			{
+		AsyncTask(ENamedThreads::GameThread, [this]() {
+			PIEStartedHandle = FEditorDelegates::PostPIEStarted.AddLambda([this](const bool bIsSimulating) {
 				// Notify the thread about the world being ready
 				bWorldIsReady = true;
 			});
@@ -84,7 +85,7 @@ void FFactionsSpec::PrepareTestWorld(FFactionsTestOnWorldReady OnWorldReady)
 		});
 
 		// Wait while PIE initializes
-		while(!bWorldIsReady)
+		while (!bWorldIsReady)
 		{
 			FPlatformProcess::Sleep(0.005f);
 		}
@@ -115,8 +116,7 @@ void FFactionsSpec::ReleaseTestWorld()
 #if WITH_EDITOR
 	if (!IsInGameThread())
 	{
-		AsyncTask(ENamedThreads::GameThread, [this]()
-		{
+		AsyncTask(ENamedThreads::GameThread, [this]() {
 			ReleaseTestWorld();
 		});
 		return;
@@ -131,10 +131,8 @@ void FFactionsSpec::ReleaseTestWorld()
 
 void FFactionsSpec::PreDefine()
 {
-	LatentBeforeEach(EAsyncExecution::ThreadPool, [this](const auto & Done)
-	{
-		PrepareTestWorld(FFactionsTestOnWorldReady::CreateLambda([this, &Done](UWorld * InWorld)
-		{
+	LatentBeforeEach(EAsyncExecution::ThreadPool, [this](const auto& Done) {
+		PrepareTestWorld(FFactionsTestOnWorldReady::CreateLambda([this, &Done](UWorld* InWorld) {
 			World = InWorld;
 			Done.Execute();
 		}));
@@ -143,8 +141,7 @@ void FFactionsSpec::PreDefine()
 
 void FFactionsSpec::PostDefine()
 {
-	AfterEach([this]()
-	{
+	AfterEach([this]() {
 		ReleaseTestWorld();
 
 		--TestRemaining;

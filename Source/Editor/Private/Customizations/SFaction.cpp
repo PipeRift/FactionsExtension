@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "Customizations/SFaction.h"
 
@@ -22,31 +22,22 @@ void SFaction::Construct(const FArguments& InArgs)
 
 	// Bind On Settings changed event
 	FFactionsModule& Module = FFactionsModule::Get();
-	OnModifiedSettingsHandle = Module.OnModifiedSettings().Add(
-		FSimpleDelegate::CreateRaw(this, &SFaction::UpdateItems, true)
-	);
+	OnModifiedSettingsHandle =
+		Module.OnModifiedSettings().Add(FSimpleDelegate::CreateRaw(this, &SFaction::UpdateItems, true));
 
-	ChildSlot
-	[
-		SAssignNew(ComboBox, SSearchableComboBox)
-		.OptionsSource(&CachedItems)
-		.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item){
-			return SNew(STextBlock)
-				.Text(FText::FromString(*Item));
-		})
-		.OnComboBoxOpening(this, &SFaction::UpdateItems, false)
-		.OnSelectionChanged(this, &SFaction::OnSelectionChanged)
-		.ForegroundColor(this, &SFaction::GetForegroundColor)
-		.HasDownArrow(InArgs._HasDownArrow)
-		.ContentPadding(InArgs._ContentPadding)
-		.ComboBoxStyle(InArgs._ComboBoxStyle)
-		.ButtonStyle(InArgs._ButtonStyle)
-		.ItemStyle(InArgs._ItemStyle)
-		[
-			SNew(STextBlock)
-			.Text(this, &SFaction::GetSelectedItem)
-		]
-	];
+	ChildSlot[SAssignNew(ComboBox, SSearchableComboBox)
+				  .OptionsSource(&CachedItems)
+				  .OnGenerateWidget_Lambda([](TSharedPtr<FString> Item) {
+					  return SNew(STextBlock).Text(FText::FromString(*Item));
+				  })
+				  .OnComboBoxOpening(this, &SFaction::UpdateItems, false)
+				  .OnSelectionChanged(this, &SFaction::OnSelectionChanged)
+				  .ForegroundColor(this, &SFaction::GetForegroundColor)
+				  .HasDownArrow(InArgs._HasDownArrow)
+				  .ContentPadding(InArgs._ContentPadding)
+				  .ComboBoxStyle(InArgs._ComboBoxStyle)
+				  .ButtonStyle(InArgs._ButtonStyle)
+				  .ItemStyle(InArgs._ItemStyle)[SNew(STextBlock).Text(this, &SFaction::GetSelectedItem)]];
 }
 
 void SFaction::UpdateItems(bool bRefreshComboBox /*= false*/)

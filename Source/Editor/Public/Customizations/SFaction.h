@@ -1,12 +1,12 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #pragma once
 
-#include <CoreMinimal.h>
-#include <Widgets/DeclarativeSyntaxSupport.h>
-#include <Widgets/SCompoundWidget.h>
+#include <Faction.h>
 #include <PropertyHandle.h>
 #include <SSearchableComboBox.h>
+#include <Widgets/DeclarativeSyntaxSupport.h>
+#include <Widgets/SCompoundWidget.h>
 
 
 class SFaction : public SCompoundWidget
@@ -15,7 +15,7 @@ public:
 	using FOnFactionSelected = typename TSlateDelegates<FFaction>::FOnSelectionChanged;
 
 	SLATE_BEGIN_ARGS(SFaction)
-		:  _ComboBoxStyle(&FAppStyle::Get().GetWidgetStyle<FComboBoxStyle>("ComboBox"))
+		: _ComboBoxStyle(&FAppStyle::Get().GetWidgetStyle<FComboBoxStyle>("ComboBox"))
 		, _ButtonStyle(nullptr)
 		, _ItemStyle(&FAppStyle::Get().GetWidgetStyle<FTableRowStyle>("ComboBox.Row"))
 		, _ContentPadding(_ComboBoxStyle->ContentPadding)

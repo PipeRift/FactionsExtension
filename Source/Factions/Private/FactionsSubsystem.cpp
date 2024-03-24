@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "FactionsSubsystem.h"
 
@@ -22,8 +22,7 @@ void UFactionsSubsystem::PostInitProperties()
 
 	if (!IsDefaultSubobject() && !hasSetTeamIdAttitudeSolver)
 	{
-		FGenericTeamId::SetAttitudeSolver([this](FGenericTeamId A, FGenericTeamId B)
-		{
+		FGenericTeamId::SetAttitudeSolver([this](FGenericTeamId A, FGenericTeamId B) {
 			return GetAttitude(FromTeamId(A), FromTeamId(B));
 		});
 		hasSetTeamIdAttitudeSolver = true;
@@ -51,16 +50,22 @@ TEnumAsByte<ETeamAttitude::Type> UFactionsSubsystem::GetAttitude(
 	}
 	else if (!Source.IsNone())
 	{
-		UE_LOG(LogFactions, Warning, TEXT("Tried to get an attitude using an invalid faction ('%s'). All factions must be registered in the Factions Subsystem."), *Source.GetId().ToString());
+		UE_LOG(LogFactions, Warning,
+			TEXT("Tried to get an attitude using an invalid faction ('%s'). All factions must be registered "
+				 "in the Factions Subsystem."),
+			*Source.GetId().ToString());
 	}
 	return ETeamAttitude::Neutral;
 }
 
 int32 UFactionsSubsystem::GetFactionIndex(FFaction Faction) const
 {
-	return Algo::BinarySearchBy(BakedBehaviors, Faction.GetId(), [](const auto& Behavior) {
-		return Behavior.Id;
-	}, FBehaviorSort{});
+	return Algo::BinarySearchBy(
+		BakedBehaviors, Faction.GetId(),
+		[](const auto& Behavior) {
+			return Behavior.Id;
+		},
+		FBehaviorSort{});
 }
 
 FFaction UFactionsSubsystem::FromTeamId(FGenericTeamId TeamId) const
@@ -76,8 +81,9 @@ FFaction UFactionsSubsystem::FromTeamId(FGenericTeamId TeamId) const
 FGenericTeamId UFactionsSubsystem::ToTeamId(FFaction Faction) const
 {
 	const int32 Index = GetFactionIndex(Faction);
-	if (Index != INDEX_NONE &&
-		ensureMsgf(Index < FGenericTeamId::NoTeam.GetId(), TEXT("Faction Index exceeded maximum GenericTeamIds. GenericTeamId only supports up to 255 teams")))
+	if (Index != INDEX_NONE && ensureMsgf(Index < FGenericTeamId::NoTeam.GetId(),
+								   TEXT("Faction Index exceeded maximum GenericTeamIds. GenericTeamId only "
+										"supports up to 255 teams")))
 	{
 		return FGenericTeamId{uint8(Index)};
 	}
@@ -90,7 +96,7 @@ FString UFactionsSubsystem::GetDisplayName(const FFaction Faction) const
 	if (Descriptor)
 	{
 		const bool bUseId = Descriptor->bIdAsDisplayName ||
-			(bUseIdsIfDisplayNamesAreEmpty && Descriptor->DisplayName.IsEmpty());
+							(bUseIdsIfDisplayNamesAreEmpty && Descriptor->DisplayName.IsEmpty());
 		if (!bUseId)
 		{
 			return Descriptor->DisplayName.ToString();
@@ -293,13 +299,9 @@ void UFactionsSubsystem::BakeFactions()
 	for (const auto& It : Factions.List)
 	{
 		const auto& Descriptor = It.Value;
-		BakedBehaviors.Add({
-			It.Key,
-			Descriptor.SelfAttitude,
-			Descriptor.ExternalAttitude
-		});
+		BakedBehaviors.Add({It.Key, Descriptor.SelfAttitude, Descriptor.ExternalAttitude});
 	}
-	BakedBehaviors.Sort([](const auto& A, const auto& B){
+	BakedBehaviors.Sort([](const auto& A, const auto& B) {
 		return A.Id.FastLess(B.Id);
 	});
 }
@@ -307,19 +309,19 @@ void UFactionsSubsystem::BakeFactions()
 void UFactionsSubsystem::AddBakedFaction(FName Id, const FFactionDescriptor& Descriptor)
 {
 	// Insert sorted
-	const int32 Index = Algo::LowerBoundBy(BakedBehaviors, Id, [](const auto& Behavior) {
-		return Behavior.Id;
-	}, FBehaviorSort{});
+	const int32 Index = Algo::LowerBoundBy(
+		BakedBehaviors, Id,
+		[](const auto& Behavior) {
+			return Behavior.Id;
+		},
+		FBehaviorSort{});
 	check(Index >= 0 && Index <= BakedBehaviors.Num());
 
-	const FBakedFactionBehavior Behavior {
-		Id,
-		Descriptor.SelfAttitude,
-		Descriptor.ExternalAttitude
-	};
+	const FBakedFactionBehavior Behavior{Id, Descriptor.SelfAttitude, Descriptor.ExternalAttitude};
 	if (BakedBehaviors.IsValidIndex(Index))
 	{
-		// Since we returned lower bound we already know Id <= Index key. So if Id is not < Index key, they must be equal
+		// Since we returned lower bound we already know Id <= Index key. So if Id is not < Index key, they
+		// must be equal
 		if (!FBehaviorSort{}(Id, BakedBehaviors[Index].Id))
 		{
 			// Found, replace

@@ -1,15 +1,16 @@
-﻿// Copyright 2015-2020 Piperift. All Rights Reserved.
+﻿// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "SFactionColor.h"
 
 #include <Editor.h>
-#include <ScopedTransaction.h>
-#include <PropertyHandle.h>
-#include <Layout/WidgetPath.h>
 #include <Framework/Application/SlateApplication.h>
-#include <Widgets/Input/SButton.h>
+#include <Layout/WidgetPath.h>
+#include <PropertyHandle.h>
+#include <ScopedTransaction.h>
 #include <Widgets/Colors/SColorBlock.h>
 #include <Widgets/Colors/SColorPicker.h>
+#include <Widgets/Input/SButton.h>
+
 
 
 #define LOCTEXT_NAMESPACE "SFactionColor"
@@ -18,9 +19,11 @@ void SFactionColor::Construct(const FArguments& InArgs, TSharedPtr<IPropertyHand
 {
 	StructPropertyHandle = _Handle;
 
-	bIsLinearColor = CastFieldChecked<FStructProperty>(StructPropertyHandle->GetProperty())->Struct->GetFName() == NAME_LinearColor;
+	bIsLinearColor =
+		CastFieldChecked<FStructProperty>(StructPropertyHandle->GetProperty())->Struct->GetFName() ==
+		NAME_LinearColor;
 	bIgnoreAlpha = StructPropertyHandle->GetProperty()->HasMetaData(TEXT("HideAlphaChannel"));
-	
+
 	if (StructPropertyHandle->GetProperty()->HasMetaData(TEXT("sRGB")))
 	{
 		sRGBOverride = StructPropertyHandle->GetProperty()->GetBoolMetaData(TEXT("sRGB"));
@@ -35,14 +38,7 @@ void SFactionColor::Construct(const FArguments& InArgs, TSharedPtr<IPropertyHand
 
 	ColorWidget = CreateColorWidget(StructWeakHandlePtr);
 
-	ChildSlot
-	[
-		SNew(SBox)
-		.MinDesiredWidth(ContentWidth)
-		[
-			ColorWidget.ToSharedRef()
-		]
-	];
+	ChildSlot[SNew(SBox).MinDesiredWidth(ContentWidth)[ColorWidget.ToSharedRef()]];
 }
 
 
@@ -52,23 +48,23 @@ TSharedRef<SWidget> SFactionColor::CreateColorWidget(TWeakPtr<IPropertyHandle> S
 		.Padding(1)
 		.BorderImage(FAppStyle::Get().GetBrush("ColorPicker.RoundedSolidBackground"))
 		.BorderBackgroundColor(this, &SFactionColor::GetColorWidgetBorderColor)
-		.VAlign(VAlign_Center)
-		[
-			SAssignNew(ColorPickerParentWidget, SColorBlock)
-			.AlphaBackgroundBrush(FAppStyle::Get().GetBrush("ColorPicker.RoundedAlphaBackground"))
-			.Color(this, &SFactionColor::OnGetColorForColorBlock)
-			.ShowBackgroundForAlpha(true)
-			.AlphaDisplayMode(bIgnoreAlpha ? EColorBlockAlphaDisplayMode::Ignore : EColorBlockAlphaDisplayMode::Separate)
-			.OnMouseButtonDown(this, &SFactionColor::OnMouseButtonDownColorBlock)
-			.Size(FVector2D(70.0f, 16.0f))
-			.CornerRadius(FVector4(4.0f,4.0f,4.0f,4.0f))
-			.IsEnabled(this, &SFactionColor::IsValueEnabled, StructWeakHandlePtr)
-		];
+		.VAlign(VAlign_Center)[SAssignNew(ColorPickerParentWidget, SColorBlock)
+								   .AlphaBackgroundBrush(
+									   FAppStyle::Get().GetBrush("ColorPicker.RoundedAlphaBackground"))
+								   .Color(this, &SFactionColor::OnGetColorForColorBlock)
+								   .ShowBackgroundForAlpha(true)
+								   .AlphaDisplayMode(bIgnoreAlpha ? EColorBlockAlphaDisplayMode::Ignore
+																  : EColorBlockAlphaDisplayMode::Separate)
+								   .OnMouseButtonDown(this, &SFactionColor::OnMouseButtonDownColorBlock)
+								   .Size(FVector2D(70.0f, 16.0f))
+								   .CornerRadius(FVector4(4.0f, 4.0f, 4.0f, 4.0f))
+								   .IsEnabled(this, &SFactionColor::IsValueEnabled, StructWeakHandlePtr)];
 }
 
 void SFactionColor::CreateColorPicker(bool bUseAlpha)
 {
-	GEditor->BeginTransaction(FText::Format(LOCTEXT("SetColorProperty", "Edit {0}"), StructPropertyHandle->GetPropertyDisplayName()));
+	GEditor->BeginTransaction(FText::Format(
+		LOCTEXT("SetColorProperty", "Edit {0}"), StructPropertyHandle->GetPropertyDisplayName()));
 
 	SavedPreColorPickerColors.Empty();
 	TArray<FString> PerObjectValues;
@@ -93,7 +89,8 @@ void SFactionColor::CreateColorPicker(bool bUseAlpha)
 	FLinearColor InitialColor;
 	GetColorAsLinear(InitialColor);
 
-	const bool bRefreshOnlyOnOk = bDontUpdateWhileEditing || StructPropertyHandle->HasMetaData("DontUpdateWhileEditing");
+	const bool bRefreshOnlyOnOk =
+		bDontUpdateWhileEditing || StructPropertyHandle->HasMetaData("DontUpdateWhileEditing");
 	const bool bOnlyRefreshOnMouseUp = StructPropertyHandle->HasMetaData("OnlyUpdateOnInteractionEnd");
 
 	FColorPickerArgs PickerArgs;
@@ -102,19 +99,27 @@ void SFactionColor::CreateColorPicker(bool bUseAlpha)
 		PickerArgs.bOnlyRefreshOnMouseUp = bOnlyRefreshOnMouseUp;
 		PickerArgs.bOnlyRefreshOnOk = bRefreshOnlyOnOk;
 		PickerArgs.sRGBOverride = sRGBOverride;
-		PickerArgs.DisplayGamma = TAttribute<float>::Create(TAttribute<float>::FGetter::CreateUObject(GEngine, &UEngine::GetDisplayGamma));
-		PickerArgs.OnColorCommitted = FOnLinearColorValueChanged::CreateSP(this, &SFactionColor::OnSetColorFromColorPicker);
-		PickerArgs.OnColorPickerCancelled = FOnColorPickerCancelled::CreateSP(this, &SFactionColor::OnColorPickerCancelled);
-		PickerArgs.OnColorPickerWindowClosed = FOnWindowClosed::CreateSP(this, &SFactionColor::OnColorPickerWindowClosed);
-		PickerArgs.OnInteractivePickBegin = FSimpleDelegate::CreateSP(this, &SFactionColor::OnColorPickerInteractiveBegin);
-		PickerArgs.OnInteractivePickEnd = FSimpleDelegate::CreateSP(this, &SFactionColor::OnColorPickerInteractiveEnd);
+		PickerArgs.DisplayGamma = TAttribute<float>::Create(
+			TAttribute<float>::FGetter::CreateUObject(GEngine, &UEngine::GetDisplayGamma));
+		PickerArgs.OnColorCommitted =
+			FOnLinearColorValueChanged::CreateSP(this, &SFactionColor::OnSetColorFromColorPicker);
+		PickerArgs.OnColorPickerCancelled =
+			FOnColorPickerCancelled::CreateSP(this, &SFactionColor::OnColorPickerCancelled);
+		PickerArgs.OnColorPickerWindowClosed =
+			FOnWindowClosed::CreateSP(this, &SFactionColor::OnColorPickerWindowClosed);
+		PickerArgs.OnInteractivePickBegin =
+			FSimpleDelegate::CreateSP(this, &SFactionColor::OnColorPickerInteractiveBegin);
+		PickerArgs.OnInteractivePickEnd =
+			FSimpleDelegate::CreateSP(this, &SFactionColor::OnColorPickerInteractiveEnd);
 		PickerArgs.InitialColor = InitialColor;
 		PickerArgs.ParentWidget = ColorPickerParentWidget;
 		PickerArgs.OptionalOwningDetailsView = ColorPickerParentWidget;
 		FWidgetPath ParentWidgetPath;
-		if (FSlateApplication::Get().FindPathToWidget(ColorPickerParentWidget.ToSharedRef(), ParentWidgetPath))
+		if (FSlateApplication::Get().FindPathToWidget(
+				ColorPickerParentWidget.ToSharedRef(), ParentWidgetPath))
 		{
-			PickerArgs.bOpenAsMenu = FSlateApplication::Get().FindMenuInWidgetPath(ParentWidgetPath).IsValid();
+			PickerArgs.bOpenAsMenu =
+				FSlateApplication::Get().FindMenuInWidgetPath(ParentWidgetPath).IsValid();
 		}
 	}
 
@@ -160,7 +165,8 @@ void SFactionColor::ResetColors()
 	if (PerObjectColors.Num() > 0)
 	{
 		// See @TODO in SFactionColor::OnColorPickerWindowClosed
-		// ensure(StructPropertyHandle->SetPerObjectValues(PerObjectColors, EPropertyValueSetFlags::NotTransactable) == FPropertyAccess::Success);
+		// ensure(StructPropertyHandle->SetPerObjectValues(PerObjectColors,
+		// EPropertyValueSetFlags::NotTransactable) == FPropertyAccess::Success);
 		StructPropertyHandle->SetPerObjectValues(PerObjectColors, EPropertyValueSetFlags::NotTransactable);
 	}
 }
@@ -178,11 +184,12 @@ void SFactionColor::OnColorPickerWindowClosed(const TSharedRef<SWindow>& Window)
 	// Transact only at the end to avoid opening a lingering transaction. Reset value before transacting.
 	if (!LastPickerColorString.IsEmpty())
 	{
-		//@TODO: Not using reset & apply instant scoped transition pattern since certain property nodes are 
+		//@TODO: Not using reset & apply instant scoped transition pattern since certain property nodes are
 		// returning nullptr when finding objects to modify on reset, so we can't reset correctly for those.
 		// ResetColors();
 		{
-			// FScopedTransaction Transaction(FText::Format(LOCTEXT("SetStructPropertyHandle", "Edit {0}"), StructPropertyHandle->GetPropertyDisplayName()));
+			// FScopedTransaction Transaction(FText::Format(LOCTEXT("SetStructPropertyHandle", "Edit {0}"),
+			// StructPropertyHandle->GetPropertyDisplayName()));
 			StructPropertyHandle->SetValueFromFormattedString(LastPickerColorString);
 		}
 	}
@@ -237,7 +244,7 @@ FPropertyAccess::Result SFactionColor::GetColorAsLinear(FLinearColor& OutColor) 
 	FString StringValue;
 	FPropertyAccess::Result Result = StructPropertyHandle->GetValueAsFormattedString(StringValue);
 
-	if(Result == FPropertyAccess::Success)
+	if (Result == FPropertyAccess::Success)
 	{
 		if (bIsLinearColor)
 		{
@@ -250,7 +257,7 @@ FPropertyAccess::Result SFactionColor::GetColorAsLinear(FLinearColor& OutColor) 
 			OutColor = FLinearColor(SrgbColor);
 		}
 	}
-	else if(Result == FPropertyAccess::MultipleValues)
+	else if (Result == FPropertyAccess::MultipleValues)
 	{
 		OutColor = FLinearColor::White;
 	}
@@ -258,7 +265,8 @@ FPropertyAccess::Result SFactionColor::GetColorAsLinear(FLinearColor& OutColor) 
 	return Result;
 }
 
-FReply SFactionColor::OnMouseButtonDownColorBlock(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SFactionColor::OnMouseButtonDownColorBlock(
+	const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	if (MouseEvent.GetEffectingButton() != EKeys::LeftMouseButton)
 	{

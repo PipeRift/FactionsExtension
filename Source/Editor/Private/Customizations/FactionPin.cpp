@@ -1,14 +1,14 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #include "Customizations/FactionPin.h"
 
-#include "Kismet2/KismetEditorUtilities.h"
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
-
 #include "Faction.h"
 #include "FactionsModule.h"
 #include "FactionsSubsystem.h"
+#include "Kismet2/KismetEditorUtilities.h"
+
 
 
 void SFactionPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
@@ -20,21 +20,17 @@ TSharedRef<SWidget> SFactionPin::GetDefaultValueWidget()
 {
 	ParseDefaultValue();
 
-	return SNew(SBox)
-	.MaxDesiredHeight(20.f)
-	.Visibility( this, &SGraphPin::GetDefaultValueVisibility )
-	[
-		SNew(SFaction)
-		.ContentPadding(0.f)
-		.Faction_Lambda([this]() {
-			return FFaction{FactionDefaultNameValue};
-		})
-		.OnFactionSelected_Lambda([this](FFaction Faction, ESelectInfo::Type)
-		{
-			FactionDefaultNameValue = Faction.GetId();
-			ApplyDefaultValue();
-		})
-	];
+	return SNew(SBox).MaxDesiredHeight(20.f).Visibility(
+		this, &SGraphPin::GetDefaultValueVisibility)[SNew(SFaction)
+														 .ContentPadding(0.f)
+														 .Faction_Lambda([this]() {
+															 return FFaction{FactionDefaultNameValue};
+														 })
+														 .OnFactionSelected_Lambda(
+															 [this](FFaction Faction, ESelectInfo::Type) {
+																 FactionDefaultNameValue = Faction.GetId();
+																 ApplyDefaultValue();
+															 })];
 }
 
 void SFactionPin::ParseDefaultValue()
@@ -42,11 +38,11 @@ void SFactionPin::ParseDefaultValue()
 	FString NameString = GraphPinObj->GetDefaultAsString();
 	if (NameString.StartsWith(TEXT("(")) && NameString.EndsWith(TEXT(")")))
 	{
-		//Remove ( and )
+		// Remove ( and )
 		NameString = NameString.LeftChop(1);
 		NameString = NameString.RightChop(1);
 
-		//Get parameter string value
+		// Get parameter string value
 		NameString.Split("=", nullptr, &NameString);
 		if (NameString.StartsWith(TEXT("\"")) && NameString.EndsWith(TEXT("\"")))
 		{

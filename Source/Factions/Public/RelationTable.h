@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2023 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -23,8 +23,10 @@ public:
 	TSet<FFactionRelation> List;
 
 public:
-
-	int32 Num() const { return List.Num(); }
+	int32 Num() const
+	{
+		return List.Num();
+	}
 };
 
 
