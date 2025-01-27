@@ -6,7 +6,7 @@
 
 #include <Engine/Texture.h>
 #include <GenericTeamAgentInterface.h>
-#include <InstancedStruct.h>
+#include "StructUtils/InstancedStruct.h"
 
 #include "FactionDescriptor.generated.h"
 
