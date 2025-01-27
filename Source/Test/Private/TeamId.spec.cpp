@@ -8,7 +8,7 @@
 #define BASE_SPEC FFactionsSpec
 
 BEGIN_TESTSPEC(FTeamIdSpec, "FactionsExtension.TeamId",
-	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+	EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 UFactionsSubsystem* Factions = nullptr;
 FFaction FactionA;
 FFaction FactionB;
