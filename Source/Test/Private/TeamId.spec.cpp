@@ -1,20 +1,21 @@
-// Copyright 2015-2023 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 
+#include "Automatron.h"
 #include "Faction.h"
 #include "FactionsSubsystem.h"
-#include "TestHelpers.h"
 
 
-#define BASE_SPEC FFactionsSpec
+class FFactionsSpec_TeamId : public Automatron::FTestSpec
+{
+	GENERATE_SPEC(FFactionsSpec_TeamId, "Factions.TeamId",
+		EAutomationTestFlags::ProductFilter | EAutomationTestFlags_ApplicationContextMask);
 
-BEGIN_TESTSPEC(FTeamIdSpec, "FactionsExtension.TeamId",
-	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
-UFactionsSubsystem* Factions = nullptr;
-FFaction FactionA;
-FFaction FactionB;
-END_TESTSPEC(FTeamIdSpec)
+	TObjectPtr<UFactionsSubsystem> Factions;
+	FFaction FactionA;
+	FFaction FactionB;
+};
 
-void FTeamIdSpec::Define()
+void FFactionsSpec_TeamId::Define()
 {
 	BeforeEach([this]() {
 		Factions = NewObject<UFactionsSubsystem>();

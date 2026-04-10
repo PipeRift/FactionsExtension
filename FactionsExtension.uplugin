@@ -30,11 +30,5 @@
       "Type": "Editor",
       "LoadingPhase": "PreDefault"
     }
-  ],
-	"Plugins": [
-		{
-			"Name": "StructUtils",
-			"Enabled": true
-		}
-	]
+  ]
 }

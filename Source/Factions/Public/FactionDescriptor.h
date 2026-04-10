@@ -1,4 +1,4 @@
-// Copyright 2015-2023 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 
 #pragma once
 
@@ -6,7 +6,7 @@
 
 #include <Engine/Texture.h>
 #include <GenericTeamAgentInterface.h>
-#include <InstancedStruct.h>
+#include <StructUtils/InstancedStruct.h>
 
 #include "FactionDescriptor.generated.h"
 

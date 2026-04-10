@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2023 Piperift. All Rights Reserved.
+﻿// Copyright 2015-2026 Piperift. All Rights Reserved.
 
 #include "SFactionColor.h"
 
@@ -10,7 +10,6 @@
 #include <Widgets/Colors/SColorBlock.h>
 #include <Widgets/Colors/SColorPicker.h>
 #include <Widgets/Input/SButton.h>
-
 
 
 #define LOCTEXT_NAMESPACE "SFactionColor"

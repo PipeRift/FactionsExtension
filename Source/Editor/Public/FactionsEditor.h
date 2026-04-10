@@ -1,10 +1,9 @@
-// Copyright 2015-2023 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 #pragma once
 
 #include "EdGraphUtilities.h"
 #include "IAssetTools.h"
 #include "PropertyEditorModule.h"
-
 
 
 DECLARE_LOG_CATEGORY_EXTERN(LogFactionsEditor, All, All)

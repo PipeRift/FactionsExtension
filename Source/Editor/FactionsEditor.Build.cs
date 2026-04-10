@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 
 using System.IO;
 using UnrealBuildTool;
@@ -33,7 +33,7 @@ public class FactionsEditor : ModuleRules
             "SlateCore",
             "ToolWidgets",
             "UnrealEd",
-			"Projects"
+            "Projects"
 			// ... add private dependencies that you statically link with here ...
 		});
 

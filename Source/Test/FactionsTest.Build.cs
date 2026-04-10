@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 
 using UnrealBuildTool;
 using System.IO;
@@ -10,15 +10,18 @@ namespace UnrealBuildTool.Rules
         public FactionsTest(ReadOnlyTargetRules Target) : base(Target)
         {
             PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-            IWYUSupport = IWYUSupport.Full;
 
             PublicDependencyModuleNames.AddRange(new string[]
             {
-                "Core",
-                "Engine",
-                "CoreUObject",
+                "Core"
+            });
+
+            PrivateDependencyModuleNames.AddRange(new string[]
+            {
                 "AIModule",
-                "StructUtils",
+                "CoreUObject",
+                "Engine",
+                "EngineSettings",
                 "Factions"
             });
 

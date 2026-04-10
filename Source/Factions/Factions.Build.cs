@@ -1,4 +1,4 @@
-// Copyright 2015-2020 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 
 using System.IO;
 using UnrealBuildTool;
@@ -18,8 +18,7 @@ public class Factions : ModuleRules
 			"Core",
 			"CoreUObject",
 			"Engine",
-            "AIModule",
-			"StructUtils"
+			"AIModule"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

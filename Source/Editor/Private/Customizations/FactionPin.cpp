@@ -1,4 +1,4 @@
-// Copyright 2015-2023 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 
 #include "Customizations/FactionPin.h"
 
@@ -8,7 +8,6 @@
 #include "FactionsModule.h"
 #include "FactionsSubsystem.h"
 #include "Kismet2/KismetEditorUtilities.h"
-
 
 
 void SFactionPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)

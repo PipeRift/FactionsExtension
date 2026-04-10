@@ -1,4 +1,4 @@
-// Copyright 2015-2023 Piperift. All Rights Reserved.
+// Copyright 2015-2026 Piperift. All Rights Reserved.
 
 #include "Customizations/FactionCustomization.h"
 
@@ -8,7 +8,6 @@
 #include "FactionsSubsystem.h"
 
 #include <DetailWidgetRow.h>
-
 
 
 #define LOCTEXT_NAMESPACE "FFactionCustomization"
