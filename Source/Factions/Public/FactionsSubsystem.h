@@ -28,7 +28,7 @@ enum class EFactionTestMode : uint8
  * Defined the behavior of a faction after it has been backed form a FactionTable
  */
 USTRUCT()
-struct FACTIONS_API FBakedFactionBehavior
+struct FACTIONSEXTENSION_API FBakedFactionBehavior
 {
 	GENERATED_BODY()
 
@@ -47,7 +47,7 @@ struct FACTIONS_API FBakedFactionBehavior
  * The FactionsSubsystem contains the global registry of factions and the attitudes between them
  */
 UCLASS(ClassGroup = FactionsExtension, config = Game, defaultconfig, meta = (DisplayName = "Factions"))
-class FACTIONS_API UFactionsSubsystem : public UWorldSubsystem
+class FACTIONSEXTENSION_API UFactionsSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -392,13 +392,4 @@ inline bool UFactionsSubsystem::BPNotEqual(const FFaction A, const FFaction B)
 inline bool UFactionsSubsystem::BPIsNone(const FFaction Faction)
 {
 	return Faction.IsNone();
-}
-
-inline UFactionsSubsystem* UFactionsSubsystem::Get(const UObject* ContextObject)
-{
-	if (UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::ReturnNull))
-	{
-		return UWorld::GetSubsystem<UFactionsSubsystem>(World);
-	}
-	return nullptr;
 }

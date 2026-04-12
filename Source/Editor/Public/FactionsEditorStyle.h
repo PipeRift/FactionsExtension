@@ -2,12 +2,11 @@
 
 #pragma once
 
-#include <CoreMinimal.h>
 #include <Styling/SlateStyle.h>
 
 
 /** Manages the style which provides resources for UtilityTree editor widgets. */
-class FACTIONSEDITOR_API FFactionsEditorStyle
+class FACTIONSEXTENSIONEDITOR_API FFactionsEditorStyle
 {
 public:
 	static void Initialize();

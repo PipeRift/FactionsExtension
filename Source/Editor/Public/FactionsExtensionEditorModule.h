@@ -8,7 +8,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogFactionsEditor, All, All)
 
-class FFactionsEditorModule : public IModuleInterface
+class FFactionsExtensionEditorModule : public IModuleInterface
 {
 public:
 	virtual void StartupModule() override;

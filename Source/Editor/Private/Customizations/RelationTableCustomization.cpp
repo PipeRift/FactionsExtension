@@ -12,9 +12,11 @@
 #include <Editor.h>
 #include <IDetailChildrenBuilder.h>
 #include <IDetailPropertyRow.h>
+#include <PropertyCustomizationHelpers.h>
 #include <ScopedTransaction.h>
 #include <Styling/StyleColors.h>
 #include <Widgets/Input/SButton.h>
+#include <Widgets/Input/SCheckBox.h>
 #include <Widgets/Input/SSearchBox.h>
 #include <Widgets/Layout/SScrollBox.h>
 

@@ -4,7 +4,7 @@
 
 #include "Customizations/SFaction.h"
 #include "Faction.h"
-#include "FactionsModule.h"
+#include "FactionsExtensionModule.h"
 #include "FactionsSubsystem.h"
 
 #include <DetailWidgetRow.h>

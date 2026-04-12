@@ -1,6 +1,6 @@
 // Copyright 2015-2026 Piperift. All Rights Reserved.
 
-#include "FactionsModule.h"
+#include "FactionsExtensionModule.h"
 
 #include "FactionsSubsystem.h"
 #include "GameDelegates.h"
@@ -9,17 +9,17 @@
 
 DEFINE_LOG_CATEGORY(LogFactions)
 
-#define LOCTEXT_NAMESPACE "FactionsModule"
+#define LOCTEXT_NAMESPACE "FactionsExtensionModule"
 
 
-void FFactionsModule::StartupModule()
+void FFactionsExtensionModule::StartupModule()
 {
 	UE_LOG(LogFactions, Log, TEXT("Factions: Log Started"));
 
 	RegisterSettings();
 }
 
-void FFactionsModule::ShutdownModule()
+void FFactionsExtensionModule::ShutdownModule()
 {
 	UE_LOG(LogFactions, Log, TEXT("Factions: Log Ended"));
 
@@ -29,7 +29,7 @@ void FFactionsModule::ShutdownModule()
 	}
 }
 
-void FFactionsModule::RegisterSettings()
+void FFactionsExtensionModule::RegisterSettings()
 {
 #if WITH_EDITOR
 	// Registering some settings is just a matter of exposing the default UObject of
@@ -51,13 +51,13 @@ void FFactionsModule::RegisterSettings()
 		// validate those or just act to settings changes.
 		if (SettingsSection.IsValid())
 		{
-			SettingsSection->OnModified().BindRaw(this, &FFactionsModule::HandleSettingsSaved);
+			SettingsSection->OnModified().BindRaw(this, &FFactionsExtensionModule::HandleSettingsSaved);
 		}
 	}
 #endif
 }
 
-void FFactionsModule::UnregisterSettings()
+void FFactionsExtensionModule::UnregisterSettings()
 {
 #if WITH_EDITOR
 	// Ensure to unregister all of your registered settings here, hot-reload would
@@ -70,7 +70,7 @@ void FFactionsModule::UnregisterSettings()
 #endif
 }
 
-bool FFactionsModule::HandleSettingsSaved()
+bool FFactionsExtensionModule::HandleSettingsSaved()
 {
 	UFactionsSubsystem* Settings = GetMutableDefault<UFactionsSubsystem>();
 	bool ResaveSettings = false;
@@ -94,4 +94,4 @@ bool FFactionsModule::HandleSettingsSaved()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FFactionsModule, Factions)
+IMPLEMENT_MODULE(FFactionsExtensionModule, FactionsExtension)

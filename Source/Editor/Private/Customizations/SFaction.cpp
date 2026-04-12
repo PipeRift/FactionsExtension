@@ -2,13 +2,14 @@
 
 #include "Customizations/SFaction.h"
 
+#include <FactionsExtensionModule.h>
 #include <FactionsSubsystem.h>
 #include <PropertyEditorModule.h>
 
 
 SFaction::~SFaction()
 {
-	FFactionsModule& Module = FFactionsModule::Get();
+	FFactionsExtensionModule& Module = FFactionsExtensionModule::Get();
 	Module.OnModifiedSettings().Remove(OnModifiedSettingsHandle);
 }
 
@@ -21,7 +22,7 @@ void SFaction::Construct(const FArguments& InArgs)
 	UpdateItems();
 
 	// Bind On Settings changed event
-	FFactionsModule& Module = FFactionsModule::Get();
+	FFactionsExtensionModule& Module = FFactionsExtensionModule::Get();
 	OnModifiedSettingsHandle =
 		Module.OnModifiedSettings().Add(FSimpleDelegate::CreateRaw(this, &SFaction::UpdateItems, true));
 

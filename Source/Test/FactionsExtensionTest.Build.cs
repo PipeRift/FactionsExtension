@@ -5,9 +5,9 @@ using System.IO;
 
 namespace UnrealBuildTool.Rules
 {
-    public class FactionsTest : ModuleRules
+    public class FactionsExtensionTest : ModuleRules
     {
-        public FactionsTest(ReadOnlyTargetRules Target) : base(Target)
+        public FactionsExtensionTest(ReadOnlyTargetRules Target) : base(Target)
         {
             PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -22,7 +22,7 @@ namespace UnrealBuildTool.Rules
                 "CoreUObject",
                 "Engine",
                 "EngineSettings",
-                "Factions"
+                "FactionsExtension"
             });
 
             if (Target.bBuildEditor == true)

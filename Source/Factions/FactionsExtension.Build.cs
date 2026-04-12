@@ -3,15 +3,11 @@
 using System.IO;
 using UnrealBuildTool;
 
-public class Factions : ModuleRules
+public class FactionsExtension : ModuleRules
 {
-	public Factions(ReadOnlyTargetRules TargetRules) : base(TargetRules)
+	public FactionsExtension(ReadOnlyTargetRules TargetRules) : base(TargetRules)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-
-		PublicIncludePaths.AddRange(new string[] {
-			Path.Combine(ModuleDirectory, "Public/EnvironmentQuery")
-		});
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{

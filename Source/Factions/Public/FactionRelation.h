@@ -15,7 +15,7 @@
  * Defines a relation between factions
  */
 USTRUCT(BlueprintType)
-struct FACTIONS_API FFactionRelation
+struct FACTIONSEXTENSION_API FFactionRelation
 {
 	GENERATED_BODY()
 

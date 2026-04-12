@@ -3,9 +3,9 @@
 using System.IO;
 using UnrealBuildTool;
 
-public class FactionsEditor : ModuleRules
+public class FactionsExtensionEditor : ModuleRules
 {
-    public FactionsEditor(ReadOnlyTargetRules TargetRules) : base(TargetRules)
+    public FactionsExtensionEditor(ReadOnlyTargetRules TargetRules) : base(TargetRules)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -25,7 +25,7 @@ public class FactionsEditor : ModuleRules
             "DetailCustomizations",
             "EditorStyle",
             "Engine",
-            "Factions",
+            "FactionsExtension",
             "GraphEditor",
             "Kismet",
             "Settings",

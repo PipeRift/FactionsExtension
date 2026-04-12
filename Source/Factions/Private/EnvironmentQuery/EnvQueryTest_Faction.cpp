@@ -1,6 +1,6 @@
 // Copyright 2015-2026 Piperift. All Rights Reserved.
 
-#include "EnvQueryTest_Faction.h"
+#include "EnvironmentQuery/EnvQueryTest_Faction.h"
 
 #include <EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h>
 

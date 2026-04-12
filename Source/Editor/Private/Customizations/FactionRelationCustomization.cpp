@@ -3,12 +3,15 @@
 #include "Customizations/FactionRelationCustomization.h"
 
 #include "Customizations/SFaction.h"
-#include "DetailWidgetRow.h"
 #include "FactionsEditorStyle.h"
-#include "FactionsSubsystem.h"
-#include "IDetailChildrenBuilder.h"
-#include "IDetailPropertyRow.h"
-#include "Widgets/Views/SListView.h"
+
+#include <DetailWidgetRow.h>
+#include <FactionsSubsystem.h>
+#include <IDetailChildrenBuilder.h>
+#include <IDetailPropertyRow.h>
+#include <PropertyHandle.h>
+#include <Widgets/Input/SCheckBox.h>
+#include <Widgets/Views/SListView.h>
 
 
 #define LOCTEXT_NAMESPACE "FFactionRelationCustomization"
@@ -30,26 +33,49 @@ void FFactionRelationCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> 
 	TSharedPtr<IPropertyHandle> BidirectionalHandle =
 		StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FFactionRelation, bBidirectional));
 
+	// clang-format off
 	HeaderRow.NameContent()
-		.HAlign(HAlign_Fill)[StructPropertyHandle->CreatePropertyNameWidget()]
-		.ValueContent()
+	.HAlign(HAlign_Fill)
+	[
+		StructPropertyHandle->CreatePropertyNameWidget()
+	]
+	.ValueContent()
+	.HAlign(HAlign_Fill)
+	[
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
 		.HAlign(HAlign_Fill)
-			[SNew(SHorizontalBox) +
-				SHorizontalBox::Slot().HAlign(HAlign_Fill)[CreateFactionWidget(SourceHandle.ToSharedRef())] +
-				SHorizontalBox::Slot()
-					.AutoWidth()[SNew(SCheckBox)
-									 .Style(FFactionsEditorStyle::Get(), "Relation.DirectionalCheckBox")
-									 .IsChecked_Lambda([=]() {
-										 bool bValue = false;
-										 BidirectionalHandle->GetValue(bValue);
-										 return bValue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
-									 })
-									 .OnCheckStateChanged_Lambda([=](const ECheckBoxState NewState) {
-										 BidirectionalHandle->SetValue(NewState == ECheckBoxState::Checked);
-									 })
-									 .ToolTipText(BidirectionalHandle->GetToolTipText())] +
-				SHorizontalBox::Slot().HAlign(HAlign_Fill)[CreateFactionWidget(TargetHandle.ToSharedRef())] +
-				SHorizontalBox::Slot().HAlign(HAlign_Fill)[AttitudeHandle->CreatePropertyValueWidget()]];
+		[
+			CreateFactionWidget(SourceHandle.ToSharedRef())
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SCheckBox)
+			.Style(FFactionsEditorStyle::Get(), "Relation.DirectionalCheckBox")
+			.IsChecked_Lambda([=]() {
+				bool bValue = false;
+				BidirectionalHandle->GetValue(bValue);
+				return bValue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
+			})
+			.OnCheckStateChanged_Lambda([=](const ECheckBoxState NewState)
+			{
+				BidirectionalHandle->SetValue(NewState == ECheckBoxState::Checked);
+			})
+			.ToolTipText(BidirectionalHandle->GetToolTipText())
+		]
+		+ SHorizontalBox::Slot()
+		.HAlign(HAlign_Fill)
+		[
+			CreateFactionWidget(TargetHandle.ToSharedRef())
+		]
+		+ SHorizontalBox::Slot()
+		.HAlign(HAlign_Fill)
+		[
+			AttitudeHandle->CreatePropertyValueWidget()
+		]
+	];
+	// clang-format on
 }
 
 void FFactionRelationCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,

@@ -9,7 +9,7 @@
  * Represents an existing faction from the database
  */
 USTRUCT(BlueprintType)
-struct FACTIONS_API FFaction
+struct FACTIONSEXTENSION_API FFaction
 {
 	GENERATED_BODY()
 

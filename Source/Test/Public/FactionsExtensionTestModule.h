@@ -5,15 +5,15 @@
 #include "Modules/ModuleManager.h"
 
 
-class FFactionsExtensionTest : public IModuleInterface
+class FFactionsExtensionTestModule : public IModuleInterface
 {
 public:
 	virtual void StartupModule() override {}
 	virtual void ShutdownModule() override {}
 
-	static inline FFactionsExtensionTest& Get()
+	static inline FFactionsExtensionTestModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FFactionsExtensionTest>("FactionsExtensionTest");
+		return FModuleManager::LoadModuleChecked<FFactionsExtensionTestModule>("FactionsExtensionTest");
 	}
 
 	static inline bool IsAvailable()
@@ -21,5 +21,3 @@ public:
 		return FModuleManager::Get().IsModuleLoaded("FactionsExtensionTest");
 	}
 };
-
-IMPLEMENT_MODULE(FFactionsExtensionTest, FactionsExtensionTest);

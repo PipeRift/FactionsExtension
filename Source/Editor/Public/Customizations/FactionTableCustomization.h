@@ -2,6 +2,7 @@
 #pragma once
 
 #include <EditorUndoClient.h>
+#include <FactionDescriptor.h>
 #include <IPropertyTypeCustomization.h>
 #include <IStructureDetailsView.h>
 #include <PropertyHandle.h>

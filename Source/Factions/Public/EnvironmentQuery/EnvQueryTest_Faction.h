@@ -15,7 +15,7 @@
  *
  */
 UCLASS(meta = (DisplayName = "Faction"))
-class FACTIONS_API UEnvQueryTest_Faction : public UEnvQueryTest
+class FACTIONSEXTENSION_API UEnvQueryTest_Faction : public UEnvQueryTest
 {
 	GENERATED_BODY()
 

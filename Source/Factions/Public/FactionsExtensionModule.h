@@ -18,13 +18,13 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogFactions, All, All);
 
 
-class FFactionsModule : public IModuleInterface
+class FFactionsExtensionModule : public IModuleInterface
 {
 public:
 	// Get Jink Core module instance
-	FORCEINLINE static FFactionsModule& Get()
+	FORCEINLINE static FFactionsExtensionModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FFactionsModule>("Factions");
+		return FModuleManager::LoadModuleChecked<FFactionsExtensionModule>("FactionsExtension");
 	}
 
 	/** IModuleInterface implementation */

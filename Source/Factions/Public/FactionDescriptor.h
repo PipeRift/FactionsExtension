@@ -15,7 +15,7 @@
  * Struct containing information about a faction.
  */
 USTRUCT(BlueprintType)
-struct FACTIONS_API FFactionDescriptor
+struct FACTIONSEXTENSION_API FFactionDescriptor
 {
 	GENERATED_BODY()
 

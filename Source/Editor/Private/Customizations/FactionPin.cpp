@@ -2,12 +2,14 @@
 
 #include "Customizations/FactionPin.h"
 
-#include "EdGraph/EdGraphPin.h"
-#include "EdGraph/EdGraphSchema.h"
-#include "Faction.h"
-#include "FactionsModule.h"
-#include "FactionsSubsystem.h"
-#include "Kismet2/KismetEditorUtilities.h"
+#include "Customizations/SFaction.h"
+
+#include <EdGraph/EdGraphPin.h>
+#include <EdGraph/EdGraphSchema.h>
+#include <Faction.h>
+#include <FactionsExtensionModule.h>
+#include <FactionsSubsystem.h>
+#include <Kismet2/KismetEditorUtilities.h>
 
 
 void SFactionPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
@@ -19,17 +21,24 @@ TSharedRef<SWidget> SFactionPin::GetDefaultValueWidget()
 {
 	ParseDefaultValue();
 
-	return SNew(SBox).MaxDesiredHeight(20.f).Visibility(
-		this, &SGraphPin::GetDefaultValueVisibility)[SNew(SFaction)
-														 .ContentPadding(0.f)
-														 .Faction_Lambda([this]() {
-															 return FFaction{FactionDefaultNameValue};
-														 })
-														 .OnFactionSelected_Lambda(
-															 [this](FFaction Faction, ESelectInfo::Type) {
-																 FactionDefaultNameValue = Faction.GetId();
-																 ApplyDefaultValue();
-															 })];
+	// clang-format off
+	return SNew(SBox)
+	.MaxDesiredHeight(20.f)
+	.Visibility(this, &SGraphPin::GetDefaultValueVisibility)
+	[
+		SNew(SFaction)
+		.ContentPadding(0.f)
+		.Faction_Lambda([this]()
+		{
+			return FFaction{FactionDefaultNameValue};
+		})
+		.OnFactionSelected_Lambda([this](FFaction Faction, ESelectInfo::Type)
+		{
+			FactionDefaultNameValue = Faction.GetId();
+			ApplyDefaultValue();
+		})
+	];
+	// clang-format on
 }
 
 void SFactionPin::ParseDefaultValue()

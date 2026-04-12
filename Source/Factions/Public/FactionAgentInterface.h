@@ -11,15 +11,15 @@
 
 // This class does not need to be modified.
 UINTERFACE()
-class FACTIONS_API UFactionAgentInterface : public UGenericTeamAgentInterface
+class FACTIONSEXTENSION_API UFactionAgentInterface : public UGenericTeamAgentInterface
 {
-	GENERATED_UINTERFACE_BODY()
+	GENERATED_BODY()
 };
 
 /**
  *
  */
-class FACTIONS_API IFactionAgentInterface : public IGenericTeamAgentInterface
+class FACTIONSEXTENSION_API IFactionAgentInterface : public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 

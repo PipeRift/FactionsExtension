@@ -10,6 +10,8 @@
 #include <Widgets/Colors/SColorBlock.h>
 #include <Widgets/Colors/SColorPicker.h>
 #include <Widgets/Input/SButton.h>
+#include <Widgets/Layout/SBorder.h>
+#include <Widgets/Layout/SBox.h>
 
 
 #define LOCTEXT_NAMESPACE "SFactionColor"
@@ -43,21 +45,26 @@ void SFactionColor::Construct(const FArguments& InArgs, TSharedPtr<IPropertyHand
 
 TSharedRef<SWidget> SFactionColor::CreateColorWidget(TWeakPtr<IPropertyHandle> StructWeakHandlePtr)
 {
+	// clang-format off
 	return SAssignNew(ColorWidgetBackgroundBorder, SBorder)
-		.Padding(1)
-		.BorderImage(FAppStyle::Get().GetBrush("ColorPicker.RoundedSolidBackground"))
-		.BorderBackgroundColor(this, &SFactionColor::GetColorWidgetBorderColor)
-		.VAlign(VAlign_Center)[SAssignNew(ColorPickerParentWidget, SColorBlock)
-								   .AlphaBackgroundBrush(
-									   FAppStyle::Get().GetBrush("ColorPicker.RoundedAlphaBackground"))
-								   .Color(this, &SFactionColor::OnGetColorForColorBlock)
-								   .ShowBackgroundForAlpha(true)
-								   .AlphaDisplayMode(bIgnoreAlpha ? EColorBlockAlphaDisplayMode::Ignore
-																  : EColorBlockAlphaDisplayMode::Separate)
-								   .OnMouseButtonDown(this, &SFactionColor::OnMouseButtonDownColorBlock)
-								   .Size(FVector2D(70.0f, 16.0f))
-								   .CornerRadius(FVector4(4.0f, 4.0f, 4.0f, 4.0f))
-								   .IsEnabled(this, &SFactionColor::IsValueEnabled, StructWeakHandlePtr)];
+	.Padding(1)
+	.BorderImage(FAppStyle::Get().GetBrush("ColorPicker.RoundedSolidBackground"))
+	.BorderBackgroundColor(this, &SFactionColor::GetColorWidgetBorderColor)
+	.VAlign(VAlign_Center)
+	[
+		SAssignNew(ColorPickerParentWidget, SColorBlock)
+		.AlphaBackgroundBrush(
+			FAppStyle::Get().GetBrush("ColorPicker.RoundedAlphaBackground"))
+		.Color(this, &SFactionColor::OnGetColorForColorBlock)
+		.ShowBackgroundForAlpha(true)
+		.AlphaDisplayMode(bIgnoreAlpha ? EColorBlockAlphaDisplayMode::Ignore
+										: EColorBlockAlphaDisplayMode::Separate)
+		.OnMouseButtonDown(this, &SFactionColor::OnMouseButtonDownColorBlock)
+		.Size(FVector2D(70.0f, 16.0f))
+		.CornerRadius(FVector4(4.0f, 4.0f, 4.0f, 4.0f))
+		.IsEnabled(this, &SFactionColor::IsValueEnabled, StructWeakHandlePtr)
+	];
+	// clang-format on
 }
 
 void SFactionColor::CreateColorPicker(bool bUseAlpha)

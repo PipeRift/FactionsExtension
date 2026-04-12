@@ -10,23 +10,23 @@
   "CreatedByURL": "http://piperift.com/",
   "DocsURL": "https://piperift.com/FactionsExtension/",
   "SupportURL": "info@piperift.com",
-  "EngineVersion": "5.1",
+  "EngineVersion": "5.7.0",
   "EnabledByDefault": true,
   "CanContainContent": false,
   "IsBetaVersion": false,
   "Modules": [
     {
-      "Name": "Factions",
+      "Name": "FactionsExtension",
       "Type": "Runtime",
       "LoadingPhase": "PreDefault"
     },
     {
-      "Name": "FactionsEditor",
+      "Name": "FactionsExtensionEditor",
       "Type": "Editor",
       "LoadingPhase": "PostEngineInit"
     },
     {
-      "Name": "FactionsTest",
+      "Name": "FactionsExtensionTest",
       "Type": "Editor",
       "LoadingPhase": "PreDefault"
     }

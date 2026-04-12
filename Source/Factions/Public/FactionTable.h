@@ -16,7 +16,7 @@ struct FFaction;
  * Contains a list of in-editor editable factions
  */
 USTRUCT()
-struct FACTIONS_API FFactionTable
+struct FACTIONSEXTENSION_API FFactionTable
 {
 	GENERATED_BODY()
 

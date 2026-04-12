@@ -11,6 +11,7 @@
 #include <DetailWidgetRow.h>
 #include <Editor.h>
 #include <IDetailChildrenBuilder.h>
+#include <Modules/ModuleManager.h>
 #include <PropertyCustomizationHelpers.h>
 #include <ScopedTransaction.h>
 #include <Widgets/Input/SButton.h>

@@ -2,13 +2,8 @@
 
 #include "FactionAgentInterface.h"
 
+#include <FactionsSubsystem.h>
 
-//----------------------------------------------------------------------//
-// UGenericTeamAgentInterface
-//----------------------------------------------------------------------//
-UFactionAgentInterface::UFactionAgentInterface(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{}
 
 const ETeamAttitude::Type IFactionAgentInterface::GetAttitude(const UObject& Target) const
 {

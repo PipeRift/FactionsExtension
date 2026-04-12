@@ -2,6 +2,9 @@
 
 #include "FactionsSubsystem.h"
 
+#include "FactionsExtensionModule.h"
+
+#include <Engine/Engine.h>
 #include <EngineUtils.h>
 
 
@@ -345,4 +348,13 @@ void UFactionsSubsystem::RemoveBakedFaction(FFaction Faction)
 	{
 		BakedBehaviors.RemoveAt(Index);
 	}
+}
+
+UFactionsSubsystem* UFactionsSubsystem::Get(const UObject* ContextObject)
+{
+	if (UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::ReturnNull))
+	{
+		return UWorld::GetSubsystem<UFactionsSubsystem>(World);
+	}
+	return nullptr;
 }
