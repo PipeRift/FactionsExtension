@@ -270,28 +270,57 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 			.VAlignHeader(VAlign_Center)
 			.FixedWidth(70.f)[SNew(STextBlock).Text(LOCTEXT("FactionColumnColor", "Color"))];
 
+	// clang-format off
 	ListView = SNew(SListView<FFactionListItemPtr>)
-				   .ListItemsSource(&VisibleFactions)
-				   .HeaderRow(ListHeaderRow)
-				   .OnGenerateRow(this, &FFactionTableCustomization::MakeListRow)
-				   //.OnListViewScrolled(this, &FFactionTableCustomization::OnScrolled)
-				   .OnSelectionChanged(this, &FFactionTableCustomization::SetSelection)
-				   .ExternalScrollbar(VerticalScrollBar)
-				   .ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
-				   .SelectionMode(ESelectionMode::Single)
-				   .AllowOverscroll(EAllowOverscroll::No);
+		.ListItemsSource(&VisibleFactions)
+		.HeaderRow(ListHeaderRow)
+		.OnGenerateRow(this, &FFactionTableCustomization::MakeListRow)
+		//.OnListViewScrolled(this, &FFactionTableCustomization::OnScrolled)
+		.OnSelectionChanged(this, &FFactionTableCustomization::SetSelection)
+		.ExternalScrollbar(VerticalScrollBar)
+		.ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
+		.SelectionMode(ESelectionMode::Single)
+		.AllowOverscroll(EAllowOverscroll::No);
 
 	StructBuilder.AddCustomRow(LOCTEXT("FactionsPropertySearch", "Factions"))
-		.NameContent()
-		.VAlign(VAlign_Top)
-		.HAlign(HAlign_Fill)[SNew(SBox).Padding(FMargin{0, 0, 0,
-			8})[SNew(SHorizontalBox) +
-				SHorizontalBox::Slot().FillWidth(
-					1.f)[SNew(SBox).MaxDesiredHeight(180.f)[ListView.ToSharedRef()]] +
-				SHorizontalBox::Slot().AutoWidth()[SNew(SBox).WidthOverride(14.f)[VerticalScrollBar]]]]
-		.ValueContent()
-		.HAlign(HAlign_Fill)[SNew(SBox).Padding(
-			FMargin{0, 0, 0, 8})[DescriptorDetailsView->GetWidget().ToSharedRef()]];
+	.NameContent()
+	.VAlign(VAlign_Top)
+	.HAlign(HAlign_Fill)
+	[
+		SNew(SBox)
+		.Padding(FMargin{0, 0, 0, 8})
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.f)
+			[
+				SNew(SBox)
+				.MaxDesiredHeight(180.f)
+				[
+					ListView.ToSharedRef()
+				]
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SBox)
+				.WidthOverride(14.f)
+				[
+					VerticalScrollBar
+				]
+			]
+		]
+	]
+	.ValueContent()
+	.HAlign(HAlign_Fill)
+	[
+		SNew(SBox)
+		.Padding(FMargin{0, 0, 0, 8})
+		[
+			DescriptorDetailsView->GetWidget().ToSharedRef()
+		]
+	];
+	// clang-format on
 
 	if (!CurrentSelection.IsValid() && AvailableFactions.Num() > 0)
 	{
