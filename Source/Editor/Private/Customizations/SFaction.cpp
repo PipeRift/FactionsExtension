@@ -27,18 +27,18 @@ void SFaction::Construct(const FArguments& InArgs)
 		Module.OnModifiedSettings().Add(FSimpleDelegate::CreateRaw(this, &SFaction::UpdateItems, true));
 
 	ChildSlot[SAssignNew(ComboBox, SSearchableComboBox)
-				  .OptionsSource(&CachedItems)
-				  .OnGenerateWidget_Lambda([](TSharedPtr<FString> Item) {
-					  return SNew(STextBlock).Text(FText::FromString(*Item));
-				  })
-				  .OnComboBoxOpening(this, &SFaction::UpdateItems, false)
-				  .OnSelectionChanged(this, &SFaction::OnSelectionChanged)
-				  .ForegroundColor(this, &SFaction::GetForegroundColor)
-				  .HasDownArrow(InArgs._HasDownArrow)
-				  .ContentPadding(InArgs._ContentPadding)
-				  .ComboBoxStyle(InArgs._ComboBoxStyle)
-				  .ButtonStyle(InArgs._ButtonStyle)
-				  .ItemStyle(InArgs._ItemStyle)[SNew(STextBlock).Text(this, &SFaction::GetSelectedItem)]];
+			.OptionsSource(&CachedItems)
+			.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item) {
+				return SNew(STextBlock).Text(FText::FromString(*Item));
+			})
+			.OnComboBoxOpening(this, &SFaction::UpdateItems, false)
+			.OnSelectionChanged(this, &SFaction::OnSelectionChanged)
+			.ForegroundColor(this, &SFaction::GetForegroundColor)
+			.HasDownArrow(InArgs._HasDownArrow)
+			.ContentPadding(InArgs._ContentPadding)
+			.ComboBoxStyle(InArgs._ComboBoxStyle)
+			.ButtonStyle(InArgs._ButtonStyle)
+			.ItemStyle(InArgs._ItemStyle)[SNew(STextBlock).Text(this, &SFaction::GetSelectedItem)]];
 }
 
 void SFaction::UpdateItems(bool bRefreshComboBox /*= false*/)

@@ -63,8 +63,8 @@ public:
 				.ForegroundColor(FAppStyle::GetSlateColor("DefaultForeground"))
 				.OnClicked(Customization.Pin().Get(), &FFactionTableCustomization::OnDeleteFaction,
 					Item)[SNew(STextBlock)
-							  .Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
-							  .Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)];
+						.Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
+						.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)];
 		}
 		else if (Column == FFactionTableCustomization::ColumnSelfAttitude)
 		{
@@ -81,27 +81,23 @@ public:
 			return SNew(SBox).Padding(FMargin{5, 0})[SNew(SFactionColor, Item->GetColorProperty())];
 		}
 
-		return SNew(SBox).Padding(FMargin{5,
-			0})[SAssignNew(IdNameSwitcher, SWidgetSwitcher) +
-				SWidgetSwitcher::Slot()[SNew(SBox)
-											.VAlign(VAlign_Center)
-											.MinDesiredWidth(30.f)
-											.MinDesiredHeight(
-												18.f)[SNew(STextBlock)
-														  .Text(this, &SFactionViewItem::GetIdAsText)
-														  .OnDoubleClicked(this,
-															  &SFactionViewItem::OnIdNameDoubleClicked)]] +
-				SWidgetSwitcher::Slot()
-					[SNew(SBox)
-							.VAlign(VAlign_Center)
-							.MinDesiredWidth(30.f)
-								[SAssignNew(IdNameTextBox, SEditableTextBox)
-										.Text(this, &SFactionViewItem::GetIdAsText)
-										.ToolTipText(LOCTEXT("EditNameId_Tooltip", "Replace a faction's Id"))
-										.RevertTextOnEscape(true)
-										.ClearKeyboardFocusOnCommit(true)
-										.SelectAllTextWhenFocused(true)
-										.OnTextCommitted(this, &SFactionViewItem::OnIdNameCommited)]]];
+		return SNew(SBox).Padding(FMargin{
+			5, 0})[SAssignNew(IdNameSwitcher, SWidgetSwitcher) +
+				   SWidgetSwitcher::Slot()[SNew(SBox)
+						   .VAlign(VAlign_Center)
+						   .MinDesiredWidth(30.f)
+						   .MinDesiredHeight(18.f)[SNew(STextBlock)
+								   .Text(this, &SFactionViewItem::GetIdAsText)
+								   .OnDoubleClicked(this, &SFactionViewItem::OnIdNameDoubleClicked)]] +
+				   SWidgetSwitcher::Slot()[SNew(SBox)
+						   .VAlign(VAlign_Center)
+						   .MinDesiredWidth(30.f)[SAssignNew(IdNameTextBox, SEditableTextBox)
+								   .Text(this, &SFactionViewItem::GetIdAsText)
+								   .ToolTipText(LOCTEXT("EditNameId_Tooltip", "Replace a faction's Id"))
+								   .RevertTextOnEscape(true)
+								   .ClearKeyboardFocusOnCommit(true)
+								   .SelectAllTextWhenFocused(true)
+								   .OnTextCommitted(this, &SFactionViewItem::OnIdNameCommited)]]];
 	}
 
 private:
@@ -190,15 +186,14 @@ void FFactionTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> Str
 				SHorizontalBox::Slot()
 					.HAlign(HAlign_Right)
 					.AutoWidth()
-					.Padding(4, 0)[SNew(SBox).MaxDesiredHeight(20.f).MinDesiredWidth(
-						100.f)[SNew(SSearchBox)
-								   .InitialText(FText::GetEmpty())
-								   .OnTextChanged(this, &FFactionTableCustomization::OnFilterChanged)]]]
+					.Padding(4, 0)[SNew(SBox).MaxDesiredHeight(20.f).MinDesiredWidth(100.f)[SNew(SSearchBox)
+							.InitialText(FText::GetEmpty())
+							.OnTextChanged(this, &FFactionTableCustomization::OnFilterChanged)]]]
 		.ValueContent()[SNew(SHorizontalBox) +
 						SHorizontalBox::Slot()
 							.VAlign(VAlign_Center)
 							.AutoWidth()[SNew(STextBlock)
-											 .Text(this, &FFactionTableCustomization::GetHeaderValueText)] +
+									.Text(this, &FFactionTableCustomization::GetHeaderValueText)] +
 						SHorizontalBox::Slot()
 							.Padding(2.0f)
 							.HAlign(HAlign_Center)
@@ -250,10 +245,10 @@ void FFactionTableCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> S
 			.VAlignCell(VAlign_Center)
 			.VAlignHeader(VAlign_Center)
 			.FillWidth(1.f)[SNew(STextBlock)
-								.Text(LOCTEXT("FactionColumnId", "Id"))
-								.ToolTipText(LOCTEXT("FactionColumnIdTooltip",
-									"A faction's Id serves as its unique identifier. For setting a name use "
-									"the Display Name"))] +
+					.Text(LOCTEXT("FactionColumnId", "Id"))
+					.ToolTipText(LOCTEXT("FactionColumnIdTooltip",
+						"A faction's Id serves as its unique identifier. For setting a name use "
+						"the Display Name"))] +
 		SHeaderRow::Column(ColumnSelfAttitude)
 			.HAlignCell(HAlign_Center)
 			.VAlignCell(VAlign_Center)
@@ -405,7 +400,9 @@ void FFactionTableCustomization::RefreshList()
 	uint32 Num;
 	FPropertyAccess::Result Result = ListHandle->AsMap()->GetNumElements(Num);
 	if (Result != FPropertyAccess::Success)
+	{
 		return;
+	}
 
 	AvailableFactions.SetNum(Num);
 	for (uint32 I = 0; I < Num; ++I)
@@ -522,7 +519,9 @@ void FFactionTableCustomization::OnFinishedChangingProperties(
 UObject* FFactionTableCustomization::GetOuter() const
 {
 	if (!StructHandle.IsValid())
+	{
 		return nullptr;
+	}
 
 	// Customization -> Factions -> Settings
 	TArray<UObject*> Objects;
@@ -535,7 +534,9 @@ FText FFactionTableCustomization::GetHeaderValueText() const
 {
 	uint32 Num;
 	if (ListHandle->AsMap()->GetNumElements(Num) != FPropertyAccess::Success)
+	{
 		return FText::GetEmpty();
+	}
 
 	return FText::Format(LOCTEXT("ValueDescription", "{0} factions"), FText::AsNumber(Num));
 }

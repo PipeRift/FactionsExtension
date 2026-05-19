@@ -101,15 +101,14 @@ void FRelationTableCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 				SHorizontalBox::Slot()
 					.HAlign(HAlign_Right)
 					.AutoWidth()
-					.Padding(4, 0)[SNew(SBox).MaxDesiredHeight(20.f).MinDesiredWidth(
-						100.f)[SNew(SSearchBox)
-								   .Visibility(this, &FRelationTableCustomization::GetFilterVisibility)
-								   .OnTextChanged(this, &FRelationTableCustomization::OnFilterChanged)]]]
+					.Padding(4, 0)[SNew(SBox).MaxDesiredHeight(20.f).MinDesiredWidth(100.f)[SNew(SSearchBox)
+							.Visibility(this, &FRelationTableCustomization::GetFilterVisibility)
+							.OnTextChanged(this, &FRelationTableCustomization::OnFilterChanged)]]]
 		.ValueContent()[SNew(SHorizontalBox) +
 						SHorizontalBox::Slot()
 							.VAlign(VAlign_Center)
 							.AutoWidth()[SNew(STextBlock)
-											 .Text(this, &FRelationTableCustomization::GetHeaderValueText)] +
+									.Text(this, &FRelationTableCustomization::GetHeaderValueText)] +
 						SHorizontalBox::Slot()
 							.Padding(2.0f)
 							.HAlign(HAlign_Center)
@@ -191,16 +190,15 @@ TSharedRef<SWidget> FRelationTableCustomization::CreateFactionWidget(
 		.HAlign(HAlign_Fill)
 		.Padding(FMargin{3, 0})
 		.MinDesiredWidth(175.f)
-		.MaxDesiredWidth(
-			250.f)[SNew(SFaction)
-					   .Faction_Lambda([IdHandle]() {
-						   FName Id;
-						   IdHandle->GetValue(Id);
-						   return FFaction{Id};
-					   })
-					   .OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
-						   IdHandle->SetValue(Faction.GetId());
-					   })];
+		.MaxDesiredWidth(250.f)[SNew(SFaction)
+				.Faction_Lambda([IdHandle]() {
+					FName Id;
+					IdHandle->GetValue(Id);
+					return FFaction{Id};
+				})
+				.OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
+					IdHandle->SetValue(Faction.GetId());
+				})];
 }
 
 TSharedRef<ITableRow> FRelationTableCustomization::MakeRelationWidget(
@@ -228,10 +226,10 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 				.ContentPadding(FMargin{0, 1, 0, 0})
 				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
 				.ForegroundColor(FAppStyle::GetSlateColor("DefaultForeground"))
-				.OnClicked(this, &FRelationTableCustomization::OnDeleteRelation,
-					RelationIndex)[SNew(STextBlock)
-									   .Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
-									   .Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)];
+				.OnClicked(
+					this, &FRelationTableCustomization::OnDeleteRelation, RelationIndex)[SNew(STextBlock)
+						.Font(FAppStyle::Get().GetFontStyle("FontAwesome.10"))
+						.Text(FText::FromString(FString(TEXT("\xf057"))) /*fa-times-circle*/)];
 		}
 		else if (ColumnName == SourceId)
 		{
@@ -264,18 +262,17 @@ TSharedRef<SWidget> FRelationTableCustomization::MakeColumnWidget(uint32 Relatio
 
 			return SNew(SBox)
 				.HAlign(HAlign_Center)
-				.Padding(FMargin{
-					3, 0})[SNew(SCheckBox)
-							   .Style(FFactionsEditorStyle::Get(), "Relation.DirectionalCheckBox")
-							   .IsChecked_Lambda([=]() {
-								   bool bValue = false;
-								   BidirectionalHandle->GetValue(bValue);
-								   return bValue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
-							   })
-							   .OnCheckStateChanged_Lambda([=](const ECheckBoxState NewState) {
-								   BidirectionalHandle->SetValue(NewState == ECheckBoxState::Checked);
-							   })
-							   .ToolTipText(BidirectionalHandle->GetToolTipText())];
+				.Padding(FMargin{3, 0})[SNew(SCheckBox)
+						.Style(FFactionsEditorStyle::Get(), "Relation.DirectionalCheckBox")
+						.IsChecked_Lambda([=]() {
+							bool bValue = false;
+							BidirectionalHandle->GetValue(bValue);
+							return bValue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
+						})
+						.OnCheckStateChanged_Lambda([=](const ECheckBoxState NewState) {
+							BidirectionalHandle->SetValue(NewState == ECheckBoxState::Checked);
+						})
+						.ToolTipText(BidirectionalHandle->GetToolTipText())];
 		}
 	}
 
@@ -310,13 +307,17 @@ void FRelationTableCustomization::RefreshRelations()
 	VisibleRelations.Empty();
 
 	if (!ListHandleArray.IsValid())
+	{
 		return;
+	}
 
 	uint32 Num;
 	FPropertyAccess::Result Result = ListHandleArray->GetNumElements(Num);
 
 	if (Result != FPropertyAccess::Success)
+	{
 		return;
+	}
 
 	for (uint32 I = 0; I < Num; ++I)
 	{
@@ -387,7 +388,9 @@ void FRelationTableCustomization::OnClearRelations()
 UObject* FRelationTableCustomization::GetOuter() const
 {
 	if (!StructHandle.IsValid())
+	{
 		return nullptr;
+	}
 
 	// Customization -> Relations -> Settings
 	TArray<UObject*> Objects;
@@ -400,7 +403,9 @@ FText FRelationTableCustomization::GetHeaderValueText() const
 {
 	uint32 Num;
 	if (ListHandleArray->GetNumElements(Num) != FPropertyAccess::Success)
+	{
 		return FText::GetEmpty();
+	}
 
 	return FText::Format(LOCTEXT("ValueDescription", "{0} relations"), FText::AsNumber(Num));
 }

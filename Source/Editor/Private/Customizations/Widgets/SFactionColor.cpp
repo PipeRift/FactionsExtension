@@ -242,7 +242,9 @@ FSlateColor SFactionColor::GetColorWidgetBorderColor() const
 FPropertyAccess::Result SFactionColor::GetColorAsLinear(FLinearColor& OutColor) const
 {
 	if (!StructPropertyHandle.IsValid())
+	{
 		return FPropertyAccess::Fail;
+	}
 
 	// Default to full alpha in case the alpha component is disabled.
 	OutColor.A = 1.0f;

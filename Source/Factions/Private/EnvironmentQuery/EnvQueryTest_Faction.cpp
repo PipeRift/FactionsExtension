@@ -23,7 +23,9 @@ void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const
 	UObject* Owner = QueryInstance.Owner.Get();
 	const auto* Factions = UFactionsSubsystem::Get(Owner);
 	if (!Owner || !Factions)
+	{
 		return;
+	}
 
 	BoolValue.BindData(Owner, QueryInstance.QueryID);
 	const bool bNegate = BoolValue.GetValue();
@@ -34,12 +36,18 @@ void UEnvQueryTest_Faction::RunTest(FEnvQueryInstance& QueryInstance) const
 		// don't support context Location here, it doesn't make any sense
 		TArray<AActor*> ContextItems;
 		if (!QueryInstance.PrepareContext(Context, ContextItems))
+		{
 			return;
+		}
 
 		if (ContextItems.Num() <= 0)
+		{
 			TargetFaction = FFaction::NoFaction();
+		}
 		else
+		{
 			TargetFaction = UFactionsSubsystem::GetFaction(ContextItems[0]);
+		}
 	}
 
 	auto IteratePoints = [this, &QueryInstance, bNegate](auto Callback) {
@@ -92,7 +100,9 @@ FText UEnvQueryTest_Faction::GetDescriptionTitle() const
 	{
 		ModeDesc = TEXT("");
 		if (bNegate)
+		{
 			ModeDesc += TEXT("Not ");
+		}
 
 		switch (Mode)
 		{

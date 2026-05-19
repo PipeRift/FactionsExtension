@@ -27,16 +27,15 @@ void FFactionCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> St
 	HeaderRow.NameContent()[StructHandle->CreatePropertyNameWidget()]
 		.ValueContent()
 		.MinDesiredWidth(150.0f)
-		.MaxDesiredWidth(
-			250.0f)[SNew(SFaction)
-						.Faction_Lambda([IdHandle]() {
-							FName Id;
-							IdHandle->GetValue(Id);
-							return FFaction{Id};
-						})
-						.OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
-							IdHandle->SetValue(Faction.GetId());
-						})];
+		.MaxDesiredWidth(250.0f)[SNew(SFaction)
+				.Faction_Lambda([IdHandle]() {
+					FName Id;
+					IdHandle->GetValue(Id);
+					return FFaction{Id};
+				})
+				.OnFactionSelected_Lambda([IdHandle](FFaction Faction, ESelectInfo::Type) {
+					IdHandle->SetValue(Faction.GetId());
+				})];
 }
 
 #undef LOCTEXT_NAMESPACE
